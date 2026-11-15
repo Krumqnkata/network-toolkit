@@ -9,6 +9,12 @@ Release notes.
 
 ## [Unreleased]
 
+## [0.1.0-alpha.1] - 2026-11-15
+
+> **Test pre-release.** This build verifies the signed release pipeline. It
+> contains only the app shell — no diagnostic tool is functional yet. Not
+> intended for everyday use.
+
 ### Added
 
 - Project foundation: React Native 0.88 (New Architecture) with TypeScript and
@@ -24,3 +30,6 @@ Release notes.
   CodeQL, dependency review and Dependabot.
 - Tag-driven release workflow that builds, signs, verifies and publishes the
   APK, AAB and SHA-256 checksums.
+
+[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v0.1.0-alpha.1...HEAD
+[0.1.0-alpha.1]: https://github.com/Krumqnkata/network-toolkit/releases/tag/v0.1.0-alpha.1
