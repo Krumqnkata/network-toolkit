@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../app/theme';
@@ -11,13 +11,23 @@ export interface ScreenProps {
   children: React.ReactNode;
   /** Set to false for screens that manage their own scrolling (e.g. lists). */
   scrollable?: boolean;
+  /** Enables pull-to-refresh on scrollable screens. */
+  onRefresh?: () => void;
+  refreshing?: boolean;
 }
 
 /**
  * Standard screen frame used by every tab: safe-area aware, themed background
  * and a large title header that is consistent across feature modules.
  */
-export function Screen({ title, subtitle, children, scrollable = true }: ScreenProps) {
+export function Screen({
+  title,
+  subtitle,
+  children,
+  scrollable = true,
+  onRefresh,
+  refreshing = false,
+}: ScreenProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -44,7 +54,20 @@ export function Screen({ title, subtitle, children, scrollable = true }: ScreenP
   return (
     <View style={[styles.root, { backgroundColor: theme.colors.background }]}>
       {scrollable ? (
-        <ScrollView contentContainerStyle={contentStyle}>
+        <ScrollView
+          contentContainerStyle={contentStyle}
+          refreshControl={
+            onRefresh ? (
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[theme.colors.accent]}
+                progressBackgroundColor={theme.colors.surface}
+                progressViewOffset={insets.top}
+              />
+            ) : undefined
+          }
+        >
           {header}
           {children}
         </ScrollView>

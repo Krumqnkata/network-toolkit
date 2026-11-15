@@ -16,24 +16,25 @@ native app.
 
 </div>
 
-> [!NOTE] > **Status: early development (milestone 1 of 9).** The app shell, theming,
-> tooling and release pipeline are in place. No diagnostic tool is
-> functional yet — see the [roadmap](#roadmap). There is no published release
-> yet.
+<!-- prettier-ignore -->
+> [!NOTE]
+> **Status: early development (milestones 1–3 of 9).** The live network
+> dashboard works; the Wi-Fi Analyzer and the network tools are next — see the
+> [roadmap](#roadmap). Only a test pre-release has been published so far.
 
 ## Features
 
 Planned feature modules. The **Status** column reflects what is actually
 implemented in the current code.
 
-| Module                   | Highlights                                                                                    | Status     |
-| ------------------------ | --------------------------------------------------------------------------------------------- | ---------- |
-| **Dashboard**            | Connection type, IP, gateway, DNS, Wi-Fi signal, internet reachability, quick access to tools | Shell only |
-| **Wi-Fi Analyzer**       | 2.4 / 5 / 6 GHz scans, SSID/BSSID, RSSI, channels, overlap analysis, signal history           | Planned    |
-| **Network Tools**        | Ping, traceroute, DNS & reverse DNS, port scanner, HTTP headers, TLS certificates, IP info    | Planned    |
-| **LAN Scanner**          | TCP-based host discovery, hostnames, MAC vendors (where available), open ports                | Planned    |
-| **Internet Diagnostics** | Download / upload speed, latency, jitter, packet loss, DNS timing, history                    | Planned    |
-| **Advanced Diagnostics** | Connection monitoring, outage tracking, automatic problem detection, PDF/JSON reports         | Planned    |
+| Module                   | Highlights                                                                                    | Status    |
+| ------------------------ | --------------------------------------------------------------------------------------------- | --------- |
+| **Dashboard**            | Connection type, IP, gateway, DNS, Wi-Fi signal, internet reachability, quick access to tools | Available |
+| **Wi-Fi Analyzer**       | 2.4 / 5 / 6 GHz scans, SSID/BSSID, RSSI, channels, overlap analysis, signal history           | Planned   |
+| **Network Tools**        | Ping, traceroute, DNS & reverse DNS, port scanner, HTTP headers, TLS certificates, IP info    | Planned   |
+| **LAN Scanner**          | TCP-based host discovery, hostnames, MAC vendors (where available), open ports                | Planned   |
+| **Internet Diagnostics** | Download / upload speed, latency, jitter, packet loss, DNS timing, history                    | Planned   |
+| **Advanced Diagnostics** | Connection monitoring, outage tracking, automatic problem detection, PDF/JSON reports         | Planned   |
 
 Design principles:
 
@@ -41,6 +42,8 @@ Design principles:
   limits — scan throttling, MAC randomization, permission requirements — and
   never shows data the OS does not actually provide.
 - **Local first.** Diagnostics run on the phone; no account, no cloud service.
+- **English and Bulgarian.** The whole interface is available in both
+  languages and follows the device language by default.
 - **Permissions in context.** Nothing is requested on first launch; each
   permission is requested when the feature that needs it is used
   ([details](docs/PERMISSIONS.md)).
@@ -112,17 +115,17 @@ Read more in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Roadmap
 
-| #   | Milestone           | Scope                                                          | Status      |
-| --- | ------------------- | -------------------------------------------------------------- | ----------- |
-| 1   | Foundation          | Project setup, architecture, navigation, theme, CI/CD          | In progress |
-| 2   | Native bridge       | Turbo Native Module infrastructure, typed and validated bridge | Planned     |
-| 3   | Network information | Connection, IP, gateway, DNS, Wi-Fi signal on the dashboard    | Planned     |
-| 4   | Wi-Fi Analyzer      | Scanning, channels, RSSI, charts, overlap analysis             | Planned     |
-| 5   | Network diagnostics | Ping, DNS lookup, traceroute, HTTP and TLS tools               | Planned     |
-| 6   | LAN Scanner         | Device discovery, vendor lookup, port scanning                 | Planned     |
-| 7   | Speed test          | Download, upload, latency, jitter, packet loss                 | Planned     |
-| 8   | Advanced features   | History, monitoring, automatic diagnostics, reports            | Planned     |
-| 9   | Optimization        | Performance, battery, compatibility, 1.0 release               | Planned     |
+| #   | Milestone           | Scope                                                          | Status  |
+| --- | ------------------- | -------------------------------------------------------------- | ------- |
+| 1   | Foundation          | Project setup, architecture, navigation, theme, CI/CD          | Done    |
+| 2   | Native bridge       | Turbo Native Module infrastructure, typed and validated bridge | Done    |
+| 3   | Network information | Connection, IP, gateway, DNS, Wi-Fi signal on the dashboard    | Done    |
+| 4   | Wi-Fi Analyzer      | Scanning, channels, RSSI, charts, overlap analysis             | Planned |
+| 5   | Network diagnostics | Ping, DNS lookup, traceroute, HTTP and TLS tools               | Planned |
+| 6   | LAN Scanner         | Device discovery, vendor lookup, port scanning                 | Planned |
+| 7   | Speed test          | Download, upload, latency, jitter, packet loss                 | Planned |
+| 8   | Advanced features   | History, monitoring, automatic diagnostics, reports            | Planned |
+| 9   | Optimization        | Performance, battery, compatibility, 1.0 release               | Planned |
 
 The first public version (MVP) covers milestones 1–5: dashboard, network
 information, Wi-Fi Analyzer, ping and DNS lookup.

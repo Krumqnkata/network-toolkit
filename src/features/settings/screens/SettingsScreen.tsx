@@ -10,50 +10,86 @@ import {
   Screen,
   SectionHeader,
   SegmentedControl,
-  type SegmentOption,
 } from '../../../components/common';
-import { useSettingsStore, type ThemePreference } from '../../../stores/settingsStore';
+import { useStrings } from '../../../i18n';
+import {
+  LANGUAGE_PREFERENCES,
+  THEME_PREFERENCES,
+  useSettingsStore,
+} from '../../../stores/settingsStore';
 
-const THEME_OPTIONS: readonly SegmentOption<ThemePreference>[] = [
-  { value: 'system', label: 'System' },
-  { value: 'light', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
-];
+function SettingGroup({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint: string;
+  children: React.ReactNode;
+}) {
+  const theme = useTheme();
+  return (
+    <View style={{ gap: theme.spacing.md }}>
+      <View style={{ gap: theme.spacing.xxs }}>
+        <AppText variant="heading">{title}</AppText>
+        <AppText variant="caption" color="textMuted">
+          {hint}
+        </AppText>
+      </View>
+      {children}
+    </View>
+  );
+}
 
 export function SettingsScreen() {
   const theme = useTheme();
+  const s = useStrings();
   const themePreference = useSettingsStore(state => state.themePreference);
   const setThemePreference = useSettingsStore(state => state.setThemePreference);
+  const languagePreference = useSettingsStore(state => state.languagePreference);
+  const setLanguagePreference = useSettingsStore(state => state.setLanguagePreference);
 
   return (
-    <Screen title="Settings">
-      <SectionHeader title="Appearance" />
-      <Card style={{ gap: theme.spacing.md }}>
-        <View style={{ gap: theme.spacing.xxs }}>
-          <AppText variant="heading">Theme</AppText>
-          <AppText variant="caption" color="textMuted">
-            System follows your device setting.
-          </AppText>
-        </View>
-        <SegmentedControl
-          accessibilityLabel="Theme"
-          options={THEME_OPTIONS}
-          value={themePreference}
-          onChange={setThemePreference}
-        />
+    <Screen title={s.settings.title}>
+      <SectionHeader title={s.settings.appearance} />
+      <Card style={{ gap: theme.spacing.xl }}>
+        <SettingGroup title={s.settings.theme} hint={s.settings.themeHint}>
+          <SegmentedControl
+            accessibilityLabel={s.settings.theme}
+            testID="theme-options"
+            options={THEME_PREFERENCES.map(value => ({
+              value,
+              label: s.settings.themeOptions[value],
+            }))}
+            value={themePreference}
+            onChange={setThemePreference}
+          />
+        </SettingGroup>
+        <SettingGroup title={s.settings.language} hint={s.settings.languageHint}>
+          <SegmentedControl
+            accessibilityLabel={s.settings.language}
+            testID="language-options"
+            options={LANGUAGE_PREFERENCES.map(value => ({
+              value,
+              label: s.settings.languageOptions[value],
+            }))}
+            value={languagePreference}
+            onChange={setLanguagePreference}
+          />
+        </SettingGroup>
       </Card>
 
-      <SectionHeader title="About" />
+      <SectionHeader title={s.settings.about} />
       <Card padded={false}>
         <ListRow
           title={APP_NAME}
-          subtitle={`Version ${APP_VERSION}`}
+          subtitle={s.settings.version(APP_VERSION)}
           showDivider
           testID="about-version"
         />
         <ListRow
-          title="License"
-          subtitle={`${APP_LICENSE} — free and open source software`}
+          title={s.settings.license}
+          subtitle={s.settings.licenseValue(APP_LICENSE)}
           testID="about-license"
         />
       </Card>

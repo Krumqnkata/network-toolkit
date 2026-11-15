@@ -45,9 +45,10 @@ src/
 │   ├── wifi-analyzer/
 │   ├── network-tools/
 │   └── settings/
-├── domain/              Pure models and algorithms            (milestone 2+)
-├── native/              Typed native-module bridge            (milestone 2)
-├── services/            Application services                  (milestone 3+)
+├── domain/              Pure models and algorithms
+├── native/              Typed native-module bridge (specs + Zod wrappers)
+├── services/            Application services (permissions, …)
+├── i18n/                Translations (en, bg) and language selection
 ├── database/            SQLite migrations and repositories    (milestone 3+)
 ├── stores/              Zustand stores
 └── utils/               Small generic helpers
@@ -99,6 +100,16 @@ themes (`themes.ts`). Components read colors only through `useTheme()` and
 semantic names (`textPrimary`, `accent`, …). The theme tests check WCAG AA
 contrast for every text/background pair in both themes, so color changes that
 hurt readability fail CI.
+
+## Localization
+
+The UI is available in English and Bulgarian. Strings live in
+`src/i18n/strings/<lang>.ts`; English (`en.ts`) defines the shape and every
+other language is typed against it, so a missing or extra key fails the type
+check. Strings with parameters are functions. Components read strings with
+`useStrings()`; the language follows the device locale unless the user
+picks one in Settings. Technical values (addresses, units such as dBm, MHz,
+Mbps) are not translated.
 
 ## Testing strategy
 
