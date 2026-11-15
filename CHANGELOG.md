@@ -9,6 +9,23 @@ Release notes.
 
 ## [Unreleased]
 
+### Added
+
+- Live Dashboard: connection type, internet status (validated / captive
+  portal / no internet), VPN and metered badges, Wi-Fi name, BSSID, signal
+  strength meter, band, channel, frequency, link speeds, Wi-Fi standard and
+  security, IP addresses, gateway, DNS servers, Private DNS, MTU, search
+  domain, bandwidth estimate and mobile operator. Updates every 3 seconds
+  while visible and supports pull-to-refresh.
+- Bulgarian translation of the whole interface, with a language setting
+  (System / English / Български).
+- Native bridge: first Turbo Native Module (`NetworkModule`, Kotlin) with
+  data validated by Zod before it reaches the UI; documented in docs/API.md.
+- Location permission requested only from the Wi-Fi card, with an in-app
+  explanation, "don't ask again" handling and a shortcut to location settings
+  when location services are off.
+- Kotlin unit tests for network value normalization.
+
 ## [0.1.0-alpha.1] - 2026-11-15
 
 > **Test pre-release.** This build verifies the signed release pipeline. It

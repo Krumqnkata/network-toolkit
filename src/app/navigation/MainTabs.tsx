@@ -6,6 +6,7 @@ import { DashboardScreen } from '../../features/dashboard/screens/DashboardScree
 import { ToolsScreen } from '../../features/network-tools/screens/ToolsScreen';
 import { SettingsScreen } from '../../features/settings/screens/SettingsScreen';
 import { WifiAnalyzerScreen } from '../../features/wifi-analyzer/screens/WifiAnalyzerScreen';
+import { useStrings } from '../../i18n';
 import { useTheme } from '../theme';
 import type { MainTabParamList } from './types';
 
@@ -32,6 +33,7 @@ const TAB_ICONS: Record<keyof MainTabParamList, (props: TabIconProps) => React.R
 
 export function MainTabs() {
   const theme = useTheme();
+  const s = useStrings();
 
   return (
     <Tab.Navigator
@@ -47,10 +49,18 @@ export function MainTabs() {
         tabBarIcon: TAB_ICONS[route.name],
       })}
     >
-      <Tab.Screen name="Dashboard" component={DashboardScreen} />
-      <Tab.Screen name="WifiAnalyzer" component={WifiAnalyzerScreen} options={{ title: 'Wi-Fi' }} />
-      <Tab.Screen name="Tools" component={ToolsScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      <Tab.Screen
+        name="Dashboard"
+        component={DashboardScreen}
+        options={{ title: s.tabs.dashboard }}
+      />
+      <Tab.Screen
+        name="WifiAnalyzer"
+        component={WifiAnalyzerScreen}
+        options={{ title: s.tabs.wifi }}
+      />
+      <Tab.Screen name="Tools" component={ToolsScreen} options={{ title: s.tabs.tools }} />
+      <Tab.Screen name="Settings" component={SettingsScreen} options={{ title: s.tabs.settings }} />
     </Tab.Navigator>
   );
 }

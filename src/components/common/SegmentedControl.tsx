@@ -14,6 +14,7 @@ export interface SegmentedControlProps<T extends string> {
   value: T;
   onChange: (value: T) => void;
   accessibilityLabel: string;
+  testID?: string;
 }
 
 export function SegmentedControl<T extends string>({
@@ -21,10 +22,12 @@ export function SegmentedControl<T extends string>({
   value,
   onChange,
   accessibilityLabel,
+  testID,
 }: SegmentedControlProps<T>) {
   const theme = useTheme();
   return (
     <View
+      testID={testID}
       accessibilityRole="radiogroup"
       accessibilityLabel={accessibilityLabel}
       style={[

@@ -1,4 +1,4 @@
-import { render, screen, userEvent } from '@testing-library/react-native';
+import { render, screen, userEvent, within } from '@testing-library/react-native';
 import React from 'react';
 
 import { App } from '../src/app/App';
@@ -31,7 +31,7 @@ describe('App shell', () => {
     const user = userEvent.setup();
     await render(<App />);
 
-    await user.press(screen.getByRole('button', { name: 'Open Network Tools' }));
+    await user.press(screen.getByRole('button', { name: 'Open Tools' }));
 
     expect(await screen.findByRole('header', { name: 'Tools' })).toBeOnTheScreen();
     expect(screen.getByText('Ping')).toBeOnTheScreen();
@@ -42,11 +42,27 @@ describe('App shell', () => {
     const user = userEvent.setup();
     await render(<App />);
 
-    await user.press(screen.getByRole('button', { name: /Settings/ }));
-    await user.press(await screen.findByRole('radio', { name: 'Light' }));
+    await user.press(screen.getByRole('button', { name: /^Settings/ }));
+    const themeGroup = await screen.findByTestId('theme-options');
+    await user.press(within(themeGroup).getByRole('radio', { name: 'Light' }));
 
     expect(useSettingsStore.getState().themePreference).toBe('light');
-    expect(screen.getByRole('radio', { name: 'Light' })).toBeChecked();
-    expect(screen.getByRole('radio', { name: 'System' })).not.toBeChecked();
+    expect(within(themeGroup).getByRole('radio', { name: 'Light' })).toBeChecked();
+    expect(within(themeGroup).getByRole('radio', { name: 'System' })).not.toBeChecked();
+  });
+
+  it('switches the whole interface to Bulgarian', async () => {
+    const user = userEvent.setup();
+    await render(<App />);
+
+    await user.press(screen.getByRole('button', { name: /^Settings/ }));
+    const languageGroup = await screen.findByTestId('language-options');
+    await user.press(within(languageGroup).getByRole('radio', { name: 'Български' }));
+
+    expect(useSettingsStore.getState().languagePreference).toBe('bg');
+    expect(await screen.findByRole('header', { name: 'Настройки' })).toBeOnTheScreen();
+    for (const tab of ['Табло', 'Wi-Fi', 'Инструменти', 'Настройки']) {
+      expect(screen.getByRole('button', { name: new RegExp(`^${tab}`) })).toBeOnTheScreen();
+    }
   });
 });
