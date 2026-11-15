@@ -11,6 +11,19 @@ Release notes.
 
 ### Added
 
+- Wi-Fi Analyzer: scans nearby networks on 2.4, 5 and 6 GHz and shows a
+  channel graph (each network drawn across the spectrum it occupies, including
+  40/80/160 MHz channels), a list sorted by signal with channel, width,
+  frequency, security (WPA/WPA2/WPA3/Enterprise/OWE, WPS), Wi-Fi standard and
+  BSSID, the connected access point, and a per-network signal history for the
+  session.
+- Channel recommendations: ranks 1/6/11 on 2.4 GHz, all common 5 GHz channels
+  (DFS marked) and 6 GHz preferred scanning channels by overlap with visible
+  networks, plus the load on your own network's channel.
+- Automatic scan every 30 seconds while the analyzer is open (within Android's
+  4-scans-per-2-minutes limit), with a clear message when Android throttles a
+  scan, and explanations when location or Wi-Fi is off.
+
 - Live Dashboard: connection type, internet status (validated / captive
   portal / no internet), VPN and metered badges, Wi-Fi name, BSSID, signal
   strength meter, band, channel, frequency, link speeds, Wi-Fi standard and

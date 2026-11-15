@@ -27,9 +27,16 @@ export interface ThemeColors {
   tabInactive: string;
 }
 
+export interface ChartColors {
+  /** Categorical colors for data series (networks, devices), in display order. */
+  series: readonly string[];
+  grid: string;
+}
+
 export interface Theme {
   scheme: ColorScheme;
   colors: ThemeColors;
+  chart: ChartColors;
   spacing: typeof spacing;
   radius: typeof radius;
   typography: typeof typography;
@@ -73,12 +80,28 @@ const lightColors: ThemeColors = {
   tabInactive: palette.ink500,
 };
 
+const darkChart: ChartColors = {
+  series: ['#2DD4BF', '#60A5FA', '#FBBF24', '#F472B6', '#A78BFA', '#A3E635', '#FB923C', '#38BDF8'],
+  grid: palette.ink700,
+};
+
+const lightChart: ChartColors = {
+  series: ['#0F766E', '#1D4ED8', '#B45309', '#BE185D', '#6D28D9', '#4D7C0F', '#C2410C', '#0369A1'],
+  grid: palette.ink100,
+};
+
 const shared = { spacing, radius, typography };
 
-export const darkTheme: Theme = { scheme: 'dark', colors: darkColors, ...shared };
+export const darkTheme: Theme = {
+  scheme: 'dark',
+  colors: darkColors,
+  chart: darkChart,
+  ...shared,
+};
 export const lightTheme: Theme = {
   scheme: 'light',
   colors: lightColors,
+  chart: lightChart,
   ...shared,
 };
 

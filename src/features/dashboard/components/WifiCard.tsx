@@ -4,11 +4,11 @@ import { View } from 'react-native';
 import { useTheme } from '../../../app/theme';
 import { AppText, Card, InfoRow } from '../../../components/common';
 import { SignalMeter } from '../../../components/indicators/SignalMeter';
+import { LocationNotice } from '../../../components/permissions/LocationNotice';
 import { wifiStandardLabel } from '../../../domain/algorithms/wifi';
 import type { NetworkSnapshot, WifiLink } from '../../../domain/models/network';
 import { useStrings } from '../../../i18n';
 import { formatBand, formatChannel, formatMbps, formatTxRx, ssidBlocker } from '../format';
-import { LocationNotice } from './LocationNotice';
 
 export interface WifiCardProps {
   snapshot: NetworkSnapshot & { wifi: WifiLink };
@@ -51,7 +51,9 @@ export function WifiCard({ snapshot, onPermissionGranted }: WifiCardProps) {
         </AppText>
       </View>
 
-      {blocker ? <LocationNotice reason={blocker} onGranted={onPermissionGranted} /> : null}
+      {blocker ? (
+        <LocationNotice purpose="ssid" reason={blocker} onGranted={onPermissionGranted} />
+      ) : null}
 
       {wifi.rssi !== null ? (
         <SignalMeter

@@ -24,6 +24,13 @@ describe.each(Object.values(themes))('$scheme theme', theme => {
     expect(contrastRatio(colors[fg], colors[bg])).toBeGreaterThanOrEqual(WCAG_AA_TEXT);
   });
 
+  it('chart series colors stand out from the surface', () => {
+    for (const color of theme.chart.series) {
+      expect(contrastRatio(color, colors.surface)).toBeGreaterThanOrEqual(WCAG_AA_NON_TEXT);
+    }
+    expect(new Set(theme.chart.series).size).toBe(theme.chart.series.length);
+  });
+
   it('inactive tab icons are distinguishable from the tab bar', () => {
     expect(contrastRatio(colors.tabInactive, colors.tabBar)).toBeGreaterThanOrEqual(
       WCAG_AA_NON_TEXT,
