@@ -23,9 +23,24 @@ updates:
         update-types: ['version-update:semver-major']
       - dependency-name: 'react'
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      # Tooling majors are tied to what the React Native presets support
+      # (Babel 7, ESLint 8 legacy config, @react-native/typescript-config) and
+      # are upgraded together with React Native.
+      - dependency-name: '@babel/*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'eslint'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
+      # Prettier majors reformat the codebase; upgraded manually in one commit.
+      - dependency-name: 'prettier'
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: gradle
     directory: /android
+    ignore:
+      # The Gradle wrapper version is pinned by the React Native template.
+      - dependency-name: 'gradle-wrapper'
     schedule:
       interval: weekly
 

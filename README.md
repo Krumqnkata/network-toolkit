@@ -8,6 +8,8 @@
 internet diagnostics, LAN discovery and network administration tools in one
 native app.
 
+[![CI](https://github.com/Krumqnkata/network-toolkit/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Krumqnkata/network-toolkit/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Krumqnkata/network-toolkit/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/Krumqnkata/network-toolkit/actions/workflows/codeql.yml)
 [![License: AGPL-3.0-only](https://img.shields.io/badge/license-AGPL--3.0--only-blue.svg)](LICENSE)
 ![Platform: Android 8.0+](https://img.shields.io/badge/platform-Android%208.0%2B-3DDC84.svg)
 ![React Native 0.88](https://img.shields.io/badge/React%20Native-0.88-61DAFB.svg)
@@ -66,7 +68,7 @@ Screenshots will be added once the first functional screens are available.
 ## Installation
 
 Once the first version is released, signed APKs will be available on the
-[Releases](../../releases) page:
+[Releases](https://github.com/Krumqnkata/network-toolkit/releases) page:
 
 1. Download `NetworkToolkit-vX.Y.Z.apk` and `checksums.txt` from the latest release.
 2. Optionally verify the download: `sha256sum -c checksums.txt`.
@@ -82,7 +84,7 @@ Prerequisites: Node.js 24 LTS, JDK 17, Android SDK (platform 37, build-tools
 [React Native environment setup](https://reactnative.dev/docs/set-up-your-environment).
 
 ```sh
-git clone <repository-url> network-toolkit
+git clone https://github.com/Krumqnkata/network-toolkit.git
 cd network-toolkit
 npm ci
 npm start           # Metro bundler, in one terminal
