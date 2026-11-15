@@ -16,3 +16,13 @@ jest.mock('../../src/native/specs/NativeNetworkModule', () => ({
     ),
   },
 }));
+
+jest.mock('../../src/native/specs/NativeWifiModule', () => ({
+  __esModule: true,
+  default: {
+    scan: jest.fn(() => Promise.resolve(require('../fixtures/wifiScan').scanResult)),
+    getCachedScanResults: jest.fn(() =>
+      Promise.resolve({ ...require('../fixtures/wifiScan').scanResult, fresh: false }),
+    ),
+  },
+}));

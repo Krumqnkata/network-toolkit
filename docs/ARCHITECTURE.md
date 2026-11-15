@@ -101,6 +101,14 @@ semantic names (`textPrimary`, `accent`, …). The theme tests check WCAG AA
 contrast for every text/background pair in both themes, so color changes that
 hurt readability fail CI.
 
+## Charts
+
+Charts are drawn with `react-native-svg` (`src/components/charts`). The Wi-Fi
+channel graph is a custom shape (each network spans the spectrum it occupies)
+that general charting libraries do not model well, so Victory Native XL, which
+would add Skia, Reanimated and Gesture Handler as native dependencies, is
+deferred until a time-series chart needs interaction that SVG cannot do cheaply.
+
 ## Localization
 
 The UI is available in English and Bulgarian. Strings live in

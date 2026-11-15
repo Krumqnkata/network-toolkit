@@ -18,8 +18,8 @@ native app.
 
 <!-- prettier-ignore -->
 > [!NOTE]
-> **Status: early development (milestones 1–3 of 9).** The live network
-> dashboard works; the Wi-Fi Analyzer and the network tools are next — see the
+> **Status: early development (milestones 1–4 of 9).** The live network
+> dashboard and the Wi-Fi Analyzer work; the network tools are next — see the
 > [roadmap](#roadmap). Only a test pre-release has been published so far.
 
 ## Features
@@ -30,7 +30,7 @@ implemented in the current code.
 | Module                   | Highlights                                                                                    | Status    |
 | ------------------------ | --------------------------------------------------------------------------------------------- | --------- |
 | **Dashboard**            | Connection type, IP, gateway, DNS, Wi-Fi signal, internet reachability, quick access to tools | Available |
-| **Wi-Fi Analyzer**       | 2.4 / 5 / 6 GHz scans, SSID/BSSID, RSSI, channels, overlap analysis, signal history           | Planned   |
+| **Wi-Fi Analyzer**       | 2.4 / 5 / 6 GHz scans, SSID/BSSID, RSSI, channels, overlap analysis, signal history           | Available |
 | **Network Tools**        | Ping, traceroute, DNS & reverse DNS, port scanner, HTTP headers, TLS certificates, IP info    | Planned   |
 | **LAN Scanner**          | TCP-based host discovery, hostnames, MAC vendors (where available), open ports                | Planned   |
 | **Internet Diagnostics** | Download / upload speed, latency, jitter, packet loss, DNS timing, history                    | Planned   |
@@ -62,7 +62,7 @@ Screenshots will be added once the first functional screens are available.
 | Navigation | React Navigation 7 (native stack + bottom tabs)                    |
 | State      | Zustand                                                            |
 | Native     | Kotlin, Android SDK, Turbo Native Modules                          |
-| Graphics   | react-native-svg (icons); Victory Native XL planned for charts     |
+| Graphics   | react-native-svg (icons, channel graph, sparklines)                |
 | Storage    | SQLite (planned)                                                   |
 | Testing    | Jest, React Native Testing Library, JUnit; Maestro planned for E2E |
 | Quality    | ESLint, Prettier, CodeQL, Dependabot, dependency review            |
@@ -120,7 +120,7 @@ Read more in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | 1   | Foundation          | Project setup, architecture, navigation, theme, CI/CD          | Done    |
 | 2   | Native bridge       | Turbo Native Module infrastructure, typed and validated bridge | Done    |
 | 3   | Network information | Connection, IP, gateway, DNS, Wi-Fi signal on the dashboard    | Done    |
-| 4   | Wi-Fi Analyzer      | Scanning, channels, RSSI, charts, overlap analysis             | Planned |
+| 4   | Wi-Fi Analyzer      | Scanning, channels, RSSI, charts, overlap analysis             | Done    |
 | 5   | Network diagnostics | Ping, DNS lookup, traceroute, HTTP and TLS tools               | Planned |
 | 6   | LAN Scanner         | Device discovery, vendor lookup, port scanning                 | Planned |
 | 7   | Speed test          | Download, upload, latency, jitter, packet loss                 | Planned |

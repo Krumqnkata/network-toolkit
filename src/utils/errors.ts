@@ -21,6 +21,7 @@ export class AppError extends Error {
 const NATIVE_CODE_MAP: Record<string, AppErrorCode> = {
   E_PERMISSION: 'permission-denied',
   E_NETWORK: 'network',
+  E_WIFI: 'network',
 };
 
 /** Normalizes anything thrown (including native promise rejections) into an AppError. */

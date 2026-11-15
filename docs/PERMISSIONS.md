@@ -6,17 +6,31 @@ for which permissions the app declares and why.
 
 ## Declared today
 
-| Permission               | Since | Why                                                                         | Runtime prompt                                       |
-| ------------------------ | ----- | --------------------------------------------------------------------------- | ---------------------------------------------------- |
-| `INTERNET`               | 0.1.0 | Network diagnostics, and Metro bundler connection in debug builds           | No (normal)                                          |
-| `ACCESS_NETWORK_STATE`   | 0.2.0 | Connection type, `NetworkCapabilities`, `LinkProperties` (IP, gateway, DNS) | No (normal)                                          |
-| `ACCESS_WIFI_STATE`      | 0.2.0 | Current Wi-Fi link: signal, frequency, link speed, standard, security       | No (normal)                                          |
-| `ACCESS_FINE_LOCATION`   | 0.2.0 | Android reveals the current SSID/BSSID only with precise location           | Yes — from the Dashboard Wi-Fi card, on user request |
-| `ACCESS_COARSE_LOCATION` | 0.2.0 | Must be requested together with fine location on Android 12+                | Yes — same dialog                                    |
+| Permission               | Since | Why                                                                                                                   | Runtime prompt                                                             |
+| ------------------------ | ----- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `INTERNET`               | 0.1.0 | Network diagnostics, and Metro bundler connection in debug builds                                                     | No (normal)                                                                |
+| `ACCESS_NETWORK_STATE`   | 0.2.0 | Connection type, `NetworkCapabilities`, `LinkProperties` (IP, gateway, DNS)                                           | No (normal)                                                                |
+| `ACCESS_WIFI_STATE`      | 0.2.0 | Current Wi-Fi link (signal, frequency, link speed, standard, security) and `getScanResults()`                         | No (normal)                                                                |
+| `CHANGE_WIFI_STATE`      | 0.2.0 | Required by `WifiManager.startScan()`                                                                                 | No (normal)                                                                |
+| `ACCESS_FINE_LOCATION`   | 0.2.0 | SSID/BSSID of the current network, and `startScan()` / `getScanResults()` on **every** Android version, including 13+ | Yes — from the Dashboard Wi-Fi card or the Wi-Fi Analyzer, on user request |
+| `ACCESS_COARSE_LOCATION` | 0.2.0 | Must be requested together with fine location on Android 12+                                                          | Yes — same dialog                                                          |
 
 Location is never read, stored or transmitted; the permission only unlocks the
-Wi-Fi identifiers Android ties to it. SSID/BSSID also require location services
-to be on — the app detects this and links to the system location settings.
+Wi-Fi data Android ties to it. SSIDs, BSSIDs and scan results also require
+location services to be on — the app detects this and links to the system
+location settings.
+
+Scanning is throttled by Android: a foreground app may scan 4 times per
+2 minutes (Android 9+). The analyzer auto-scans every 30 seconds, and shows a
+notice when a manual scan was throttled and older results are displayed.
+
+### Why not `NEARBY_WIFI_DEVICES`?
+
+Per the official [Wi-Fi permissions guide](https://developer.android.com/develop/connectivity/wifi/wifi-permissions),
+`getScanResults()` and `startScan()` still require `ACCESS_FINE_LOCATION` when
+targeting Android 13+, so `NEARBY_WIFI_DEVICES` would not unlock anything the
+app uses today. It will be added if a feature needs an API it covers (e.g.
+Wi-Fi Aware or Wi-Fi RTT).
 
 ## Planned
 
@@ -26,9 +40,6 @@ differs between Android versions.
 
 | Permission / API                   | Milestone | Purpose                                       | Notes                                                                               |
 | ---------------------------------- | --------- | --------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `ACCESS_FINE_LOCATION` (scans)     | 4         | Wi-Fi scan results on Android 8–12            | Already declared; scan results count as location data on these versions             |
-| `NEARBY_WIFI_DEVICES`              | 4         | Wi-Fi scan results on Android 13+             | Runtime; declare with `neverForLocation` only if no location is derived             |
-| `CHANGE_WIFI_STATE`                | 4         | `WifiManager.startScan()`                     | Normal; scans are throttled by the OS (foreground: 4 scans / 2 min on Android 9+)   |
 | Local network access (Android 17+) | 6         | LAN scanner and port scanner on newer targets | Must be verified against the Android 17 behavior changes before raising `targetSdk` |
 
 ## Handling rules

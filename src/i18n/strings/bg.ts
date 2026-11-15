@@ -74,13 +74,16 @@ export const bg: Strings = {
     ssidTitle: 'Покажи името на мрежата',
     ssidBody:
       'Android показва името на Wi-Fi мрежата (SSID) и точката за достъп (BSSID) само на приложения с достъп до точно местоположение. Network Toolkit не чете, не съхранява и не изпраща местоположението ти.',
+    scanTitle: 'Разреши сканиране на Wi-Fi',
+    scanBody:
+      'Android изисква достъп до точно местоположение, за да сканира за Wi-Fi мрежи наоколо, на всички версии. Network Toolkit не чете, не съхранява и не изпраща местоположението ти.',
     allow: 'Разреши достъп',
     blockedBody:
       'Достъпът до местоположение е отказан окончателно. Можеш да го разрешиш от настройките на приложението: Разрешения → Местоположение → Разрешаване само докато приложението се използва, с включено точно местоположение.',
     openSettings: 'Отвори настройките на приложението',
     locationOffTitle: 'Местоположението е изключено',
     locationOffBody:
-      'Android скрива името на Wi-Fi мрежата, докато услугите за местоположение са изключени, дори когато приложението има разрешение.',
+      'Android скрива имената на Wi-Fi мрежите и резултатите от сканирането, докато услугите за местоположение са изключени, дори когато приложението има разрешение.',
     openLocationSettings: 'Отвори настройките за местоположение',
   },
   transport: {
@@ -114,9 +117,48 @@ export const bg: Strings = {
   wifiAnalyzer: {
     title: 'Wi-Fi анализатор',
     subtitle: 'Мрежи наоколо, канали и сила на сигнала.',
-    comingTitle: 'Сканирането все още не е налично',
-    comingBody:
-      'Сканиране в 2.4, 5 и 6 GHz с анализ на каналите и припокриванията идва в етап 4. Разрешенията ще бъдат поискани едва когато стартираш сканиране.',
+    scan: 'Сканирай',
+    scanning: 'Сканиране…',
+    autoScan: 'Автоматично на всеки 30 сек',
+    autoScanHint: 'Android позволява 4 сканирания на 2 минути.',
+    summary: (count: number, time: string) =>
+      `${count} ${count === 1 ? 'мрежа' : 'мрежи'} · ${time}`,
+    throttled: 'Android ограничи сканирането — показани са последните резултати.',
+    wifiOffTitle: 'Wi-Fi е изключен',
+    wifiOffBody: 'Включи Wi-Fi, за да сканираш за мрежи наоколо.',
+    errorTitle: 'Сканирането не успя',
+    emptyBand: 'Няма открити мрежи в тази лента.',
+    bands: { '2.4': '2.4 GHz', '5': '5 GHz', '6': '6 GHz' },
+    bandWithCount: (band: string, count: number) => `${band} (${count})`,
+    graphTitle: 'Графика на каналите',
+    graphLabel: (count: number, band: string) =>
+      `Графика на каналите: ${count} мрежи в ${band}. Подробностите са в списъка по-долу.`,
+    channelAxis: 'Канал',
+    recommendationsTitle: 'Най-добри канали',
+    recommendationsHint:
+      'Подредени според това колко силно видимите мрежи припокриват всеки 20 MHz канал. По-ниското натоварване е по-добро.',
+    dfs: 'DFS',
+    yourNetwork: 'Твоята мрежа',
+    yourNetworkLoad: (channel: string, overlapping: number) =>
+      `Канал ${channel} · ${overlapping} ${
+        overlapping === 1 ? 'припокриваща се мрежа' : 'припокриващи се мрежи'
+      }`,
+    networksTitle: 'Мрежи',
+    connected: 'Свързан',
+    hidden: 'Скрита мрежа',
+    channelShort: (channel: string) => `к. ${channel}`,
+    load: { clear: 'Свободен', light: 'Леко', moderate: 'Средно', busy: 'Натоварен' },
+    security: {
+      open: 'Отворена',
+      owe: 'Enhanced Open',
+      wep: 'WEP',
+      wpa: 'WPA',
+      wpa2: 'WPA2',
+      'wpa2-wpa3': 'WPA2/WPA3',
+      wpa3: 'WPA3',
+      enterprise: 'Enterprise',
+    },
+    wps: 'WPS',
   },
   tools: {
     title: 'Инструменти',

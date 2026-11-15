@@ -6,18 +6,20 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
 import io.github.krumqnkata.networktoolkit.network.NetworkModule
+import io.github.krumqnkata.networktoolkit.wifi.WifiModule
 
 /** Registers the app's own Turbo Native Modules. Modules are created lazily on first use. */
 class NetworkToolkitPackage : BaseReactPackage() {
     override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? =
         when (name) {
             NetworkModule.NAME -> NetworkModule(reactContext)
+            WifiModule.NAME -> WifiModule(reactContext)
             else -> null
         }
 
     override fun getReactModuleInfoProvider(): ReactModuleInfoProvider =
         ReactModuleInfoProvider {
-            listOf(NetworkModule.NAME).associateWith { name ->
+            listOf(NetworkModule.NAME, WifiModule.NAME).associateWith { name ->
                 ReactModuleInfo(
                     name = name,
                     className = name,

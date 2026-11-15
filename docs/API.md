@@ -69,3 +69,40 @@ SSID and BSSID additionally require precise location (`ACCESS_FINE_LOCATION`)
 
 The MAC address of the phone is never read: Android returns a constant
 placeholder to apps.
+
+## `NativeWifiModule`
+
+Kotlin: [`wifi/WifiModule.kt`](../android/app/src/main/java/io/github/krumqnkata/networktoolkit/wifi/WifiModule.kt),
+[`wifi/WifiScanner.kt`](../android/app/src/main/java/io/github/krumqnkata/networktoolkit/wifi/WifiScanner.kt)
+
+Permissions: `ACCESS_WIFI_STATE`, `CHANGE_WIFI_STATE` (install-time) and
+`ACCESS_FINE_LOCATION` (runtime), which Android requires for scanning on all
+versions. Location services must be on. Without the permission both methods
+reject with `E_PERMISSION`; with location or Wi-Fi off they resolve with an
+empty list and `locationEnabled` / `wifiEnabled` set to `false`.
+
+### `scan(): Promise<WifiScanResult>`
+
+Calls `WifiManager.startScan()`, waits for `SCAN_RESULTS_AVAILABLE_ACTION`
+(up to 12 s) and returns `getScanResults()`. Android throttles foreground apps
+to 4 scans per 2 minutes; a throttled request returns the previous results
+with `scanStarted: false`.
+
+### `getCachedScanResults(): Promise<WifiScanResult>`
+
+Returns `getScanResults()` without requesting a scan (`scanStarted: false`,
+`fresh: false`). Used to show results immediately when the analyzer opens.
+
+| Field                            | Type               | Notes                             |
+| -------------------------------- | ------------------ | --------------------------------- |
+| `timestamp`                      | number (ms)        |                                   |
+| `scanStarted`                    | boolean            | Android accepted the scan request |
+| `fresh`                          | boolean            | Results come from that scan       |
+| `wifiEnabled`, `locationEnabled` | boolean            | Preconditions for scanning        |
+| `networks`                       | `ScannedNetwork[]` | See below                         |
+
+`ScannedNetwork`: `ssid` (null if hidden), `bssid`, `rssi` (dBm),
+`frequencyMhz` (primary channel), `channelWidthMhz` (20/40/80/160/320; 80+80 is
+reported as 160), `centerFreq0Mhz` / `centerFreq1Mhz` (0 when not reported),
+`capabilities` (raw string, parsed in `src/domain/algorithms/wifiAnalysis.ts`),
+`wifiStandard` (Android 11+), `supportsRtt`, `passpoint`, `ageMs`.

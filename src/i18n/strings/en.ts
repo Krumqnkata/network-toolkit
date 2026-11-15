@@ -76,13 +76,16 @@ export const en = {
     ssidTitle: 'Show the network name',
     ssidBody:
       'Android only reveals the Wi-Fi name (SSID) and access point (BSSID) to apps with precise location access. Network Toolkit does not read, store or send your location.',
+    scanTitle: 'Allow Wi-Fi scanning',
+    scanBody:
+      'Android requires precise location access to scan for nearby Wi-Fi networks, on every Android version. Network Toolkit does not read, store or send your location.',
     allow: 'Allow access',
     blockedBody:
       'Location access was denied permanently. You can enable it in the app settings under Permissions → Location → Allow while using the app, with precise location on.',
     openSettings: 'Open app settings',
     locationOffTitle: 'Location is turned off',
     locationOffBody:
-      'Android hides the Wi-Fi name while location services are off, even when the app has permission.',
+      'Android hides Wi-Fi names and scan results while location services are off, even when the app has permission.',
     openLocationSettings: 'Open location settings',
   },
   transport: {
@@ -116,9 +119,48 @@ export const en = {
   wifiAnalyzer: {
     title: 'Wi-Fi Analyzer',
     subtitle: 'Nearby networks, channels and signal strength.',
-    comingTitle: 'Scanning is not available yet',
-    comingBody:
-      'Network scanning across 2.4, 5 and 6 GHz with channel and overlap analysis ships in milestone 4. Permissions will be requested only when you start a scan.',
+    scan: 'Scan now',
+    scanning: 'Scanning…',
+    autoScan: 'Auto-scan every 30 s',
+    autoScanHint: 'Android allows 4 scans per 2 minutes.',
+    summary: (count: number, time: string) =>
+      `${count} ${count === 1 ? 'network' : 'networks'} · ${time}`,
+    throttled: 'Android limited scanning — showing the most recent results.',
+    wifiOffTitle: 'Wi-Fi is turned off',
+    wifiOffBody: 'Turn on Wi-Fi to scan for nearby networks.',
+    errorTitle: 'Scan failed',
+    emptyBand: 'No networks found on this band.',
+    bands: { '2.4': '2.4 GHz', '5': '5 GHz', '6': '6 GHz' },
+    bandWithCount: (band: string, count: number) => `${band} (${count})`,
+    graphTitle: 'Channel graph',
+    graphLabel: (count: number, band: string) =>
+      `Channel graph: ${count} networks on ${band}. Details are listed below.`,
+    channelAxis: 'Channel',
+    recommendationsTitle: 'Best channels',
+    recommendationsHint:
+      'Ranked by how strongly visible networks overlap each 20 MHz channel. Lower load is better.',
+    dfs: 'DFS',
+    yourNetwork: 'Your network',
+    yourNetworkLoad: (channel: string, overlapping: number) =>
+      `Channel ${channel} · ${overlapping} overlapping ${
+        overlapping === 1 ? 'network' : 'networks'
+      }`,
+    networksTitle: 'Networks',
+    connected: 'Connected',
+    hidden: 'Hidden network',
+    channelShort: (channel: string) => `ch ${channel}`,
+    load: { clear: 'Clear', light: 'Light', moderate: 'Moderate', busy: 'Busy' },
+    security: {
+      open: 'Open',
+      owe: 'Enhanced Open',
+      wep: 'WEP',
+      wpa: 'WPA',
+      wpa2: 'WPA2',
+      'wpa2-wpa3': 'WPA2/WPA3',
+      wpa3: 'WPA3',
+      enterprise: 'Enterprise',
+    },
+    wps: 'WPS',
   },
   tools: {
     title: 'Tools',
