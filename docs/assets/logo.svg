@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 108 108" role="img" aria-label="Network Toolkit logo">
+  <rect width="108" height="108" rx="24" fill="#0B1117"/>
+  <g fill="none" stroke="#2DD4BF" stroke-width="5" stroke-linecap="round">
+    <path d="M35.62 47.62A26 26 0 0 1 72.38 47.62"/>
+    <path d="M41.98 53.98A17 17 0 0 1 66.02 53.98"/>
+    <path d="M48.34 60.34A8 8 0 0 1 59.66 60.34"/>
+  </g>
+  <circle cx="54" cy="66" r="3.5" fill="#2DD4BF"/>
+</svg>

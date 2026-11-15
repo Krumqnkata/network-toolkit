@@ -1,0 +1,114 @@
+# Architecture
+
+Network Toolkit is a native Android app: the UI is React Native (TypeScript,
+New Architecture), and everything that touches Android networking APIs is
+Kotlin. This document describes how the code is layered and where new code
+belongs.
+
+## Layers
+
+```text
+┌──────────────────────────────────────────────────────────────┐
+│ Presentation     src/app, src/components, src/features/*/screens │
+│                  screens, components, navigation, theme      │
+├──────────────────────────────────────────────────────────────┤
+│ Application      src/features/*/hooks, src/services, src/stores │
+│                  use cases, orchestration, state (Zustand)   │
+├──────────────────────────────────────────────────────────────┤
+│ Domain           src/domain                                  │
+│                  models, interfaces, algorithms — pure TS    │
+├──────────────────────────────────────────────────────────────┤
+│ Infrastructure   src/native, src/database, android/          │
+│                  Turbo Native Modules (Kotlin), SQLite       │
+└──────────────────────────────────────────────────────────────┘
+```
+
+Dependency rule: a layer may only import from the layers **below** it.
+
+- **Screens never call native modules.** They use hooks/services, which use
+  the typed bridge in `src/native`.
+- **`src/domain` has no React, React Native or native imports.** Channel
+  math, signal classification, subnet calculation, report generation and
+  similar logic live here and are tested with plain Jest.
+- **`src/native` is the only bridge to Kotlin.** Each native module has a
+  TypeScript spec (used by React Native codegen) and a thin wrapper that
+  validates results with Zod before they reach the rest of the app.
+
+## Source layout
+
+```text
+src/
+├── app/                 App root, navigation, theme, app config
+├── components/          Shared UI: common/, icons/ (charts/, indicators/ later)
+├── features/            One folder per module, developed independently
+│   ├── dashboard/
+│   ├── wifi-analyzer/
+│   ├── network-tools/
+│   └── settings/
+├── domain/              Pure models and algorithms            (milestone 2+)
+├── native/              Typed native-module bridge            (milestone 2)
+├── services/            Application services                  (milestone 3+)
+├── database/            SQLite migrations and repositories    (milestone 3+)
+├── stores/              Zustand stores
+└── utils/               Small generic helpers
+tests/                   App-level integration tests and Jest setup
+android/                 Android app and Kotlin native modules
+```
+
+A feature folder contains its `screens/`, feature-specific `hooks/` and
+logic, and `__tests__/`. Folders marked with a milestone are created when the
+first code that belongs there is written.
+
+## Native modules (planned)
+
+Native modules are implemented as **Turbo Native Modules** in Kotlin. All
+methods are asynchronous: they run on background threads (coroutines) and
+resolve promises, so the JS and UI threads are never blocked. Long-running
+operations (scans, ping series, speed tests) report progress through events
+and can be cancelled.
+
+| Module              | Milestone | Responsibility                                         |
+| ------------------- | --------- | ------------------------------------------------------ |
+| `NetworkModule`     | 3         | Active network, capabilities, link properties, changes |
+| `InterfaceModule`   | 3         | `NetworkInterface` enumeration and addresses           |
+| `WifiModule`        | 4         | Connection info, scans, scan results                   |
+| `PingModule`        | 5         | ICMP (where available) and TCP-connect latency         |
+| `DnsModule`         | 5         | DNS queries via `DnsResolver` / explicit resolvers     |
+| `LanScannerModule`  | 6         | Host discovery (TCP, ARP-cache where accessible, mDNS) |
+| `PortScannerModule` | 6         | Bounded, rate-limited TCP connect scanning             |
+| `SpeedTestModule`   | 7         | Multi-stream download/upload measurement               |
+
+The bridge contract for each module is documented in `docs/API.md` as the
+module is implemented.
+
+## State and storage
+
+- **UI state** lives in components.
+- **App state** that several screens share lives in small Zustand stores in
+  `src/stores` (currently: settings).
+- **Persistent data** (test history, saved networks and devices, settings,
+  reports) will be stored in SQLite with versioned migrations in
+  `src/database`. Until then, settings are kept in memory.
+- **Server state** (e.g. speed-test server lists) may use TanStack Query once
+  such a remote source exists.
+
+## Theming
+
+`src/app/theme` defines raw tokens (`tokens.ts`) and semantic light/dark
+themes (`themes.ts`). Components read colors only through `useTheme()` and
+semantic names (`textPrimary`, `accent`, …). The theme tests check WCAG AA
+contrast for every text/background pair in both themes, so color changes that
+hurt readability fail CI.
+
+## Testing strategy
+
+| Level                  | Tool                         | Location                     |
+| ---------------------- | ---------------------------- | ---------------------------- |
+| Domain logic           | Jest                         | `src/**/__tests__`           |
+| Components and screens | React Native Testing Library | `src/**/__tests__`, `tests/` |
+| Kotlin logic           | JUnit (`testDebugUnitTest`)  | `android/app/src/test`       |
+| Device / E2E           | Maestro (planned)            | `.maestro/`                  |
+
+Network-facing logic is written so it can be tested without a device: Kotlin
+modules keep parsing and calculations in plain classes, and the TypeScript
+bridge is mocked at the `src/native` boundary.

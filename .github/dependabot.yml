@@ -1,0 +1,38 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      react-navigation:
+        patterns: ['@react-navigation/*', 'react-native-screens', 'react-native-safe-area-context']
+      testing:
+        patterns: ['jest', '@types/jest', '@testing-library/*', 'test-renderer']
+      lint-format:
+        patterns: ['eslint*', 'prettier', 'typescript']
+    ignore:
+      # React Native minor releases change native template files and are
+      # upgraded by hand with the React Native Upgrade Helper.
+      - dependency-name: 'react-native'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      - dependency-name: '@react-native/*'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      - dependency-name: '@react-native-community/cli*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'react'
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+
+  - package-ecosystem: gradle
+    directory: /android
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ['*']
