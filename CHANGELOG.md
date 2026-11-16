@@ -9,6 +9,19 @@ Release notes.
 
 ## [Unreleased]
 
+### Added
+
+- Speed Test (milestone 7): download and upload throughput over 4 parallel
+  HTTPS connections for 10 s each against Cloudflare's speed-test servers,
+  reported as the sustained rate after a 2 s warm-up; idle latency (HTTP round
+  trips minus server time) and jitter; latency under load during download and
+  upload with a bufferbloat rating; packet loss from 20 ICMP probes (shown as
+  "not measured" where ICMP is unavailable); server location and data used.
+  A live gauge shows the current rate. Asks before running on metered
+  networks. Results of the session are listed below the test.
+- `NativeSpeedTestModule` (Kotlin); the test keeps running if the screen is
+  left and can be stopped at any time.
+
 ## [0.2.0-beta.2] - 2026-11-16
 
 First feature pre-release: the MVP (milestones 1–5) plus the LAN scanner

@@ -72,6 +72,14 @@ Other Android limits the scanner works within:
   permission or `MulticastLock` is needed.
 - **UPnP descriptions** are fetched only from the address that announced them.
 
+### Speed test (no extra permissions)
+
+The speed test uses only `INTERNET`. It talks to Cloudflare's speed-test
+servers (`speed.cloudflare.com`, the endpoints used by Cloudflare's own web
+test), which see the device's public IP address like any web server. It runs
+only when the user starts it, and asks first on metered networks because a
+fast connection can transfer several hundred MB.
+
 ### Why not `NEARBY_WIFI_DEVICES`?
 
 Per the official [Wi-Fi permissions guide](https://developer.android.com/develop/connectivity/wifi/wifi-permissions),

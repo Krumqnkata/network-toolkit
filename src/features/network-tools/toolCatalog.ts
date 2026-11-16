@@ -114,7 +114,7 @@ export const TOOLS: readonly ToolDefinition[] = [
     id: 'speed-test',
     category: 'performance',
     icon: 'gauge',
-    status: 'planned',
+    status: 'available',
     milestone: 7,
   },
   {

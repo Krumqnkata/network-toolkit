@@ -13,6 +13,7 @@ import { PingScreen } from './PingScreen';
 import { ReachabilityScreen } from './ReachabilityScreen';
 import { TlsCertificateScreen } from './TlsCertificateScreen';
 import { LanScannerScreen } from '../../lan-scanner/screens/LanScannerScreen';
+import { SpeedTestScreen } from '../../speed-test/screens/SpeedTestScreen';
 import { PortScannerScreen } from './PortScannerScreen';
 import { TracerouteScreen } from './TracerouteScreen';
 
@@ -41,6 +42,7 @@ export const TOOL_SCREENS: Partial<Record<ToolId, React.ComponentType<ToolScreen
   'tls-certificate': TlsCertificateScreen,
   'lan-scanner': LanScannerScreen,
   'port-scanner': PortScannerScreen,
+  'speed-test': SpeedTestScreen,
 };
 
 function NotAvailable({ toolId }: { toolId: ToolId }) {

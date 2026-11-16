@@ -18,9 +18,9 @@ native app.
 
 <!-- prettier-ignore -->
 > [!NOTE]
-> **Status: early development (milestones 1–6 of 9).** The live network
-> dashboard, the Wi-Fi Analyzer, the network tools and the LAN scanner work;
-> the speed test is next — see the [roadmap](#roadmap). The app has not yet been tested on a
+> **Status: early development (milestones 1–7 of 9).** The live network
+> dashboard, the Wi-Fi Analyzer, the network tools, the LAN scanner and the
+> speed test work; history and monitoring are next — see the [roadmap](#roadmap). The app has not yet been tested on a
 > wide range of physical devices.
 
 ## Features
@@ -34,7 +34,7 @@ implemented in the current code.
 | **Wi-Fi Analyzer**       | 2.4 / 5 / 6 GHz scans, SSID/BSSID, RSSI, channels, overlap analysis, signal history           | Available |
 | **Network Tools**        | Ping, traceroute, DNS & reverse DNS, reachability, HTTP headers, TLS certificates, IP info    | Available |
 | **LAN Scanner**          | TCP/ICMP sweep, mDNS, SSDP/UPnP and NetBIOS discovery, device names and types, port scanner   | Available |
-| **Internet Diagnostics** | Download / upload speed, latency, jitter, packet loss, DNS timing, history                    | Planned   |
+| **Internet Diagnostics** | Download / upload speed, latency, jitter, packet loss, latency under load (bufferbloat)       | Available |
 | **Advanced Diagnostics** | Connection monitoring, outage tracking, automatic problem detection, PDF/JSON reports         | Planned   |
 
 Design principles:
@@ -124,7 +124,7 @@ Read more in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | 4   | Wi-Fi Analyzer      | Scanning, channels, RSSI, charts, overlap analysis             | Done    |
 | 5   | Network diagnostics | Ping, DNS lookup, traceroute, HTTP and TLS tools               | Done    |
 | 6   | LAN Scanner         | Device discovery, device identification, port scanning         | Done    |
-| 7   | Speed test          | Download, upload, latency, jitter, packet loss                 | Planned |
+| 7   | Speed test          | Download, upload, latency, jitter, packet loss                 | Done    |
 | 8   | Advanced features   | History, monitoring, automatic diagnostics, reports            | Planned |
 | 9   | Optimization        | Performance, battery, compatibility, 1.0 release               | Planned |
 
