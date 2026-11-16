@@ -60,21 +60,21 @@ A feature folder contains its `screens/`, feature-specific `hooks/` and
 logic, and `__tests__/`. Folders marked with a milestone are created when the
 first code that belongs there is written.
 
-## Native modules (planned)
+## Native modules
 
 Native modules are implemented as **Turbo Native Modules** in Kotlin. All
-methods are asynchronous: they run on background threads (coroutines) and
-resolve promises, so the JS and UI threads are never blocked. Long-running
-operations (scans, ping series, speed tests) report progress through events
-and can be cancelled.
+methods are asynchronous: they run on background executors and resolve
+promises, so the JS and UI threads are never blocked. Each native call is one
+bounded operation (one ping probe, one DNS query, one traceroute hop); series
+such as continuous ping or traceroute are scheduled in TypeScript hooks, which
+also own cancellation, so no event channel is needed so far.
 
 | Module              | Milestone | Responsibility                                         |
 | ------------------- | --------- | ------------------------------------------------------ |
 | `NetworkModule`     | 3         | Active network, capabilities, link properties, changes |
 | `InterfaceModule`   | 3         | `NetworkInterface` enumeration and addresses           |
 | `WifiModule`        | 4         | Connection info, scans, scan results                   |
-| `PingModule`        | 5         | ICMP (where available) and TCP-connect latency         |
-| `DnsModule`         | 5         | DNS queries via `DnsResolver` / explicit resolvers     |
+| `NetToolsModule`    | 5         | Ping, traceroute hops, DNS, TCP connect, HTTP and TLS  |
 | `LanScannerModule`  | 6         | Host discovery (TCP, ARP-cache where accessible, mDNS) |
 | `PortScannerModule` | 6         | Bounded, rate-limited TCP connect scanning             |
 | `SpeedTestModule`   | 7         | Multi-stream download/upload measurement               |

@@ -11,11 +11,16 @@ Contract between the TypeScript app and its Kotlin Turbo Native Modules.
   raises `AppError('invalid-native-data')` instead of reaching the UI.
 - Native rejections carry a code that is mapped to `AppError` codes:
 
-  | Native code    | `AppError.code`     |
-  | -------------- | ------------------- |
-  | `E_PERMISSION` | `permission-denied` |
-  | `E_NETWORK`    | `network`           |
-  | anything else  | `unknown`           |
+  | Native code       | `AppError.code`     |
+  | ----------------- | ------------------- |
+  | `E_PERMISSION`    | `permission-denied` |
+  | `E_NETWORK`       | `network`           |
+  | `E_WIFI`          | `network`           |
+  | `E_INVALID_INPUT` | `invalid-input`     |
+  | `E_UNKNOWN_HOST`  | `unknown-host`      |
+  | `E_TIMEOUT`       | `timeout`           |
+  | `E_UNSUPPORTED`   | `unsupported`       |
+  | anything else     | `unknown`           |
 
 ## `NativeNetworkModule`
 
@@ -106,3 +111,71 @@ Returns `getScanResults()` without requesting a scan (`scanStarted: false`,
 reported as 160), `centerFreq0Mhz` / `centerFreq1Mhz` (0 when not reported),
 `capabilities` (raw string, parsed in `src/domain/algorithms/wifiAnalysis.ts`),
 `wifiStandard` (Android 11+), `supportsRtt`, `passpoint`, `ageMs`.
+
+## `NativeNetToolsModule`
+
+Kotlin: [`tools/NetToolsModule.kt`](../android/app/src/main/java/io/github/krumqnkata/networktoolkit/tools/NetToolsModule.kt)
+· TypeScript wrapper: [`src/native/netTools.ts`](../src/native/netTools.ts)
+
+Every method performs **one bounded probe** on a 4-thread executor; repeats
+(continuous ping, traceroute) and cancellation are handled in TypeScript.
+Timeouts are clamped to 0.5–30 s. Hosts are validated (`HostInput`): only
+hostnames (IDN-encoded) and IP literals are accepted, so input can never be
+parsed as a command-line option. Permission: `INTERNET` only.
+
+### `ping(host, family, ttl, timeoutMs): Promise<PingProbe>`
+
+Resolves `host` (`family`: `any` / `ipv4` / `ipv6`) and runs
+`/system/bin/ping -n -c 1 -W <s> [-t <ttl>] <address>` (`ping6` for IPv6).
+`ttl` > 0 is used by traceroute and supports IPv4 only. If the device does not
+let apps use `ping`, it falls back to timing a TCP connect to port 443/80
+(`method: "tcp"`; a refused connection still counts as a reply); with `ttl` > 0
+it rejects with `E_UNSUPPORTED` instead.
+
+| Field     | Type                                           | Notes                                     |
+| --------- | ---------------------------------------------- | ----------------------------------------- |
+| `address` | string                                         | Numeric address probed                    |
+| `family`  | `ipv4` \| `ipv6`                               |                                           |
+| `method`  | `icmp` \| `tcp`                                |                                           |
+| `status`  | `reply` `timeout` `ttl-exceeded` `unreachable` |                                           |
+| `rttMs`   | number \| null                                 | Only for `reply`                          |
+| `ttl`     | number \| null                                 | TTL of the reply                          |
+| `from`    | string \| null                                 | Router for `ttl-exceeded` / `unreachable` |
+
+### `dnsQuery(name, recordType, server, timeoutMs): Promise<DnsQueryResult>`
+
+`server` = `''` uses the system resolver: `DnsResolver.rawQuery` on Android 10+
+(honours Private DNS), otherwise UDP to the active network's first DNS server.
+An IP address sends plain DNS over UDP to that server and retries over TCP when
+the answer is truncated. Responses are decoded by `DnsMessage` (A, AAAA, NS,
+CNAME, SOA, PTR, MX, TXT, SRV, CAA; other types in RFC 3597 `\# len hex` form).
+
+Result: `server` (`system` or IP), `durationMs`, `rcode`, `authoritative`,
+`truncated`, `answers` and `authority` as `{ name, type, ttl, data }[]`.
+
+### `tcpConnect(host, port, family, timeoutMs): Promise<TcpConnectResult>`
+
+`status`: `open`, `refused`, `timeout` or `unreachable`; `connectMs` for `open`
+and `refused`; `address`, `family`, `message`.
+
+### `httpRequest(url, method, maxRedirects, timeoutMs): Promise<HttpResult>`
+
+`HEAD` or `GET` (`http`/`https` only) with redirects followed manually up to
+`maxRedirects` (max 20). Bodies are never read; no cookies or caches. Each hop:
+`url`, `status`, `statusText`, `protocol` (from Android's
+`X-Android-Selected-Protocol`, which is not shown as a header), `cipherSuite`,
+`durationMs`, `headers` (`{ name, value }[]`, in server order).
+
+### `tlsInspect(host, port, timeoutMs): Promise<TlsResult>`
+
+TCP connect + TLS handshake with SNI. The chain is validated with the platform
+trust manager (`X509TrustManagerExtensions`, so the network security config
+applies) and the default hostname verifier, but a failure is **reported**
+(`trusted: false`, `trustError`) instead of aborting, so invalid certificates
+can be inspected. The socket is closed right after the handshake.
+
+Result: `address`, `protocol`, `cipherSuite`, `handshakeMs`, `trusted`,
+`trustError`, `hostnameMatches`, `chain` — per certificate: `subject`,
+`issuer` (RFC 2253), `serialNumber` (hex), `notBefore` / `notAfter` (ms),
+`signatureAlgorithm`, `publicKeyAlgorithm`, `publicKeyBits`,
+`subjectAltNames` (`DNS:` / `IP:`), `isCa`, `sha256`.

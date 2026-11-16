@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 
 import { useTheme } from '../../../app/theme';
@@ -9,6 +10,7 @@ import { toolsByCategory } from '../toolCatalog';
 export function ToolsScreen() {
   const theme = useTheme();
   const s = useStrings();
+  const navigation = useNavigation();
   const groups = toolsByCategory();
 
   return (
@@ -27,6 +29,9 @@ export function ToolsScreen() {
                   title={text.name}
                   subtitle={text.description}
                   disabled={!available}
+                  onPress={
+                    available ? () => navigation.navigate('Tool', { toolId: tool.id }) : undefined
+                  }
                   showDivider={index < tools.length - 1}
                   leading={
                     <Icon

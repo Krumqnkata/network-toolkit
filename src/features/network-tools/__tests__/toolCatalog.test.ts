@@ -1,4 +1,5 @@
 import { translations } from '../../../i18n';
+import { TOOL_SCREENS } from '../screens/ToolHostScreen';
 import { TOOL_CATEGORIES, TOOLS, toolsByCategory, type ToolDefinition } from '../toolCatalog';
 
 describe('tool catalog', () => {
@@ -22,9 +23,17 @@ describe('tool catalog', () => {
     }
   });
 
-  it('does not mark any tool as available before it is implemented', () => {
+  it('marks a tool available exactly when its screen is implemented', () => {
     // Flip a tool to `available` only together with its implementation and tests.
-    expect(TOOLS.filter(tool => tool.status === 'available')).toEqual([]);
+    for (const tool of TOOLS) {
+      expect([tool.id, tool.status === 'available']).toEqual([tool.id, tool.id in TOOL_SCREENS]);
+    }
+  });
+
+  it('ships every milestone 5 tool', () => {
+    expect(TOOLS.filter(tool => tool.milestone === 5).every(t => t.status === 'available')).toBe(
+      true,
+    );
   });
 });
 

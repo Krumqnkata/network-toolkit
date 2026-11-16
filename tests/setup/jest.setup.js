@@ -26,3 +26,14 @@ jest.mock('../../src/native/specs/NativeWifiModule', () => ({
     ),
   },
 }));
+
+jest.mock('../../src/native/specs/NativeNetToolsModule', () => ({
+  __esModule: true,
+  default: {
+    ping: jest.fn(),
+    dnsQuery: jest.fn(),
+    tcpConnect: jest.fn(),
+    httpRequest: jest.fn(),
+    tlsInspect: jest.fn(),
+  },
+}));

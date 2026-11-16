@@ -1,5 +1,7 @@
 import type { NavigatorScreenParams } from '@react-navigation/native';
 
+import type { ToolId } from '../../features/network-tools/toolCatalog';
+
 export type MainTabParamList = {
   Dashboard: undefined;
   WifiAnalyzer: undefined;
@@ -7,12 +9,10 @@ export type MainTabParamList = {
   Settings: undefined;
 };
 
-/**
- * Root stack. Tool detail screens (Ping, DNS Lookup, …) are pushed here on top
- * of the tab bar as they are implemented.
- */
+/** Root stack. Tool screens (Ping, DNS Lookup, …) are pushed on top of the tab bar. */
 export type RootStackParamList = {
   Main: NavigatorScreenParams<MainTabParamList>;
+  Tool: { toolId: ToolId };
 };
 
 declare global {

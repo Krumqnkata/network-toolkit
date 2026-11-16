@@ -1,8 +1,9 @@
 import React from 'react';
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../app/theme';
+import { Icon } from '../icons/Icon';
 import { AppText } from './AppText';
 
 export interface ScreenProps {
@@ -14,6 +15,9 @@ export interface ScreenProps {
   /** Enables pull-to-refresh on scrollable screens. */
   onRefresh?: () => void;
   refreshing?: boolean;
+  /** Shows a back button above the title (screens pushed on the root stack). */
+  onBack?: () => void;
+  backLabel?: string;
 }
 
 /**
@@ -27,12 +31,31 @@ export function Screen({
   scrollable = true,
   onRefresh,
   refreshing = false,
+  onBack,
+  backLabel,
 }: ScreenProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
   const header = (
     <View style={{ marginBottom: theme.spacing.xl, gap: theme.spacing.xs }}>
+      {onBack ? (
+        <Pressable
+          testID="screen-back"
+          accessibilityRole="button"
+          accessibilityLabel={backLabel}
+          onPress={onBack}
+          hitSlop={12}
+          style={[styles.back, { marginBottom: theme.spacing.sm, gap: theme.spacing.xs }]}
+        >
+          <Icon name="chevronLeft" color={theme.colors.accent} size={20} />
+          {backLabel ? (
+            <AppText variant="caption" color="accent">
+              {backLabel}
+            </AppText>
+          ) : null}
+        </Pressable>
+      ) : null}
       <AppText variant="display" accessibilityRole="header">
         {title}
       </AppText>
@@ -82,6 +105,11 @@ export function Screen({
 }
 
 const styles = StyleSheet.create({
+  back: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+  },
   root: {
     flex: 1,
   },

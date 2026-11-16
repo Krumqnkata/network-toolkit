@@ -11,6 +11,36 @@ Release notes.
 
 ### Added
 
+- Network tools (milestone 5), all reachable from the Tools tab:
+  - **Ping** — repeated or continuous ICMP echo via the system `ping`, with
+    loss, min/avg/max, jitter and a latency chart; IPv4/IPv6 selection; falls
+    back to TCP connect time on devices that block ICMP for apps (and says so).
+  - **Traceroute** — TTL-limited pings, per-hop round-trip time and reverse DNS
+    names (IPv4).
+  - **DNS Lookup** — A, AAAA, CNAME, MX, TXT, NS, SOA, SRV and CAA via the
+    Android resolver (`DnsResolver`, honours Private DNS) or Cloudflare, Google
+    and Quad9; shows status (NOERROR/NXDOMAIN/…), TTLs, timing and authority
+    records.
+  - **Reverse DNS** — PTR lookups for IPv4 and IPv6 addresses.
+  - **Internet Reachability** — checks gateway, DNS, TCP to 1.1.1.1, captive
+    portal (Android's `generate_204` check), HTTPS and IPv6 in order.
+  - **IP Information** — public IPv4/IPv6, country and Cloudflare location from
+    `1.1.1.1/cdn-cgi/trace`, and ASN, prefix and network name from Team Cymru's
+    DNS service; nothing is sent until the user taps the button.
+  - **HTTP Headers** — HEAD or GET with every redirect hop, response headers,
+    negotiated protocol and a security-header summary.
+  - **TLS Certificate** — protocol, cipher suite, handshake time, trust and
+    hostname verdicts, and the full chain with validity, SANs, key, signature
+    and SHA-256 fingerprints, also for untrusted or expired certificates.
+- `NativeNetToolsModule` (Kotlin) with a dependency-free DNS wire-format codec
+  and unit-tested ping-output parser.
+
+### Changed
+
+- The app now allows cleartext HTTP through a network security config, so the
+  HTTP Headers tool can inspect `http://` URLs and the reachability check can
+  use Android's captive-portal probe.
+
 - Wi-Fi Analyzer: scans nearby networks on 2.4, 5 and 6 GHz and shows a
   channel graph (each network drawn across the spectrum it occupies, including
   40/80/160 MHz channels), a list sorted by signal with channel, width,
