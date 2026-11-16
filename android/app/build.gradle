@@ -105,8 +105,31 @@ android {
         }
     }
 
+    /**
+     * Release builds also produce one APK per ABI (about a quarter of the
+     * universal APK's size) next to the universal APK. All share the same
+     * versionCode, which is fine for sideloading; the App Bundle is unaffected.
+     * Debug builds keep a single APK.
+     */
+    def buildingRelease = gradle.startParameter.taskNames.any { it.toLowerCase().contains("release") }
+    splits {
+        abi {
+            enable buildingRelease
+            reset()
+            include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+            universalApk true
+        }
+    }
+
     testOptions {
         unitTests.returnDefaultValues = true
+    }
+
+    lint {
+        // Fails CI on errors such as NewApi (calling APIs above minSdk 26 without a check).
+        abortOnError true
+        htmlReport true
+        xmlReport false
     }
 }
 

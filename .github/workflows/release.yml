@@ -112,23 +112,32 @@ jobs:
           EXPECTED_CERT_SHA256: ${{ secrets.ANDROID_SIGNING_CERT_SHA256 }}
         run: |
           set -euo pipefail
-          APK=android/app/build/outputs/apk/release/app-release.apk
+          APK_DIR=android/app/build/outputs/apk/release
           AAB=android/app/build/outputs/bundle/release/app-release.aab
           BUILD_TOOLS="$(ls -d "${ANDROID_HOME}"/build-tools/* | sort -V | tail -n 1)"
 
-          "${BUILD_TOOLS}/apksigner" verify --verbose --print-certs "$APK" | tee apksigner.txt
-          if grep -q "CN=Android Debug" apksigner.txt; then
-            echo "::error::APK is signed with the debug key"
+          shopt -s nullglob
+          APKS=("${APK_DIR}"/app-*-release.apk)
+          # Universal APK plus one per ABI (see splits in android/app/build.gradle).
+          if [[ ${#APKS[@]} -ne 5 ]]; then
+            echo "::error::Expected 5 release APKs, found ${#APKS[@]}: ${APKS[*]}"
             exit 1
           fi
-          if [[ -n "${EXPECTED_CERT_SHA256}" ]]; then
-            ACTUAL="$(grep -m1 'certificate SHA-256 digest' apksigner.txt | awk '{print $NF}')"
-            EXPECTED="$(echo "${EXPECTED_CERT_SHA256}" | tr -d ':' | tr '[:upper:]' '[:lower:]')"
-            if [[ "$ACTUAL" != "$EXPECTED" ]]; then
-              echo "::error::Signing certificate $ACTUAL does not match the expected certificate"
+          for APK in "${APKS[@]}"; do
+            "${BUILD_TOOLS}/apksigner" verify --verbose --print-certs "$APK" | tee apksigner.txt
+            if grep -q "CN=Android Debug" apksigner.txt; then
+              echo "::error::$APK is signed with the debug key"
               exit 1
             fi
-          fi
+            if [[ -n "${EXPECTED_CERT_SHA256}" ]]; then
+              ACTUAL="$(grep -m1 'certificate SHA-256 digest' apksigner.txt | awk '{print $NF}')"
+              EXPECTED="$(echo "${EXPECTED_CERT_SHA256}" | tr -d ':' | tr '[:upper:]' '[:lower:]')"
+              if [[ "$ACTUAL" != "$EXPECTED" ]]; then
+                echo "::error::$APK: signing certificate $ACTUAL does not match the expected certificate"
+                exit 1
+              fi
+            fi
+          done
 
           jarsigner -verify "$AAB" | tee jarsigner.txt
           if ! grep -q "jar verified." jarsigner.txt; then
@@ -140,7 +149,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir dist
-          cp android/app/build/outputs/apk/release/app-release.apk "dist/NetworkToolkit-v${VERSION}.apk"
+          APK_DIR=android/app/build/outputs/apk/release
+          cp "${APK_DIR}/app-universal-release.apk" "dist/NetworkToolkit-v${VERSION}.apk"
+          for ABI in arm64-v8a armeabi-v7a x86_64 x86; do
+            cp "${APK_DIR}/app-${ABI}-release.apk" "dist/NetworkToolkit-v${VERSION}-${ABI}.apk"
+          done
           cp android/app/build/outputs/bundle/release/app-release.aab "dist/NetworkToolkit-v${VERSION}.aab"
           (cd dist && sha256sum NetworkToolkit-* > checksums.txt && cat checksums.txt)
 
@@ -158,6 +171,13 @@ jobs:
             exit 1
           fi
           {
+            echo ""
+            echo "### Which file to download"
+            echo ""
+            echo "- \`NetworkToolkit-v${VERSION}-arm64-v8a.apk\` — almost every phone from the last years (smallest download)."
+            echo "- \`NetworkToolkit-v${VERSION}-armeabi-v7a.apk\` — older 32-bit phones."
+            echo "- \`NetworkToolkit-v${VERSION}.apk\` — universal, works on every device."
+            echo "- \`-x86_64\` / \`-x86\` — emulators and Chromebooks; \`.aab\` is for app stores."
             echo ""
             echo "### Verify your download"
             echo ""

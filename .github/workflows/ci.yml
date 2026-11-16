@@ -88,6 +88,10 @@ jobs:
         working-directory: android
         run: ./gradlew testDebugUnitTest --no-daemon
 
+      - name: Android lint (API levels, permissions, manifest)
+        working-directory: android
+        run: ./gradlew :app:lintDebug --no-daemon -PreactNativeArchitectures=arm64-v8a,x86_64
+
       - name: Assemble debug APK
         working-directory: android
         # Two ABIs keep CI fast; release builds include all of them.
