@@ -3,10 +3,13 @@ import React from 'react';
 import { PermissionsAndroid } from 'react-native';
 
 import { App } from '../src/app/App';
+import { speedResults } from '../src/database/repositories';
+import { healthReports } from '../src/features/health-check/services/healthCheck';
 import NativeNetworkModule from '../src/native/specs/NativeNetworkModule';
 import { usePermissionStore } from '../src/stores/permissionStore';
 import { useSettingsStore } from '../src/stores/settingsStore';
 import { offlineSnapshot, redactedWifiSnapshot, wifiSnapshot } from './fixtures/networkSnapshot';
+import { doneResult } from './fixtures/speed';
 
 const mockedGetSnapshot = NativeNetworkModule.getNetworkSnapshot as jest.MockedFunction<
   typeof NativeNetworkModule.getNetworkSnapshot
@@ -32,9 +35,11 @@ describe('Dashboard', () => {
     mockedGetSnapshot.mockResolvedValue(wifiSnapshot);
     await render(<App />);
 
-    expect(await screen.findByText('Home Network')).toBeOnTheScreen();
-    expect(screen.getByRole('header', { name: 'Connected via Wi-Fi' })).toBeOnTheScreen();
+    expect(await screen.findByRole('header', { name: 'Home Network' })).toBeOnTheScreen();
+    expect(screen.getByText('Connected via Wi-Fi')).toBeOnTheScreen();
     expect(screen.getByText('Internet OK')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Signal strength -58 dBm, Good' })).toBeOnTheScreen();
+    expect(screen.getByTestId('home-rssi')).toHaveTextContent('-58');
     expect(screen.getByRole('progressbar', { name: 'Signal: -58 dBm, Good' })).toBeOnTheScreen();
     expect(screen.getByLabelText('Channel: 36')).toBeOnTheScreen();
     expect(screen.getByLabelText('Band: 5 GHz')).toBeOnTheScreen();
@@ -50,7 +55,7 @@ describe('Dashboard', () => {
   it('keeps polling while the dashboard is focused', async () => {
     mockedGetSnapshot.mockResolvedValue(wifiSnapshot);
     await render(<App />);
-    await screen.findByText('Home Network');
+    await screen.findByRole('header', { name: 'Home Network' });
 
     mockedGetSnapshot.mockResolvedValue({
       ...wifiSnapshot,
@@ -73,6 +78,8 @@ describe('Dashboard', () => {
     await render(<App />);
 
     expect(await screen.findByText('Show the network name')).toBeOnTheScreen();
+    // The network name is hidden, so the title falls back to "Wi-Fi".
+    expect(screen.getAllByRole('header', { name: 'Wi-Fi' }).length).toBeGreaterThan(0);
     expect(screen.getByText('Not available')).toBeOnTheScreen();
 
     mockedGetSnapshot.mockResolvedValue(wifiSnapshot);
@@ -82,7 +89,7 @@ describe('Dashboard', () => {
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
     ]);
-    expect(await screen.findByText('Home Network')).toBeOnTheScreen();
+    expect(await screen.findByRole('header', { name: 'Home Network' })).toBeOnTheScreen();
     expect(screen.queryByText('Show the network name')).not.toBeOnTheScreen();
     expect(usePermissionStore.getState().location).toBe('granted');
   });
@@ -108,7 +115,10 @@ describe('Dashboard', () => {
     mockedGetSnapshot.mockResolvedValue(offlineSnapshot);
     await render(<App />);
 
-    expect(await screen.findByRole('header', { name: 'Not connected' })).toBeOnTheScreen();
+    expect(await screen.findByRole('header', { name: 'Offline' })).toBeOnTheScreen();
+    expect(
+      screen.getByText('Turn on Wi-Fi or mobile data to see connection details.'),
+    ).toBeOnTheScreen();
     expect(screen.queryByTestId('wifi-card')).not.toBeOnTheScreen();
     expect(screen.queryByTestId('ip-card')).not.toBeOnTheScreen();
   });
@@ -126,7 +136,28 @@ describe('Dashboard', () => {
     mockedGetSnapshot.mockResolvedValue(wifiSnapshot);
     await user.press(screen.getByRole('button', { name: 'Try again' }));
 
-    expect(await screen.findByText('Home Network')).toBeOnTheScreen();
+    expect(await screen.findByRole('header', { name: 'Home Network' })).toBeOnTheScreen();
+  });
+
+  it('shows the latest speed test and the health summary', async () => {
+    mockedGetSnapshot.mockResolvedValue(wifiSnapshot);
+    await speedResults.add(doneResult);
+    await healthReports.add({
+      createdAt: 1,
+      transport: 'wifi',
+      ssid: 'Home Network',
+      findings: [
+        { id: 'weak-signal', severity: 'problem', values: { rssi: -80 } },
+        { id: 'dns-slow', severity: 'warning', values: { ms: 300 } },
+      ],
+      checks: [],
+    });
+    await render(<App />);
+
+    expect(await screen.findByTestId('home-download')).toHaveTextContent('100');
+    expect(screen.getByTestId('home-upload')).toHaveTextContent('20.0');
+    expect(screen.getByTestId('home-health')).toHaveTextContent(/1 problem, 1 warning/);
+    expect(screen.getByTestId('home-devices')).toHaveTextContent(/Scan your network/);
   });
 
   it('renders the dashboard in Bulgarian', async () => {
@@ -134,7 +165,9 @@ describe('Dashboard', () => {
     mockedGetSnapshot.mockResolvedValue(wifiSnapshot);
     await render(<App />);
 
-    expect(await screen.findByRole('header', { name: 'Свързан чрез Wi-Fi' })).toBeOnTheScreen();
+    expect(await screen.findByRole('header', { name: 'Home Network' })).toBeOnTheScreen();
+    expect(screen.getByText('Свързан чрез Wi-Fi')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Отвори Устройства' })).toBeOnTheScreen();
     expect(screen.getByText('Има интернет')).toBeOnTheScreen();
     expect(screen.getByRole('progressbar', { name: 'Сигнал: -58 dBm, Добър' })).toBeOnTheScreen();
     expect(screen.getByLabelText('Канал: 36')).toBeOnTheScreen();

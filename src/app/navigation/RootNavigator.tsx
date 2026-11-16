@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 
 import { LanDeviceScreen } from '../../features/lan-scanner/screens/LanDeviceScreen';
 import { ToolHostScreen } from '../../features/network-tools/screens/ToolHostScreen';
+import { SettingsScreen } from '../../features/settings/screens/SettingsScreen';
 import { useTheme } from '../theme';
 import { MainTabs } from './MainTabs';
 import { toNavigationTheme } from './navigationTheme';
@@ -21,6 +22,7 @@ export function RootNavigator() {
         <Stack.Screen name="Main" component={MainTabs} />
         <Stack.Screen name="Tool" component={ToolHostScreen} />
         <Stack.Screen name="LanDevice" component={LanDeviceScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

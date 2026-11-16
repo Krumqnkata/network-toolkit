@@ -9,6 +9,25 @@ Release notes.
 
 ## [Unreleased]
 
+## [1.0.0-rc.2] - 2026-11-16
+
+Second release candidate: a redesigned home screen and navigation. Release
+candidate 1 was installed and tested on a phone, and everything worked.
+
+### Changed
+
+- New home screen: the network name as the title with the internet status,
+  a large speed card with the latest download, upload and ping and a button
+  to run a test, a Wi-Fi signal card (dBm, quality, signal bar, band, channel,
+  link speed and a live trend line), and tiles for Devices, Health, Monitor and
+  Public IP showing their latest state. Wi-Fi and IP details follow below.
+- Navigation: the bottom tabs are now Home, Wi-Fi, Speed, Devices and Tools.
+  The speed test and the LAN scanner have their own tabs; Settings opens from
+  the gear button on the home screen.
+- New colors: deep navy backgrounds with a bright blue accent in the dark
+  theme and a matching light theme, all checked against WCAG AA contrast.
+- Large tabular numbers for measured values.
+
 ## [1.0.0-rc.1] - 2026-11-16
 
 Release candidate for 1.0: all nine roadmap milestones are implemented. It has
@@ -177,7 +196,8 @@ failed (see Fixed).
 - Tag-driven release workflow that builds, signs, verifies and publishes the
   APK, AAB and SHA-256 checksums.
 
-[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.1...HEAD
+[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.2...HEAD
+[1.0.0-rc.2]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.1...v1.0.0-rc.2
 [1.0.0-rc.1]: https://github.com/Krumqnkata/network-toolkit/compare/v0.2.0-beta.2...v1.0.0-rc.1
 [0.2.0-beta.2]: https://github.com/Krumqnkata/network-toolkit/compare/v0.1.0-alpha.1...v0.2.0-beta.2
 [0.1.0-alpha.1]: https://github.com/Krumqnkata/network-toolkit/releases/tag/v0.1.0-alpha.1

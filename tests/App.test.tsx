@@ -17,21 +17,34 @@ describe('App shell', () => {
     jest.useRealTimers();
   });
 
-  it('starts on the dashboard with all main tabs available', async () => {
+  it('starts on the home screen with all main tabs available', async () => {
     await render(<App />);
 
-    expect(screen.getByRole('header', { name: 'Network Toolkit' })).toBeOnTheScreen();
-    for (const tab of ['Dashboard', 'Wi-Fi', 'Tools', 'Settings']) {
+    expect(await screen.findByRole('header', { name: 'Home Network' })).toBeOnTheScreen();
+    for (const tab of ['Home', 'Wi-Fi', 'Speed', 'Devices', 'Tools']) {
       // Tab buttons are announced as "<label>, tab, n of m".
-      expect(screen.getByRole('button', { name: new RegExp(`^${tab}`) })).toBeOnTheScreen();
+      expect(screen.getByRole('button', { name: new RegExp(`^${tab}, tab`) })).toBeOnTheScreen();
     }
+    expect(screen.getByRole('button', { name: 'Settings' })).toBeOnTheScreen();
   });
 
-  it('opens the tools list from the dashboard quick actions', async () => {
+  it('opens the speed test and the LAN scanner from the home screen', async () => {
     const user = userEvent.setup();
     await render(<App />);
 
-    await user.press(screen.getByRole('button', { name: 'Open Tools' }));
+    await user.press(await screen.findByTestId('home-run-speed'));
+    expect(await screen.findByRole('header', { name: 'Speed Test' })).toBeOnTheScreen();
+
+    await user.press(screen.getByRole('button', { name: /^Home, tab/ }));
+    await user.press(screen.getByRole('button', { name: 'Open Devices' }));
+    expect(await screen.findByRole('header', { name: 'LAN Scanner' })).toBeOnTheScreen();
+  });
+
+  it('opens the tools list', async () => {
+    const user = userEvent.setup();
+    await render(<App />);
+
+    await user.press(screen.getByRole('button', { name: /^Tools, tab/ }));
 
     expect(await screen.findByRole('header', { name: 'Tools' })).toBeOnTheScreen();
     expect(screen.getByText('Ping')).toBeOnTheScreen();
@@ -49,6 +62,9 @@ describe('App shell', () => {
     expect(useSettingsStore.getState().themePreference).toBe('light');
     expect(within(themeGroup).getByRole('radio', { name: 'Light' })).toBeChecked();
     expect(within(themeGroup).getByRole('radio', { name: 'System' })).not.toBeChecked();
+
+    await user.press(screen.getByTestId('screen-back'));
+    expect(await screen.findByTestId('home-speed')).toBeOnTheScreen();
   });
 
   it('switches the whole interface to Bulgarian', async () => {
@@ -61,8 +77,9 @@ describe('App shell', () => {
 
     expect(useSettingsStore.getState().languagePreference).toBe('bg');
     expect(await screen.findByRole('header', { name: 'Настройки' })).toBeOnTheScreen();
-    for (const tab of ['Табло', 'Wi-Fi', 'Инструменти', 'Настройки']) {
-      expect(screen.getByRole('button', { name: new RegExp(`^${tab}`) })).toBeOnTheScreen();
+    await user.press(screen.getByTestId('screen-back'));
+    for (const tab of ['Начало', 'Wi-Fi', 'Скорост', 'Устройства', 'Инструменти']) {
+      expect(screen.getByRole('button', { name: new RegExp(`^${tab}, `) })).toBeOnTheScreen();
     }
   });
 });

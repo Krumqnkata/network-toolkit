@@ -5,13 +5,20 @@ import { useTheme } from '../../../app/theme';
 import { Badge, Card, ListRow, Screen, SectionHeader } from '../../../components/common';
 import { Icon } from '../../../components/icons/Icon';
 import { useStrings } from '../../../i18n';
-import { toolsByCategory } from '../toolCatalog';
+import { toolsByCategory, type ToolId } from '../toolCatalog';
 
 export function ToolsScreen() {
   const theme = useTheme();
   const s = useStrings();
   const navigation = useNavigation();
   const groups = toolsByCategory();
+
+  // The speed test and the LAN scanner have their own tabs.
+  const openTool = (toolId: ToolId) => {
+    if (toolId === 'speed-test') navigation.navigate('Main', { screen: 'SpeedTest' });
+    else if (toolId === 'lan-scanner') navigation.navigate('Main', { screen: 'Devices' });
+    else navigation.navigate('Tool', { toolId });
+  };
 
   return (
     <Screen title={s.tools.title} subtitle={s.tools.subtitle}>
@@ -29,9 +36,7 @@ export function ToolsScreen() {
                   title={text.name}
                   subtitle={text.description}
                   disabled={!available}
-                  onPress={
-                    available ? () => navigation.navigate('Tool', { toolId: tool.id }) : undefined
-                  }
+                  onPress={available ? () => openTool(tool.id) : undefined}
                   showDivider={index < tools.length - 1}
                   leading={
                     <Icon

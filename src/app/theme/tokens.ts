@@ -34,6 +34,24 @@ export const palette = {
   red700: '#B91C1C',
   blue400: '#60A5FA',
   blue700: '#1D4ED8',
+
+  // Night-sky navy and signal blue used by the app's main palette.
+  navy975: '#050913',
+  navy950: '#080D1A',
+  navy900: '#0E1527',
+  navy850: '#131C33',
+  navy800: '#18233D',
+  navy700: '#23304F',
+  navy500: '#7887A5',
+  navy300: '#A9B6CF',
+  navy100: '#E1E8F4',
+  navy50: '#F3F6FB',
+  azure300: '#7FB2FF',
+  azure400: '#4C93FF',
+  azure600: '#1668E8',
+  azure700: '#0C55C7',
+  azure950: '#06132B',
+  azure50: '#E7F0FF',
 } as const;
 
 export const spacing = {
@@ -61,6 +79,8 @@ export const fontFamilies = {
 } as const;
 
 export const typography = {
+  /** Large measurement values (speed, signal) on the home screen. */
+  hero: { fontSize: 44, lineHeight: 50, fontWeight: '700', fontVariant: ['tabular-nums'] },
   display: { fontSize: 28, lineHeight: 34, fontWeight: '700' },
   title: { fontSize: 20, lineHeight: 26, fontWeight: '600' },
   heading: { fontSize: 16, lineHeight: 22, fontWeight: '600' },

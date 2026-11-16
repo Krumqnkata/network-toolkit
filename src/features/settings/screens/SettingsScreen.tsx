@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Alert, Linking, View } from 'react-native';
 
@@ -59,6 +60,7 @@ export function SettingsScreen() {
   const languagePreference = useSettingsStore(state => state.languagePreference);
   const setLanguagePreference = useSettingsStore(state => state.setLanguagePreference);
   const [cleared, setCleared] = useState(false);
+  const navigation = useNavigation();
 
   const confirmClear = () =>
     Alert.alert(s.settings.clearTitle, s.settings.clearBody, [
@@ -75,7 +77,11 @@ export function SettingsScreen() {
     ]);
 
   return (
-    <Screen title={s.settings.title}>
+    <Screen
+      title={s.settings.title}
+      onBack={navigation.canGoBack() ? () => navigation.goBack() : undefined}
+      backLabel={s.tabs.dashboard}
+    >
       <SectionHeader title={s.settings.appearance} />
       <Card style={{ gap: theme.spacing.xl }}>
         <SettingGroup title={s.settings.theme} hint={s.settings.themeHint}>

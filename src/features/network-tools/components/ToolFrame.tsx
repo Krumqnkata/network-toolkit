@@ -17,7 +17,7 @@ export function ToolFrame({ toolId, children }: { toolId: ToolId; children: Reac
     <Screen
       title={text.name}
       subtitle={text.description}
-      onBack={() => navigation.goBack()}
+      onBack={navigation.canGoBack() ? () => navigation.goBack() : undefined}
       backLabel={s.netTools.back}
     >
       {children}

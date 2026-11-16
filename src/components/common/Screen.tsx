@@ -18,6 +18,10 @@ export interface ScreenProps {
   /** Shows a back button above the title (screens pushed on the root stack). */
   onBack?: () => void;
   backLabel?: string;
+  /** Small label above the title (e.g. the app name on the home screen). */
+  overline?: string;
+  /** Element shown to the right of the title, e.g. a settings button. */
+  headerAction?: React.ReactNode;
 }
 
 /**
@@ -33,6 +37,8 @@ export function Screen({
   refreshing = false,
   onBack,
   backLabel,
+  overline,
+  headerAction,
 }: ScreenProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -56,9 +62,17 @@ export function Screen({
           ) : null}
         </Pressable>
       ) : null}
-      <AppText variant="display" accessibilityRole="header">
-        {title}
-      </AppText>
+      {overline ? (
+        <AppText variant="overline" color="accent">
+          {overline}
+        </AppText>
+      ) : null}
+      <View style={[styles.titleRow, { gap: theme.spacing.md }]}>
+        <AppText variant="display" accessibilityRole="header" style={styles.title}>
+          {title}
+        </AppText>
+        {headerAction}
+      </View>
       {subtitle ? (
         <AppText variant="body" color="textSecondary">
           {subtitle}
@@ -112,5 +126,12 @@ const styles = StyleSheet.create({
   },
   root: {
     flex: 1,
+  },
+  title: {
+    flex: 1,
+  },
+  titleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
   },
 });
