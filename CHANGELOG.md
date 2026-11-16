@@ -9,6 +9,24 @@ Release notes.
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-16
+
+### Added
+
+- **Wi-Fi by room** (Wi-Fi tab, Tools → Check my connection, or the home
+  screen). Walk through your home and tap "Measure here" in each room: the app
+  takes eight signal readings, the link rate, the router's response time and
+  which access point the phone used, then compares the rooms with a coloured
+  bar each and names the best and the weakest. Plain-language advice covers
+  dead zones, weak rooms, when to add a mesh point or move the router, a
+  phone that stays on a far access point, strong rooms stuck on 2.4 GHz and
+  interference. Checks can be shared as text and are kept in a history.
+
+### Changed
+
+- The home screen's fourth tile opens Wi-Fi by room; the public IP is already
+  shown in the diagram at the top.
+
 ## [1.1.1] - 2026-11-16
 
 ### Fixed
@@ -397,7 +415,8 @@ failed (see Fixed).
 - Tag-driven release workflow that builds, signs, verifies and publishes the
   APK, AAB and SHA-256 checksums.
 
-[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/Krumqnkata/network-toolkit/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/Krumqnkata/network-toolkit/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Krumqnkata/network-toolkit/compare/v1.1.0-rc.1...v1.1.0
 [1.1.0-rc.1]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0...v1.1.0-rc.1

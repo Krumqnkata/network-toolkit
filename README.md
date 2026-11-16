@@ -32,7 +32,7 @@ implemented in the current code.
 | Module                   | Highlights                                                                                     | Status    |
 | ------------------------ | ---------------------------------------------------------------------------------------------- | --------- |
 | **Dashboard**            | Connection type, IP, gateway, DNS, Wi-Fi signal, internet reachability, quick access to tools  | Available |
-| **Wi-Fi Analyzer**       | 2.4 / 5 / 6 GHz scans, SSID/BSSID, RSSI, channels, overlap analysis, signal history            | Available |
+| **Wi-Fi Analyzer**       | 2.4 / 5 / 6 GHz scans, channels, overlap analysis, signal history, Wi-Fi by room               | Available |
 | **Network Tools**        | Ping, traceroute, DNS & reverse DNS, reachability, HTTP headers, TLS certificates, IP info     | Available |
 | **LAN Scanner**          | TCP/ICMP sweep, mDNS, SSDP/UPnP and NetBIOS discovery, device names and types, port scanner    | Available |
 | **Internet Diagnostics** | Download / upload speed, latency, jitter, packet loss, latency under load (bufferbloat)        | Available |
