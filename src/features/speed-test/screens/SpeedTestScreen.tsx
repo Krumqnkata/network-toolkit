@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../../app/theme';
@@ -18,7 +18,7 @@ import {
   formatMbps,
   latencyIncrease,
 } from '../../../domain/algorithms/speed';
-import { formatTime, useLanguage, useStrings } from '../../../i18n';
+import { formatDateTime, useLanguage, useStrings } from '../../../i18n';
 import { getNetworkSnapshot } from '../../../native/network';
 import { useSpeedTestStore } from '../../../stores/speedTestStore';
 import { logError } from '../../../utils/errors';
@@ -58,6 +58,12 @@ export function SpeedTestScreen() {
   const t = s.speed;
   const { status, running, error, start, cancel } = useSpeedTest();
   const results = useSpeedTestStore(state => state.results);
+  const loadResults = useSpeedTestStore(state => state.load);
+  const clearResults = useSpeedTestStore(state => state.clear);
+
+  useEffect(() => {
+    loadResults();
+  }, [loadResults]);
   const [confirmMetered, setConfirmMetered] = useState(false);
 
   const onStart = async () => {
@@ -224,10 +230,10 @@ export function SpeedTestScreen() {
         <>
           <SectionHeader title={t.history} />
           <Card>
-            {results.map(result => (
+            {results.map(({ id, data: result }) => (
               <InfoRow
-                key={result.finishedAt}
-                label={formatTime(result.finishedAt, language)}
+                key={id}
+                label={formatDateTime(result.finishedAt, language)}
                 value={t.historyRow(
                   formatMbps(result.downloadMbps),
                   formatMbps(result.uploadMbps),
@@ -236,6 +242,14 @@ export function SpeedTestScreen() {
               />
             ))}
           </Card>
+          {running ? null : (
+            <Button
+              testID="speed-clear-history"
+              label={t.clearHistory}
+              variant="secondary"
+              onPress={() => clearResults()}
+            />
+          )}
         </>
       ) : null}
     </ToolFrame>

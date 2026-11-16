@@ -11,6 +11,25 @@ Release notes.
 
 ### Added
 
+- On-device storage (milestone 8): `NativeStorageModule` over Android's
+  built-in SQLite with versioned migrations, no third-party library. Records
+  are JSON documents validated with Zod when read.
+- Theme and language settings are now saved and restored on start.
+- Speed-test history: results are saved (up to 200) and the latest 20 are
+  listed with date and time; the history can be cleared.
+- Connection Monitor: pings the internet (1.1.1.1), the gateway or a custom
+  host every 2 s while the app is open, with live latency chart, loss,
+  min/avg/max, jitter, uptime and outages (3+ consecutive losses). Sessions
+  are saved every 30 s and when stopped, listed afterwards, and can be shared
+  as a text report or deleted.
+- Health Check: runs every reachability check and combines it with the Wi-Fi
+  signal and security, the band, channel congestion from the latest scan and
+  a recent speed test into prioritized findings with explanations and advice
+  (weak signal, insecure Wi-Fi, captive portal, DNS failures or slowness,
+  router or internet unreachable, high latency, HTTPS failures, no IPv6,
+  packet loss, bufferbloat, VPN). Reports are saved and can be shared as text
+  or JSON.
+
 - Speed Test (milestone 7): download and upload throughput over 4 parallel
   HTTPS connections for 10 s each against Cloudflare's speed-test servers,
   reported as the sustained rate after a 2 s warm-up; idle latency (HTTP round

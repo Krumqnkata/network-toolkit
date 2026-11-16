@@ -1,21 +1,49 @@
 import { create } from 'zustand';
 
-import type { SpeedStatus } from '../native/speedTest';
+import { speedResults, type SpeedResult } from '../database/repositories';
+import type { StoredRecord } from '../database/storage';
+import { logError } from '../utils/errors';
 
-export interface SpeedResult extends SpeedStatus {
-  finishedAt: number;
-}
+export type { SpeedResult };
 
-/** Results of this session; persistent history arrives with SQLite (milestone 8). */
-const MAX_RESULTS = 10;
+/** How many past results the speed test screen shows. */
+export const HISTORY_SIZE = 20;
 
 interface SpeedTestState {
-  results: SpeedResult[];
-  addResult: (result: SpeedResult) => void;
+  results: StoredRecord<SpeedResult>[];
+  loaded: boolean;
+  load: () => Promise<void>;
+  addResult: (result: SpeedResult) => Promise<void>;
+  remove: (id: number) => Promise<void>;
+  clear: () => Promise<void>;
 }
 
-export const useSpeedTestStore = create<SpeedTestState>()(set => ({
+/** Speed-test history, persisted in SQLite and cached here for the UI. */
+export const useSpeedTestStore = create<SpeedTestState>()((set, get) => ({
   results: [],
-  addResult: result =>
-    set(state => ({ results: [result, ...state.results].slice(0, MAX_RESULTS) })),
+  loaded: false,
+  load: async () => {
+    try {
+      set({ results: await speedResults.list(HISTORY_SIZE), loaded: true });
+    } catch (error) {
+      logError('speed-history', error);
+      set({ loaded: true });
+    }
+  },
+  addResult: async result => {
+    try {
+      const record = await speedResults.add(result, result.finishedAt);
+      set({ results: [record, ...get().results].slice(0, HISTORY_SIZE) });
+    } catch (error) {
+      logError('speed-history', error);
+    }
+  },
+  remove: async id => {
+    await speedResults.remove(id);
+    set({ results: get().results.filter(record => record.id !== id) });
+  },
+  clear: async () => {
+    await speedResults.clear();
+    set({ results: [] });
+  },
 }));

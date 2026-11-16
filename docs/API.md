@@ -267,3 +267,26 @@ Throughput is the sustained rate after a 2 s warm-up (TCP slow start);
 | `bytesDownloaded`, `bytesUploaded`          | number                                                          |
 | `serverColo`, `serverCity`, `serverCountry` | string \| null — from `cf-meta-*` response headers              |
 | `error`                                     | string \| null                                                  |
+
+## `NativeStorageModule`
+
+Kotlin: [`storage/StorageModule.kt`](../android/app/src/main/java/io/github/krumqnkata/networktoolkit/storage/StorageModule.kt)
+· Schema: [`storage/AppDatabase.kt`](../android/app/src/main/java/io/github/krumqnkata/networktoolkit/storage/AppDatabase.kt)
+· TypeScript: [`src/database`](../src/database)
+
+Android's built-in SQLite (`SQLiteOpenHelper`), one background thread.
+`kind` must match `^[a-z][a-z0-9-]{0,31}$`; `data` is a JSON string of at most
+1,000,000 characters.
+
+| Method                                       | Result                                                                           |
+| -------------------------------------------- | -------------------------------------------------------------------------------- |
+| `insertRecord(kind, createdAt, data)`        | New id                                                                           |
+| `updateRecord(id, data)`                     | `true` if the record existed                                                     |
+| `listRecords(kind, limit, before)`           | `{ id, kind, createdAt, data }[]`, newest first; `before` = 0 for the first page |
+| `deleteRecord(id)`                           | `true` if deleted                                                                |
+| `clearRecords(kind)`                         | Number deleted                                                                   |
+| `pruneRecords(kind, keep)`                   | Deletes all but the newest `keep`; number deleted                                |
+| `getSetting(key)` / `setSetting(key, value)` | `null` value deletes the setting                                                 |
+
+Record kinds in use: `speed-result` (max 200), `monitor-session` (max 100),
+`health-report` (max 50).

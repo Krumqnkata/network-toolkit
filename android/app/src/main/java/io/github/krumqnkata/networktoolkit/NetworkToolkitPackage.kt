@@ -8,6 +8,7 @@ import com.facebook.react.module.model.ReactModuleInfoProvider
 import io.github.krumqnkata.networktoolkit.lan.LanModule
 import io.github.krumqnkata.networktoolkit.network.NetworkModule
 import io.github.krumqnkata.networktoolkit.speed.SpeedTestModule
+import io.github.krumqnkata.networktoolkit.storage.StorageModule
 import io.github.krumqnkata.networktoolkit.tools.NetToolsModule
 import io.github.krumqnkata.networktoolkit.wifi.WifiModule
 
@@ -20,12 +21,20 @@ class NetworkToolkitPackage : BaseReactPackage() {
             NetToolsModule.NAME -> NetToolsModule(reactContext)
             LanModule.NAME -> LanModule(reactContext)
             SpeedTestModule.NAME -> SpeedTestModule(reactContext)
+            StorageModule.NAME -> StorageModule(reactContext)
             else -> null
         }
 
     override fun getReactModuleInfoProvider(): ReactModuleInfoProvider =
         ReactModuleInfoProvider {
-            listOf(NetworkModule.NAME, WifiModule.NAME, NetToolsModule.NAME, LanModule.NAME, SpeedTestModule.NAME).associateWith { name ->
+            listOf(
+                NetworkModule.NAME,
+                WifiModule.NAME,
+                NetToolsModule.NAME,
+                LanModule.NAME,
+                SpeedTestModule.NAME,
+                StorageModule.NAME,
+            ).associateWith { name ->
                 ReactModuleInfo(
                     name = name,
                     className = name,

@@ -12,7 +12,8 @@ export type ToolId =
   | 'reachability'
   | 'lan-scanner'
   | 'speed-test'
-  | 'connection-monitor';
+  | 'connection-monitor'
+  | 'health-check';
 
 export type ToolCategory = 'diagnostics' | 'discovery' | 'web' | 'performance';
 
@@ -40,6 +41,13 @@ export const TOOL_CATEGORIES: readonly ToolCategory[] = [
 ];
 
 export const TOOLS: readonly ToolDefinition[] = [
+  {
+    id: 'health-check',
+    category: 'diagnostics',
+    icon: 'pulse',
+    status: 'available',
+    milestone: 8,
+  },
   {
     id: 'ping',
     category: 'diagnostics',
@@ -121,7 +129,7 @@ export const TOOLS: readonly ToolDefinition[] = [
     id: 'connection-monitor',
     category: 'performance',
     icon: 'pulse',
-    status: 'planned',
+    status: 'available',
     milestone: 8,
   },
 ];

@@ -49,7 +49,7 @@ src/
 ├── native/              Typed native-module bridge (specs + Zod wrappers)
 ├── services/            Application services (permissions, …)
 ├── i18n/                Translations (en, bg) and language selection
-├── database/            SQLite migrations and repositories    (milestone 3+)
+├── database/            Storage wrapper and typed repositories
 ├── stores/              Zustand stores
 └── utils/               Small generic helpers
 tests/                   App-level integration tests and Jest setup
@@ -85,10 +85,14 @@ module is implemented.
 
 - **UI state** lives in components.
 - **App state** that several screens share lives in small Zustand stores in
-  `src/stores` (currently: settings).
-- **Persistent data** (test history, saved networks and devices, settings,
-  reports) will be stored in SQLite with versioned migrations in
-  `src/database`. Until then, settings are kept in memory.
+  `src/stores` (settings, Wi-Fi scan, LAN scan, speed-test history, monitor).
+- **Persistent data** is stored in SQLite through `NativeStorageModule`
+  (Android's built-in SQLite, `storage/AppDatabase.kt`). Migrations are an
+  append-only list in Kotlin. Records are JSON documents in one `records`
+  table keyed by kind and time; `src/database/repositories.ts` defines a Zod
+  schema per kind, so documents are validated on read and invalid ones are
+  skipped. Settings live in a `settings` key/value table and are loaded
+  before the first frame (`hydrateSettings`).
 - **Server state** (e.g. speed-test server lists) may use TanStack Query once
   such a remote source exists.
 

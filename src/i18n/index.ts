@@ -42,3 +42,12 @@ export function formatTime(timestamp: number, language: Language): string {
     second: '2-digit',
   });
 }
+
+export function formatDateTime(timestamp: number, language: Language): string {
+  return new Date(timestamp).toLocaleString(LOCALES[language], {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}

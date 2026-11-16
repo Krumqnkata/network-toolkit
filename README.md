@@ -18,9 +18,9 @@ native app.
 
 <!-- prettier-ignore -->
 > [!NOTE]
-> **Status: early development (milestones 1–7 of 9).** The live network
-> dashboard, the Wi-Fi Analyzer, the network tools, the LAN scanner and the
-> speed test work; history and monitoring are next — see the [roadmap](#roadmap). The app has not yet been tested on a
+> **Status: early development (milestones 1–8 of 9).** The dashboard, Wi-Fi
+> Analyzer, network tools, LAN scanner, speed test, connection monitor and
+> health check work; optimization towards 1.0 is next — see the [roadmap](#roadmap). The app has not yet been tested on a
 > wide range of physical devices.
 
 ## Features
@@ -35,7 +35,7 @@ implemented in the current code.
 | **Network Tools**        | Ping, traceroute, DNS & reverse DNS, reachability, HTTP headers, TLS certificates, IP info    | Available |
 | **LAN Scanner**          | TCP/ICMP sweep, mDNS, SSDP/UPnP and NetBIOS discovery, device names and types, port scanner   | Available |
 | **Internet Diagnostics** | Download / upload speed, latency, jitter, packet loss, latency under load (bufferbloat)       | Available |
-| **Advanced Diagnostics** | Connection monitoring, outage tracking, automatic problem detection, PDF/JSON reports         | Planned   |
+| **Advanced Diagnostics** | Connection monitoring, outage tracking, automatic problem detection, text/JSON reports        | Available |
 
 Design principles:
 
@@ -64,7 +64,7 @@ Screenshots will be added once the first functional screens are available.
 | State      | Zustand                                                            |
 | Native     | Kotlin, Android SDK, Turbo Native Modules                          |
 | Graphics   | react-native-svg (icons, channel graph, sparklines)                |
-| Storage    | SQLite (planned)                                                   |
+| Storage    | SQLite (Android built-in, via a Kotlin Turbo Native Module)        |
 | Testing    | Jest, React Native Testing Library, JUnit; Maestro planned for E2E |
 | Quality    | ESLint, Prettier, CodeQL, Dependabot, dependency review            |
 | CI/CD      | GitHub Actions — checks on every PR, signed releases from Git tags |
@@ -125,7 +125,7 @@ Read more in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | 5   | Network diagnostics | Ping, DNS lookup, traceroute, HTTP and TLS tools               | Done    |
 | 6   | LAN Scanner         | Device discovery, device identification, port scanning         | Done    |
 | 7   | Speed test          | Download, upload, latency, jitter, packet loss                 | Done    |
-| 8   | Advanced features   | History, monitoring, automatic diagnostics, reports            | Planned |
+| 8   | Advanced features   | History, monitoring, automatic diagnostics, reports            | Done    |
 | 9   | Optimization        | Performance, battery, compatibility, 1.0 release               | Planned |
 
 The first public version (MVP) covers milestones 1–5: dashboard, network
