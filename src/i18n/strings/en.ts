@@ -3,6 +3,8 @@
  * Other languages are typed as `Strings`, so a missing or extra key is a
  * compile error. Functions are used for strings with parameters.
  */
+type Values = Record<string, string | number>;
+
 export const en = {
   common: {
     retry: 'Try again',
@@ -182,6 +184,10 @@ export const en = {
       'wifi-survey': {
         name: 'Wi-Fi by Room',
         description: 'Walk through your home and find the weak spots',
+      },
+      'security-check': {
+        name: 'Security Check',
+        description: 'Wi-Fi encryption, router services, UPnP and open ports',
       },
       'network-map': {
         name: 'Network Map',
@@ -828,6 +834,123 @@ export const en = {
     confirmHint: 'Android will ask you to confirm the installation.',
   },
   devices: { title: 'Devices', network: 'Network', bluetooth: 'Bluetooth', map: 'Map' },
+  securityCheck: {
+    intro:
+      'Checks your home network the way an attacker nearby would see it: Wi-Fi encryption, WPS, services open on the router, UPnP and the ports apps opened to the internet, and risky services on your devices. It only looks — nothing is logged into or changed.',
+    run: 'Check security',
+    running: 'Checking the Wi-Fi, the router and your devices…',
+    notLocal: 'Connect to your Wi-Fi or Ethernet network to check it.',
+    score: {
+      good: { title: 'Your network looks safe', body: 'No risks found in what the app can check.' },
+      fair: {
+        title: 'A few things to look at',
+        body: 'Nothing urgent, but these settings make your network easier to attack.',
+      },
+      risky: { title: 'Your network is at risk', body: 'Fix the items marked "Risk" first.' },
+    },
+    counts: (risks: number, checks: number) =>
+      `${risks} ${risks === 1 ? 'risk' : 'risks'} · ${checks} to check`,
+    severity: { fail: 'Risk', warn: 'Check', info: 'Tip', pass: 'OK', skip: 'Not checked' },
+    scanFirst: 'Scan the network first',
+    share: 'Share report',
+    reportTitle: 'Network Toolkit — security check',
+    findings: {
+      encryption: {
+        pass: (v: Values) => `Wi-Fi is encrypted (${v.level})`,
+        warn: (v: Values) => `Outdated Wi-Fi encryption (${v.level})`,
+        fail: (v: Values) =>
+          v.level === 'open' ? 'Wi-Fi has no password' : `Weak Wi-Fi security (${v.level})`,
+        skip: () => 'Wi-Fi encryption not checked',
+        advicePass: 'Good. WPA3 is the best choice if all your devices support it.',
+        adviceBad:
+          "Anyone nearby can read or join this network. In the router's Wi-Fi settings choose WPA2-AES or WPA3 and a long password.",
+        adviceSkip: "Allow location access so Android shows the network's security.",
+      },
+      wps: {
+        pass: () => 'WPS is off',
+        warn: () => 'WPS is on',
+        skip: () => 'WPS not checked',
+        advicePass: 'Good: the push-button / PIN pairing that is easy to break is off.',
+        adviceBad:
+          "WPS PINs can be guessed in hours. Turn WPS off in the router's Wi-Fi settings; join new devices with the password instead.",
+        adviceSkip: 'Allow location access and scan Wi-Fi so the app can see it.',
+      },
+      'router-admin': {
+        pass: () => 'Router settings use HTTPS',
+        warn: () => 'Router settings page without HTTPS',
+        info: () => 'No router settings page found',
+        skip: () => 'Router not checked',
+        advicePass: "The router's login page is encrypted.",
+        adviceBad:
+          "The router's password is sent unencrypted on your network. Turn on HTTPS for the web interface if the router offers it, and never log in on a guest network.",
+        adviceInfo: 'The router does not answer on the usual web ports from this phone.',
+        adviceSkip: 'The router could not be reached.',
+      },
+      'router-telnet': {
+        pass: () => 'No Telnet on the router',
+        fail: () => 'Telnet is open on the router',
+        skip: () => 'Router services not checked',
+        advicePass: 'The old unencrypted remote login is closed.',
+        adviceBad:
+          "Telnet sends passwords in plain text and is a favourite target of botnets. Turn it off in the router's settings (often under Administration or System).",
+        adviceSkip: 'The router could not be reached.',
+      },
+      'router-ftp': {
+        pass: () => 'No FTP on the router',
+        warn: () => 'FTP is open on the router',
+        advicePass: 'No unencrypted file sharing on the router.',
+        adviceBad:
+          "The router shares files over FTP, which is unencrypted. Turn it off if you don't use it, or use SMB with a password.",
+      },
+      upnp: {
+        pass: () => 'UPnP port opening is off',
+        warn: () => 'UPnP port opening is on',
+        skip: () => 'UPnP not checked',
+        advicePass: 'Devices cannot open ports to the internet by themselves.',
+        adviceBad:
+          'Any device on your network — including a hacked camera — can open ports to the internet without asking. Keep it only if games or calls need it.',
+        adviceSkip: 'The router did not answer UPnP discovery.',
+      },
+      'port-forwards': {
+        pass: () => 'No ports opened to the internet',
+        warn: (v: Values) =>
+          `${v.count} ${v.count === 1 ? 'port is' : 'ports are'} open to the internet`,
+        skip: () => 'Opened ports could not be read',
+        advicePass: 'Nothing on your network is reachable from the internet through UPnP.',
+        adviceBad:
+          "These devices are reachable from the internet. If you don't recognise one, turn UPnP off in the router or update that device.",
+        adviceSkip: 'The router hides its UPnP list.',
+      },
+      'devices-telnet': {
+        pass: () => 'No devices with Telnet',
+        fail: (v: Values) =>
+          `${v.count} ${v.count === 1 ? 'device has' : 'devices have'} Telnet open`,
+        skip: () => 'Devices not checked',
+        advicePass: 'No device on the network offers unencrypted remote login.',
+        adviceBad:
+          'Telnet on cameras and smart devices is how botnets like Mirai spread. Update the device, change its password, or replace it.',
+        adviceSkip: 'Scan your network in Devices first, then run the check again.',
+      },
+      'devices-ftp': {
+        warn: (v: Values) =>
+          `${v.count} ${v.count === 1 ? 'device shares' : 'devices share'} files over FTP`,
+        adviceBad: 'FTP is unencrypted. Use it only if you need it and protect it with a password.',
+      },
+      'devices-remote': {
+        info: (v: Values) =>
+          `${v.count} ${v.count === 1 ? 'device allows' : 'devices allow'} remote desktop`,
+        adviceInfo:
+          'Remote desktop (RDP or VNC) is open on your network. Fine if you use it — keep a strong password and never forward it to the internet.',
+      },
+      'private-dns': {
+        pass: () => 'Encrypted DNS (Private DNS) is on',
+        info: () => 'Encrypted DNS (Private DNS) is off',
+        advicePass: 'Your network and provider cannot see which sites you look up.',
+        adviceInfo:
+          'Your provider can see which sites you look up. In Android Settings → Network → Private DNS you can choose a provider such as dns.google or one.one.one.one.',
+      },
+    },
+  },
   survey: {
     intro:
       'Walk through your home. In each room, type its name and tap “Measure here” — it takes about 8 seconds. Then you see where the Wi-Fi is weak and what to do about it.',
