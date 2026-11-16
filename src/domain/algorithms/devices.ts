@@ -73,6 +73,11 @@ export function unescapeLabel(label: string): string {
   return label.replace(/\\(.)/g, '$1');
 }
 
+/** Escapes a label for presentation format: backslashes first, then dots (`My.Box` → `My\.Box`). */
+export function escapeLabel(label: string): string {
+  return label.replace(/\\/g, '\\\\').replace(/\./g, '\\.');
+}
+
 /** Splits `Instance\.Name._ipp._tcp.local` into instance and service type. */
 export function splitInstanceName(name: string): { instance: string; type: string } | null {
   const match = name.match(/^(.*?)\.(_[^.]+\._(?:tcp|udp))\.local\.?$/i);
