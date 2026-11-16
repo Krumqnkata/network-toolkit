@@ -47,6 +47,7 @@ public IP address, as every website does.
 | Health Check          | The same as Internet Reachability, plus pings to your router, your provider's first router and `1.1.1.1`                                                                                                                                                              |
 | Network map           | Pings with limited TTL to `1.1.1.1` and pings to the routers on the way; the same LAN discovery as the LAN Scanner; Bluetooth results are only those already in memory; exports are written to the app cache and leave the phone only through the share menu you open |
 | Wi-Fi by room         | Pings to your router only; the signal readings come from the phone itself                                                                                                                                                                                             |
+| Security check        | Your router only (TCP connects to common ports, SSDP, its UPnP description and port-forward list) and the devices from the last LAN scan; nothing is logged into or changed                                                                                           |
 
 ## Updates
 

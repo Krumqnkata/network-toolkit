@@ -9,6 +9,25 @@ Release notes.
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-11-16
+
+### Added
+
+- **Security check** (Tools → My network). Looks at your home network the way
+  an attacker nearby would and explains each finding in plain language:
+
+  - Wi-Fi encryption (open, WEP, WPA, TKIP, WPA2, WPA3) and whether WPS is on;
+  - the router: settings page without HTTPS, Telnet or FTP open;
+  - UPnP: whether devices can open ports to the internet by themselves, and
+    the list of ports already opened (read from the router's own UPnP
+    interface — nothing is added or removed);
+  - devices from the last network scan with Telnet, FTP or remote desktop
+    open;
+  - whether encrypted DNS (Private DNS) is on.
+
+  The result is rated "safe", "a few things to look at" or "at risk", risks
+  first, and can be shared as text. Nothing is logged into or changed.
+
 ## [1.2.0] - 2026-11-16
 
 ### Added
@@ -415,7 +434,8 @@ failed (see Fixed).
 - Tag-driven release workflow that builds, signs, verifies and publishes the
   APK, AAB and SHA-256 checksums.
 
-[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/Krumqnkata/network-toolkit/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/Krumqnkata/network-toolkit/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/Krumqnkata/network-toolkit/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Krumqnkata/network-toolkit/compare/v1.1.0-rc.1...v1.1.0
