@@ -24,6 +24,13 @@ data class NetworkSnapshot(
     val mtu: Int?,
     val wifi: WifiLink?,
     val cellularOperator: String?,
+    /** Strongest radio generation in the current signal report: 5G, 4G, 3G or 2G. */
+    val cellularGeneration: String?,
+    val cellularDbm: Int?,
+    /** Android's 0–4 signal level. */
+    val cellularLevel: Int?,
+    /** User-visible device name (Settings → About phone), falling back to the model. */
+    val deviceName: String?,
     val locationPermission: Boolean,
     val locationEnabled: Boolean,
 )
@@ -111,6 +118,10 @@ fun NetworkSnapshot.toWritableMap(): WritableMap =
             )
         }
         putString("cellularOperator", cellularOperator)
+        putString("cellularGeneration", cellularGeneration)
+        putNullableInt("cellularDbm", cellularDbm)
+        putNullableInt("cellularLevel", cellularLevel)
+        putString("deviceName", deviceName)
         putBoolean("locationPermission", locationPermission)
         putBoolean("locationEnabled", locationEnabled)
     }

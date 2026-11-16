@@ -25,6 +25,8 @@ import { formatDateTime, useLanguage, useStrings } from '../../../i18n';
 import { useUpdateStore } from '../../../stores/updateStore';
 import { UpdatePanel } from '../../updates/components/UpdatePanel';
 import { checkForUpdates, setAutoUpdate } from '../../updates/services/updater';
+import { useHomeStore } from '../../../stores/homeStore';
+import { loadHomeSettings, setShowPublicInfo } from '../../dashboard/services/homeData';
 import { logError } from '../../../utils/errors';
 import {
   LANGUAGE_PREFERENCES,
@@ -68,6 +70,10 @@ export function SettingsScreen() {
   const lastCheckedAt = useUpdateStore(state => state.lastCheckedAt);
   const updatePhase = useUpdateStore(state => state.phase);
   const hasUpdate = useUpdateStore(state => state.update !== null);
+  const showPublicInfo = useHomeStore(state => state.showPublicInfo);
+  React.useEffect(() => {
+    loadHomeSettings();
+  }, []);
   const navigation = useNavigation();
 
   const confirmClear = () =>
@@ -162,6 +168,22 @@ export function SettingsScreen() {
         <AppText variant="caption" color="textSecondary">
           {s.settings.dataHint}
         </AppText>
+        <View style={[styles.switchRow, { gap: theme.spacing.md }]}>
+          <View style={[styles.flex, { gap: theme.spacing.xxs }]}>
+            <AppText variant="heading">{s.settings.publicInfo}</AppText>
+            <AppText variant="caption" color="textMuted">
+              {s.settings.publicInfoHint}
+            </AppText>
+          </View>
+          <Switch
+            testID="public-info"
+            accessibilityLabel={s.settings.publicInfo}
+            value={showPublicInfo}
+            onValueChange={setShowPublicInfo}
+            trackColor={{ true: theme.colors.accent, false: theme.colors.surfaceRaised }}
+            thumbColor={theme.colors.textPrimary}
+          />
+        </View>
         <Button
           testID="clear-history"
           label={s.settings.clearHistory}

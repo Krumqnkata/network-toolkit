@@ -18,6 +18,18 @@ const icons = {
     </>
   ),
   arrowDown: <Path d="M12 4.5v15M6 13.5l6 6 6-6" />,
+  check: (
+    <>
+      <Circle cx={12} cy={12} r={9} />
+      <Path d="M8 12.5l2.75 2.75L16.5 9.5" />
+    </>
+  ),
+  antenna: (
+    <>
+      <Circle cx={12} cy={10} r={1.75} />
+      <Path d="M12 11.75V20M8.5 13.5a5 5 0 0 1 0-7M15.5 6.5a5 5 0 0 1 0 7M5.75 16.25a9 9 0 0 1 0-12.5M18.25 3.75a9 9 0 0 1 0 12.5" />
+    </>
+  ),
   arrowUp: <Path d="M12 19.5v-15M6 10.5l6-6 6 6" />,
   dashboard: (
     <>

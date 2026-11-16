@@ -37,6 +37,10 @@ export const wifiSnapshot: NetworkSnapshot = {
     security: 'wpa3-personal',
   },
   cellularOperator: null,
+  cellularGeneration: null,
+  cellularDbm: null,
+  cellularLevel: null,
+  deviceName: 'Pixel 9',
   locationPermission: true,
   locationEnabled: true,
 };
@@ -64,4 +68,19 @@ export const offlineSnapshot: NetworkSnapshot = {
   domains: null,
   mtu: null,
   wifi: null,
+};
+
+/** Mobile data on 5G, metered, without Wi-Fi. */
+export const cellularSnapshot: NetworkSnapshot = {
+  ...wifiSnapshot,
+  transport: 'cellular',
+  isMetered: true,
+  wifi: null,
+  interfaceName: 'rmnet_data0',
+  addresses: [{ address: '10.33.250.165', prefixLength: 32, family: 'ipv4', scope: 'global' }],
+  gateways: [],
+  cellularOperator: 'VIVACOM',
+  cellularGeneration: '5G',
+  cellularDbm: -84,
+  cellularLevel: 3,
 };

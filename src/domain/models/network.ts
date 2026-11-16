@@ -63,6 +63,13 @@ export interface NetworkSnapshot {
   mtu: number | null;
   wifi: WifiLink | null;
   cellularOperator: string | null;
+  /** Newest radio generation in the signal report (Android 10+). */
+  cellularGeneration: '5G' | '4G' | '3G' | '2G' | null;
+  cellularDbm: number | null;
+  /** Android's 0–4 signal level (Android 9+). */
+  cellularLevel: number | null;
+  /** Device name from the system settings, or the model. */
+  deviceName: string | null;
   locationPermission: boolean;
   locationEnabled: boolean;
 }

@@ -30,20 +30,20 @@ Analyzer, **never reads your location** and stores no location. See
 Every tool runs only when you start it. Any server the app contacts sees your
 public IP address, as every website does.
 
-| Tool                  | Contacts                                                                                                                                                       |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Dashboard             | Nothing — reads Android's network state                                                                                                                        |
-| Wi-Fi Analyzer        | Nothing — Android Wi-Fi scan                                                                                                                                   |
-| Ping, Traceroute      | The host you enter (ICMP); reverse DNS lookups for hops through your DNS resolver                                                                              |
-| DNS Lookup / Reverse  | Your network's DNS resolver, or the one you pick (Cloudflare 1.1.1.1, Google 8.8.8.8, Quad9 9.9.9.9)                                                           |
-| Internet Reachability | Your gateway, your DNS resolver (`example.com`), `1.1.1.1` and `2606:4700:4700::1111` (TCP 443), `connectivitycheck.gstatic.com` and `www.google.com` (Google) |
-| IP Information        | Cloudflare (`1.1.1.1/cdn-cgi/trace` over IPv4 and IPv6) and Team Cymru's IP-to-ASN DNS service (`*.asn.cymru.com`) via your DNS resolver                       |
-| HTTP Headers, TLS     | The URL or host you enter                                                                                                                                      |
-| LAN Scanner           | Devices on your local network only (TCP, ICMP, mDNS, SSDP, NetBIOS); reverse DNS through your resolver                                                         |
-| Port Scanner          | The host you enter                                                                                                                                             |
-| Speed Test            | Cloudflare (`speed.cloudflare.com`)                                                                                                                            |
-| Connection Monitor    | The target you choose (default `1.1.1.1`)                                                                                                                      |
-| Health Check          | The same as Internet Reachability                                                                                                                              |
+| Tool                  | Contacts                                                                                                                                                                                                                    |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Home screen           | Response times to google.com, youtube.com, cloudflare.com and your router (ICMP) when it opens; your public IP and provider from Cloudflare and Team Cymru (at most every 30 minutes, can be turned off in Settings → Data) |
+| Wi-Fi Analyzer        | Nothing — Android Wi-Fi scan                                                                                                                                                                                                |
+| Ping, Traceroute      | The host you enter (ICMP); reverse DNS lookups for hops through your DNS resolver                                                                                                                                           |
+| DNS Lookup / Reverse  | Your network's DNS resolver, or the one you pick (Cloudflare 1.1.1.1, Google 8.8.8.8, Quad9 9.9.9.9)                                                                                                                        |
+| Internet Reachability | Your gateway, your DNS resolver (`example.com`), `1.1.1.1` and `2606:4700:4700::1111` (TCP 443), `connectivitycheck.gstatic.com` and `www.google.com` (Google)                                                              |
+| IP Information        | Cloudflare (`1.1.1.1/cdn-cgi/trace` over IPv4 and IPv6) and Team Cymru's IP-to-ASN DNS service (`*.asn.cymru.com`) via your DNS resolver                                                                                    |
+| HTTP Headers, TLS     | The URL or host you enter                                                                                                                                                                                                   |
+| LAN Scanner           | Devices on your local network only (TCP, ICMP, mDNS, SSDP, NetBIOS); reverse DNS through your resolver                                                                                                                      |
+| Port Scanner          | The host you enter                                                                                                                                                                                                          |
+| Speed Test            | Cloudflare (`speed.cloudflare.com`)                                                                                                                                                                                         |
+| Connection Monitor    | The target you choose (default `1.1.1.1`)                                                                                                                                                                                   |
+| Health Check          | The same as Internet Reachability                                                                                                                                                                                           |
 
 ## Updates
 

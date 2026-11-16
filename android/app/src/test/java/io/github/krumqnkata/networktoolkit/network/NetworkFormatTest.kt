@@ -74,4 +74,19 @@ class NetworkFormatTest {
         assertEquals("global", scope("2001:db8::1"))
         assertEquals("loopback", scope("::1"))
     }
+
+    @Test
+    fun `cellular dBm ignores unavailable values`() {
+        assertEquals(-84, NetworkFormat.cellDbm(-84))
+        assertNull(NetworkFormat.cellDbm(Int.MAX_VALUE))
+        assertNull(NetworkFormat.cellDbm(0))
+    }
+
+    @Test
+    fun `best cellular report prefers the newest generation`() {
+        assertEquals("5G" to -95, NetworkFormat.bestCellReport(listOf("4G" to -84, "5G" to -95)))
+        // Non-standalone 5G sometimes reports NR without a level: fall back to LTE dBm.
+        assertEquals("5G" to -84, NetworkFormat.bestCellReport(listOf("4G" to -84, "5G" to null)))
+        assertNull(NetworkFormat.bestCellReport(emptyList()))
+    }
 }

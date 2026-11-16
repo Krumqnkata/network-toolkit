@@ -11,6 +11,13 @@ import android.net.wifi.SupplicantState
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.provider.Settings
+import android.telephony.CellSignalStrengthCdma
+import android.telephony.CellSignalStrengthGsm
+import android.telephony.CellSignalStrengthLte
+import android.telephony.CellSignalStrengthNr
+import android.telephony.CellSignalStrengthTdscdma
+import android.telephony.CellSignalStrengthWcdma
 import android.telephony.TelephonyManager
 import androidx.core.content.ContextCompat
 import androidx.core.location.LocationManagerCompat
@@ -35,6 +42,7 @@ class NetworkSnapshotReader(context: Context) {
         val caps = network?.let { connectivity?.getNetworkCapabilities(it) }
         val link = network?.let { connectivity?.getLinkProperties(it) }
         val transport = transportOf(caps)
+        val cellular = if (transport == "cellular") cellularSignal() else null
 
         return NetworkSnapshot(
             timestamp = System.currentTimeMillis(),
@@ -56,6 +64,10 @@ class NetworkSnapshotReader(context: Context) {
             mtu = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) link?.mtu?.let(NetworkFormat::positiveOrNull) else null,
             wifi = readWifi(),
             cellularOperator = if (transport == "cellular") cellularOperator() else null,
+            cellularGeneration = cellular?.generation,
+            cellularDbm = cellular?.dbm,
+            cellularLevel = cellular?.level,
+            deviceName = deviceName(),
             locationPermission = hasFineLocation(),
             locationEnabled = isLocationEnabled(),
         )
@@ -156,6 +168,42 @@ class NetworkSnapshotReader(context: Context) {
                 else -> null
             }
         }
+
+    private data class CellularSignal(val generation: String?, val dbm: Int?, val level: Int?)
+
+    /**
+     * Signal of the mobile network (Android 9+). Reading it needs no
+     * permission; on Android 10+ the per-technology reports also tell the
+     * generation (5G NR is reported next to LTE on non-standalone 5G).
+     */
+    private fun cellularSignal(): CellularSignal? {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return null
+        val telephony = context.getSystemService(TelephonyManager::class.java) ?: return null
+        val strength = try {
+            telephony.signalStrength
+        } catch (error: SecurityException) {
+            null
+        } ?: return null
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            return CellularSignal(null, null, strength.level)
+        }
+        val reports = strength.cellSignalStrengths.mapNotNull { cell ->
+            val generation = when (cell) {
+                is CellSignalStrengthNr -> "5G"
+                is CellSignalStrengthLte -> "4G"
+                is CellSignalStrengthWcdma, is CellSignalStrengthTdscdma -> "3G"
+                is CellSignalStrengthGsm, is CellSignalStrengthCdma -> "2G"
+                else -> null
+            } ?: return@mapNotNull null
+            generation to NetworkFormat.cellDbm(cell.dbm)
+        }
+        val best = NetworkFormat.bestCellReport(reports)
+        return CellularSignal(best?.first, best?.second, strength.level)
+    }
+
+    private fun deviceName(): String? =
+        Settings.Global.getString(context.contentResolver, Settings.Global.DEVICE_NAME)?.ifBlank { null }
+            ?: Build.MODEL
 
     private fun cellularOperator(): String? =
         context.getSystemService(TelephonyManager::class.java)?.networkOperatorName?.ifBlank { null }

@@ -58,6 +58,10 @@ export const networkSnapshotSchema = z.object({
   mtu: z.number().int().positive().nullable(),
   wifi: wifiLinkSchema.nullable(),
   cellularOperator: z.string().nullable(),
+  cellularGeneration: z.enum(['5G', '4G', '3G', '2G']).nullable(),
+  cellularDbm: z.number().int().nullable(),
+  cellularLevel: z.number().int().min(0).max(4).nullable(),
+  deviceName: z.string().nullable(),
   locationPermission: z.boolean(),
   locationEnabled: z.boolean(),
 }) satisfies z.ZodType<NetworkSnapshot>;
