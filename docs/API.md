@@ -179,3 +179,47 @@ Result: `address`, `protocol`, `cipherSuite`, `handshakeMs`, `trusted`,
 `issuer` (RFC 2253), `serialNumber` (hex), `notBefore` / `notAfter` (ms),
 `signatureAlgorithm`, `publicKeyAlgorithm`, `publicKeyBits`,
 `subjectAltNames` (`DNS:` / `IP:`), `isCa`, `sha256`.
+
+## `NativeLanModule`
+
+Kotlin: [`lan/LanModule.kt`](../android/app/src/main/java/io/github/krumqnkata/networktoolkit/lan/LanModule.kt)
+· TypeScript wrapper: [`src/native/lan.ts`](../src/native/lan.ts)
+· Orchestration: [`src/features/lan-scanner/services/lanScan.ts`](../src/features/lan-scanner/services/lanScan.ts)
+
+All host arguments must be IP literals (`scanPorts` also accepts a hostname).
+Each call is one bounded batch; the TypeScript side batches, reports progress
+and stops between batches. Timeouts are clamped to 0.1–10 s.
+
+### `probeHosts(hosts, ports, timeoutMs, icmp)`
+
+Up to 256 hosts and 512 host×port pairs per call. All TCP connects run at once
+on one NIO `Selector`; `open` or `refused` (RST) marks a host alive. With
+`icmp`, hosts that did not answer get one ICMP echo each (system `ping`, up to
+32 in parallel). Result: `hosts: { address, alive, method (tcp|icmp|null),
+rttMs, openPorts }[]`.
+
+### `netbiosQuery(hosts, timeoutMs)`
+
+NetBIOS node status request (UDP 137, RFC 1002) to each host; replies give
+`{ address, name, workgroup, mac }` (`mac` is null when the host reports
+zeros).
+
+### `mdnsQuery(localAddress, names, types, durationMs)`
+
+Sends the questions (up to 12 per packet, names must end in `.local`) to
+`224.0.0.251:5353` from an ephemeral port on the interface that owns
+`localAddress`, so responders answer by unicast. Returns every reply as
+`{ from, records }`, where records are the answer and additional sections in
+the same `{ name, type, ttl, data }` form as `dnsQuery`. Dots inside labels
+are escaped as `\.`.
+
+### `ssdpSearch(localAddress, durationMs)`
+
+Sends `M-SEARCH` (`ST: ssdp:all`) twice to `239.255.255.250:1900` and collects
+the unicast responses: `{ from, server, location, st, usn }[]`.
+
+### `scanPorts(host, ports, timeoutMs)`
+
+TCP connect scan of up to 512 ports in one selector round. Result:
+`{ address, ports: { port, status (open|refused|timeout|unreachable),
+connectMs }[] }`.

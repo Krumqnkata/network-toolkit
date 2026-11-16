@@ -8,6 +8,7 @@ export { ChoiceChips } from './ChoiceChips';
 export { EmptyState } from './EmptyState';
 export { InfoRow } from './InfoRow';
 export { ListRow } from './ListRow';
+export { ProgressBar } from './ProgressBar';
 export { Screen } from './Screen';
 export { SectionHeader } from './SectionHeader';
 export { SegmentedControl } from './SegmentedControl';

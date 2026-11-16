@@ -11,6 +11,7 @@ data class DnsResponse(
     val truncated: Boolean,
     val answers: List<DnsRecord>,
     val authority: List<DnsRecord>,
+    val additional: List<DnsRecord> = emptyList(),
 )
 
 /**
@@ -22,17 +23,23 @@ object DnsMessage {
     const val CLASS_IN = 1
     private const val MAX_POINTER_JUMPS = 32
 
-    fun buildQuery(id: Int, name: String, type: Int): ByteArray {
+    fun buildQuery(id: Int, name: String, type: Int): ByteArray = buildQuery(id, listOf(name to type), true)
+
+    /** Query with several questions; mDNS uses `recursionDesired = false`. */
+    fun buildQuery(id: Int, questions: List<Pair<String, Int>>, recursionDesired: Boolean): ByteArray {
+        require(questions.size in 1..64) { "Too many questions" }
         val out = ByteArrayOutputStream()
         out.writeShort(id and 0xFFFF)
-        out.writeShort(0x0100) // standard query, recursion desired
-        out.writeShort(1) // QDCOUNT
+        out.writeShort(if (recursionDesired) 0x0100 else 0x0000)
+        out.writeShort(questions.size) // QDCOUNT
         out.writeShort(0)
         out.writeShort(0)
         out.writeShort(0)
-        writeName(out, name)
-        out.writeShort(type)
-        out.writeShort(CLASS_IN)
+        for ((name, type) in questions) {
+            writeName(out, name)
+            out.writeShort(type)
+            out.writeShort(CLASS_IN)
+        }
         return out.toByteArray()
     }
 
@@ -43,13 +50,20 @@ object DnsMessage {
         val questions = reader.u16()
         val answerCount = reader.u16()
         val authorityCount = reader.u16()
-        reader.u16() // additional records are not shown
+        val additionalCount = reader.u16()
         repeat(questions) {
             reader.name()
             reader.skip(4)
         }
         val answers = List(answerCount) { reader.record() }
         val authority = List(authorityCount) { reader.record() }
+        // Additional records matter for mDNS (SRV/TXT/A next to a PTR answer); a
+        // malformed or OPT-only tail must not discard the answers above.
+        val additional = try {
+            List(additionalCount) { reader.record() }
+        } catch (error: IllegalArgumentException) {
+            emptyList()
+        }
         return DnsResponse(
             id = id,
             rcode = flags and 0x0F,
@@ -57,13 +71,45 @@ object DnsMessage {
             truncated = flags and 0x0200 != 0,
             answers = answers,
             authority = authority,
+            additional = additional,
         )
     }
 
+    /** Splits a presentation-format name on unescaped dots (`\.` keeps a dot inside a label). */
+    fun splitLabels(name: String): List<String> {
+        if (name.isEmpty() || name == ".") return emptyList()
+        val labels = mutableListOf<String>()
+        val current = StringBuilder()
+        var index = 0
+        while (index < name.length) {
+            val char = name[index]
+            when {
+                char == BACKSLASH && index + 1 < name.length -> {
+                    current.append(name[index + 1])
+                    index++
+                }
+                char == '.' -> {
+                    labels += current.toString()
+                    current.clear()
+                }
+                else -> current.append(char)
+            }
+            index++
+        }
+        if (current.isNotEmpty() || !name.endsWith(".")) labels += current.toString()
+        return labels
+    }
+
+    private const val BACKSLASH = '\\'
+
+    private fun escapeLabel(label: String): String =
+        label.replace("$BACKSLASH", "$BACKSLASH$BACKSLASH").replace(".", "$BACKSLASH.")
+
     private fun writeName(out: ByteArrayOutputStream, name: String) {
         if (name.isNotEmpty()) {
-            for (label in name.split('.')) {
-                val bytes = label.toByteArray(Charsets.US_ASCII)
+            for (label in splitLabels(name)) {
+                // UTF-8: mDNS instance names may contain any characters (RFC 6763).
+                val bytes = label.toByteArray(Charsets.UTF_8)
                 require(bytes.size in 1..63) { "Invalid label in $name" }
                 out.write(bytes.size)
                 out.write(bytes)
@@ -123,7 +169,7 @@ object DnsMessage {
                     }
                     else -> {
                         if (cursor + 1 + length > data.size) throw IllegalArgumentException("Truncated DNS name")
-                        labels += String(data, cursor + 1, length, Charsets.US_ASCII)
+                        labels += escapeLabel(String(data, cursor + 1, length, Charsets.UTF_8))
                         cursor += 1 + length
                     }
                 }

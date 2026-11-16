@@ -48,6 +48,30 @@ The tools in milestone 5 only need `INTERNET`:
   (`/cdn-cgi/trace`) and Team Cymru's DNS service. Both run only when the user
   taps the button.
 
+### LAN scanner and local network access
+
+The LAN scanner (milestone 6) also needs only `INTERNET`, because the app
+targets SDK 36. Per the official
+[local network permission guide](https://developer.android.com/privacy-and-security/local-network-permission),
+apps targeting SDK 36 or lower get an implicit grant of `ACCESS_LOCAL_NETWORK`
+and must **not** declare or request it. Raising `targetSdk` to 37 makes local
+network traffic (TCP, UDP, mDNS, `NsdManager`) blocked by default; before that
+the app must declare `ACCESS_LOCAL_NETWORK`, request it from the LAN scanner
+with an explanation, and handle denial (TCP then times out, UDP fails with
+`EPERM`).
+
+Other Android limits the scanner works within:
+
+- **No ARP table, no MAC addresses.** Since Android 10, apps cannot read
+  `/proc/net/arp` or use netlink neighbour queries, so devices are found by
+  active probes and announcements instead. A MAC address is shown only when
+  the device reports it itself (NetBIOS node status). MAC vendor lookup is
+  therefore not offered.
+- **No multicast lock.** mDNS queries use the legacy-unicast form (RFC 6762
+  §6.7) and SSDP responses are unicast, so no `CHANGE_WIFI_MULTICAST_STATE`
+  permission or `MulticastLock` is needed.
+- **UPnP descriptions** are fetched only from the address that announced them.
+
 ### Why not `NEARBY_WIFI_DEVICES`?
 
 Per the official [Wi-Fi permissions guide](https://developer.android.com/develop/connectivity/wifi/wifi-permissions),
@@ -62,9 +86,9 @@ Each row is added to the manifest in the milestone that needs it. Behavior must
 be re-checked against the official Android documentation at that time, since it
 differs between Android versions.
 
-| Permission / API                   | Milestone | Purpose                                       | Notes                                                                               |
-| ---------------------------------- | --------- | --------------------------------------------- | ----------------------------------------------------------------------------------- |
-| Local network access (Android 17+) | 6         | LAN scanner and port scanner on newer targets | Must be verified against the Android 17 behavior changes before raising `targetSdk` |
+| Permission / API                     | Milestone | Purpose                                                                    | Notes                                                                                               |
+| ------------------------------------ | --------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `ACCESS_LOCAL_NETWORK` (Android 17+) | 9         | LAN scanner, port scanner, gateway checks once `targetSdk` is raised to 37 | Runtime permission in the `NEARBY_DEVICES` group; must be requested in context from the LAN scanner |
 
 ## Handling rules
 

@@ -4,14 +4,15 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useTheme } from '../../../app/theme';
 import { AppText, Button, Card, SectionHeader, TextField } from '../../../components/common';
 import { useStrings } from '../../../i18n';
+import type { ToolScreenProps } from './ToolHostScreen';
 import { ErrorNotice, FormCard, ToolFrame, formatMs } from '../components/ToolFrame';
 import { useTraceroute } from '../hooks/useTraceroute';
 
-export function TracerouteScreen() {
+export function TracerouteScreen({ initialHost }: ToolScreenProps) {
   const theme = useTheme();
   const s = useStrings();
   const t = s.netTools;
-  const [host, setHost] = useState('one.one.one.one');
+  const [host, setHost] = useState(initialHost ?? 'one.one.one.one');
   const [inputError, setInputError] = useState<string | null>(null);
   const { running, hops, target, outcome, error, start, stop } = useTraceroute();
 
