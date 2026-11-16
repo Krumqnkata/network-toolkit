@@ -23,6 +23,7 @@ import { useSpeedTestStore } from '../../../stores/speedTestStore';
 import { logError } from '../../../utils/errors';
 import { healthReports, type HealthReport } from '../../health-check/services/healthCheck';
 import { formatMs } from '../../network-tools/components/ToolFrame';
+import { UpdatePanel } from '../../updates/components/UpdatePanel';
 import { HomeTile } from '../components/HomeTile';
 import { IpConfigCard } from '../components/IpConfigCard';
 import { SignalCard } from '../components/SignalCard';
@@ -171,6 +172,8 @@ export function DashboardScreen() {
           />
         </Card>
       ) : null}
+
+      <UpdatePanel compact />
 
       <SpeedHeroCard
         result={speed}

@@ -9,6 +9,28 @@ Release notes.
 
 ## [Unreleased]
 
+## [1.0.0-rc.3] - 2026-11-16
+
+### Added
+
+- Automatic updates: on start (at most every 6 hours) the app checks this
+  repository's GitHub releases for a newer version — pre-releases too while a
+  pre-release is installed — downloads the APK for the phone's ABI, checks its
+  SHA-256 against the release's `checksums.txt`, verifies that it is this app,
+  newer and signed with the same key, and installs it with `PackageInstaller`.
+  On Android 12+ updates install without a confirmation once "Install unknown
+  apps" is allowed for Network Toolkit; Android 8–11 always ask. On metered
+  networks the update waits on a home-screen banner.
+- Settings → Updates: automatic updates on/off, installed version, last check,
+  "Check now", and the download/install status.
+
+### Changed
+
+- New permissions: `REQUEST_INSTALL_PACKAGES` and
+  `UPDATE_PACKAGES_WITHOUT_USER_ACTION`, used only for self-updates.
+- CI installs the Android NDK up front with retries (a corrupt NDK download
+  had failed a build).
+
 ## [1.0.0-rc.2] - 2026-11-16
 
 Second release candidate: a redesigned home screen and navigation. Release
@@ -196,7 +218,8 @@ failed (see Fixed).
 - Tag-driven release workflow that builds, signs, verifies and publishes the
   APK, AAB and SHA-256 checksums.
 
-[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.2...HEAD
+[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.3...HEAD
+[1.0.0-rc.3]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.2...v1.0.0-rc.3
 [1.0.0-rc.2]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.1...v1.0.0-rc.2
 [1.0.0-rc.1]: https://github.com/Krumqnkata/network-toolkit/compare/v0.2.0-beta.2...v1.0.0-rc.1
 [0.2.0-beta.2]: https://github.com/Krumqnkata/network-toolkit/compare/v0.1.0-alpha.1...v0.2.0-beta.2

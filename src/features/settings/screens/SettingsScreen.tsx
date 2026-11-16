@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Alert, Linking, View } from 'react-native';
+import { Alert, Linking, StyleSheet, Switch, View } from 'react-native';
 
 import {
   APP_LICENSE,
@@ -21,7 +21,10 @@ import {
 } from '../../../components/common';
 import { clearHistory } from '../../../database/clearHistory';
 import { Icon } from '../../../components/icons/Icon';
-import { useStrings } from '../../../i18n';
+import { formatDateTime, useLanguage, useStrings } from '../../../i18n';
+import { useUpdateStore } from '../../../stores/updateStore';
+import { UpdatePanel } from '../../updates/components/UpdatePanel';
+import { checkForUpdates, setAutoUpdate } from '../../updates/services/updater';
 import { logError } from '../../../utils/errors';
 import {
   LANGUAGE_PREFERENCES,
@@ -60,6 +63,11 @@ export function SettingsScreen() {
   const languagePreference = useSettingsStore(state => state.languagePreference);
   const setLanguagePreference = useSettingsStore(state => state.setLanguagePreference);
   const [cleared, setCleared] = useState(false);
+  const language = useLanguage();
+  const autoUpdate = useUpdateStore(state => state.autoUpdate);
+  const lastCheckedAt = useUpdateStore(state => state.lastCheckedAt);
+  const updatePhase = useUpdateStore(state => state.phase);
+  const hasUpdate = useUpdateStore(state => state.update !== null);
   const navigation = useNavigation();
 
   const confirmClear = () =>
@@ -108,6 +116,45 @@ export function SettingsScreen() {
             onChange={setLanguagePreference}
           />
         </SettingGroup>
+      </Card>
+
+      <SectionHeader title={s.updates.title} />
+      <Card style={{ gap: theme.spacing.md }}>
+        <View style={[styles.switchRow, { gap: theme.spacing.md }]}>
+          <View style={[styles.flex, { gap: theme.spacing.xxs }]}>
+            <AppText variant="heading">{s.updates.auto}</AppText>
+            <AppText variant="caption" color="textMuted">
+              {s.updates.autoHint}
+            </AppText>
+          </View>
+          <Switch
+            testID="auto-update"
+            accessibilityLabel={s.updates.auto}
+            value={autoUpdate}
+            onValueChange={setAutoUpdate}
+            trackColor={{ true: theme.colors.accent, false: theme.colors.surfaceRaised }}
+            thumbColor={theme.colors.textPrimary}
+          />
+        </View>
+        <AppText variant="caption" color="textSecondary">
+          {[
+            s.updates.current(APP_VERSION),
+            lastCheckedAt ? s.updates.lastChecked(formatDateTime(lastCheckedAt, language)) : null,
+          ]
+            .filter(Boolean)
+            .join(' · ')}
+        </AppText>
+        <UpdatePanel />
+        {updatePhase === 'idle' ||
+        updatePhase === 'up-to-date' ||
+        (updatePhase === 'error' && !hasUpdate) ? (
+          <Button
+            testID="check-updates"
+            label={s.updates.checkNow}
+            variant="secondary"
+            onPress={() => checkForUpdates()}
+          />
+        ) : null}
       </Card>
 
       <SectionHeader title={s.settings.data} />
@@ -161,3 +208,13 @@ export function SettingsScreen() {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
+  switchRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+});

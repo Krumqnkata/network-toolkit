@@ -2,6 +2,7 @@ import { act, render, screen, userEvent } from '@testing-library/react-native';
 import React from 'react';
 
 import { App } from '../src/app/App';
+import NativeStorageModule from '../src/native/specs/NativeStorageModule';
 import NativeNetToolsModule from '../src/native/specs/NativeNetToolsModule';
 import { useSettingsStore } from '../src/stores/settingsStore';
 
@@ -43,6 +44,8 @@ describe('network tools', () => {
 
   beforeEach(() => {
     useSettingsStore.setState(initialSettings, true);
+    // These tests count fetch calls; keep the startup update check out of them.
+    NativeStorageModule.setSetting('update.auto', 'false');
     native.ping.mockReset();
     native.dnsQuery.mockReset().mockResolvedValue(dnsResult());
     native.tcpConnect.mockReset();

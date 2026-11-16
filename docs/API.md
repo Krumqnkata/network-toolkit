@@ -290,3 +290,22 @@ Android's built-in SQLite (`SQLiteOpenHelper`), one background thread.
 
 Record kinds in use: `speed-result` (max 200), `monitor-session` (max 100),
 `health-report` (max 50).
+
+## `NativeUpdateModule`
+
+Kotlin: [`update/UpdateModule.kt`](../android/app/src/main/java/io/github/krumqnkata/networktoolkit/update/UpdateModule.kt)
+· TypeScript: [`src/native/update.ts`](../src/native/update.ts),
+[`src/features/updates/services/updater.ts`](../src/features/updates/services/updater.ts)
+
+| Method                                           | Notes                                                                                                                                                                                                                                      |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `getInstallInfo()`                               | `versionName`, `versionCode`, supported `abis`, `sdkInt`, `canRequestInstalls`, `silentUpdates` (Android 12+), `debuggable`                                                                                                                |
+| `startDownload(url, sha256, name)`               | URL must be `https://github.com/Krumqnkata/network-toolkit/releases/download/…/NetworkToolkit-v….apk`; streams to the app cache and checks SHA-256; max 200 MB                                                                             |
+| `getDownloadStatus()`                            | `state` (`idle` `downloading` `done` `error`), `bytes`, `total`, `path`, `error`                                                                                                                                                           |
+| `canRequestInstalls()` / `openInstallSettings()` | "Install unknown apps" state and its system settings screen                                                                                                                                                                                |
+| `install(path)`                                  | Rejects files outside the update cache, other packages, versions that are not newer and **APKs not signed with the installed app's certificate**; then commits a `PackageInstaller` session with `USER_ACTION_NOT_REQUIRED` on Android 12+ |
+| `getInstallStatus()`                             | `idle` `installing` `pending-user-action` `success` `failure` (+ `message`), from `InstallResultReceiver`                                                                                                                                  |
+
+The release list comes from `GET https://api.github.com/repos/Krumqnkata/network-toolkit/releases`;
+the newest non-draft release above the installed version wins (pre-releases
+only while a pre-release is installed), using the per-ABI APK when present.
