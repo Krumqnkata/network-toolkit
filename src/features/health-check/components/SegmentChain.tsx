@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { useTheme, type ThemeColors } from '../../../app/theme';
 import { AppText, Card } from '../../../components/common';
-import { Icon, type IconName } from '../../../components/icons/Icon';
+import { EquipmentPicture } from '../../../components/illustrations/EquipmentPicture';
 import type {
   Segment,
   SegmentId,
@@ -44,7 +44,8 @@ export function verdictTone(verdict: string): keyof ThemeColors {
 
 interface ChainNode {
   id: string;
-  icon: IconName;
+  /** Equipment picture kind (see EquipmentPicture). */
+  icon: string;
   title: string;
   address: string | null;
 }
@@ -78,7 +79,7 @@ export function SegmentChain({
         {
           node: {
             id: 'operator',
-            icon: 'antenna',
+            icon: 'operator',
             title: t.nodes.operator,
             address: location.provider,
           },
@@ -100,7 +101,7 @@ export function SegmentChain({
         {
           node: {
             id: 'provider',
-            icon: 'lan',
+            icon: 'provider',
             title: t.nodes.provider,
             address: location.provider,
           },
@@ -110,7 +111,7 @@ export function SegmentChain({
       ];
   const last: ChainNode = {
     id: 'internet',
-    icon: 'globe',
+    icon: 'internet',
     title: t.nodes.internet,
     address: location.internet,
   };
@@ -137,11 +138,7 @@ export function SegmentChain({
           },
         ]}
       >
-        <Icon
-          name={node.icon}
-          color={problem ? theme.colors.danger : theme.colors.accent}
-          size={22}
-        />
+        <EquipmentPicture kind={node.icon} size={36} />
       </View>
       <View style={styles.flex}>
         <AppText variant="heading">{node.title}</AppText>

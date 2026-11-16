@@ -24,11 +24,7 @@ import { formatDateTime, useLanguage, useStrings } from '../../../i18n';
 import { getNetworkSnapshot } from '../../../native/network';
 import { useSpeedTestStore } from '../../../stores/speedTestStore';
 import { logError } from '../../../utils/errors';
-import {
-  ErrorNotice,
-  ToolFrame,
-  formatMs,
-} from '../../network-tools/components/ToolFrame';
+import { ErrorNotice, ToolFrame, formatMs } from '../../network-tools/components/ToolFrame';
 import { useSpeedTest } from '../hooks/useSpeedTest';
 
 const BLOAT_TONE = { low: 'success', moderate: 'warning', high: 'danger' } as const;
@@ -157,6 +153,7 @@ export function SpeedTestScreen() {
               testID="speed-start"
               label={phase === 'done' ? t.again : t.start}
               onPress={onStart}
+              block
             />
           )}
         </View>
