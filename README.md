@@ -18,11 +18,11 @@ native app.
 
 <!-- prettier-ignore -->
 > [!NOTE]
-> **Status: 1.0 release candidate.** All nine milestones are implemented:
-> dashboard, Wi-Fi Analyzer, network tools, LAN scanner, speed test,
-> connection monitor and health check. The app has not yet been tested on a
-> wide range of physical devices, so releases stay pre-releases until it has — see the [roadmap](#roadmap). The app has not yet been tested on a
-> wide range of physical devices.
+> **Status: 1.0 — stable.** All nine milestones are implemented: home screen,
+> Wi-Fi Analyzer, network tools, LAN and Bluetooth scanners, speed test,
+> connection monitor and health check. Installed copies update themselves from
+> the [Releases](https://github.com/Krumqnkata/network-toolkit/releases) page —
+> see the [roadmap](#roadmap) for what comes next.
 
 ## Features
 
@@ -131,7 +131,7 @@ Read more in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | 6   | LAN Scanner         | Device discovery, device identification, port scanning         | Done   |
 | 7   | Speed test          | Download, upload, latency, jitter, packet loss                 | Done   |
 | 8   | Advanced features   | History, monitoring, automatic diagnostics, reports            | Done   |
-| 9   | Optimization        | Performance, battery, compatibility, 1.0 release               | RC     |
+| 9   | Optimization        | Performance, battery, compatibility, 1.0 release               | Done   |
 
 The first public version (MVP) covers milestones 1–5: dashboard, network
 information, Wi-Fi Analyzer, ping and DNS lookup.

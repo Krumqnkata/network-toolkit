@@ -9,6 +9,35 @@ Release notes.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-16
+
+First stable release. It contains exactly what was tested as 1.0.0-rc.5 on a
+phone, including a successful automatic update from rc.3.
+
+### Highlights
+
+- **Home:** your provider and this phone with their IP addresses, a
+  one-sentence verdict on your connection, a one-tap speed test with what the
+  speed is good for, what affects your speed (Wi-Fi or mobile: operator,
+  5G/4G, signal) and response times to popular sites and your router.
+- **Wi-Fi Analyzer:** nearby networks on 2.4/5/6 GHz, channel graph, signal
+  history and channel recommendations.
+- **Speed test:** download, upload, ping, jitter, latency under load
+  (bufferbloat) and packet loss, with saved history.
+- **Devices:** LAN scanner (TCP/ICMP, mDNS, SSDP/UPnP, NetBIOS) with device
+  names and types, and a Bluetooth scanner with a "find this device" signal
+  finder.
+- **Tools:** ping, traceroute, DNS and reverse DNS lookup, internet
+  reachability, public IP and provider, HTTP headers, TLS certificates, port
+  scanner, connection monitor with outage tracking, and a health check that
+  explains problems in plain language.
+- **Updates:** checks this repository's releases and installs new versions
+  itself after verifying their checksum and signature.
+- English and Bulgarian, dark and light themes, no accounts, ads or
+  analytics.
+
+See the 1.0.0-rc.1 … rc.5 sections below for every change.
+
 ## [1.0.0-rc.5] - 2026-11-16
 
 ### Fixed
@@ -272,7 +301,8 @@ failed (see Fixed).
 - Tag-driven release workflow that builds, signs, verifies and publishes the
   APK, AAB and SHA-256 checksums.
 
-[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.5...HEAD
+[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.5...v1.0.0
 [1.0.0-rc.5]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.4...v1.0.0-rc.5
 [1.0.0-rc.4]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.3...v1.0.0-rc.4
 [1.0.0-rc.3]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.2...v1.0.0-rc.3

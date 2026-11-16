@@ -1,6 +1,6 @@
 {
   "name": "network-toolkit",
-  "version": "1.0.0-rc.5",
+  "version": "1.0.0",
   "private": true,
   "description": "Open source Android network diagnostics toolkit: Wi-Fi analysis, LAN discovery and network tools.",
   "license": "AGPL-3.0-only",
