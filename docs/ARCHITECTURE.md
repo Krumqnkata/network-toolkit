@@ -76,7 +76,7 @@ also own cancellation, so no event channel is needed so far.
 | `WifiModule`      | 4         | Connection info, scans, scan results                   |
 | `NetToolsModule`  | 5         | Ping, traceroute hops, DNS, TCP connect, HTTP and TLS  |
 | `LanModule`       | 6         | Host probes, NetBIOS, mDNS, SSDP, port scanning        |
-| `SpeedTestModule` | 7         | Multi-stream download/upload measurement               |
+| `SpeedTestModule` | 7         | Multi-stream download/upload, latency under load       |
 
 The bridge contract for each module is documented in `docs/API.md` as the
 module is implemented.

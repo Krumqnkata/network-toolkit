@@ -48,3 +48,12 @@ jest.mock('../../src/native/specs/NativeLanModule', () => ({
     scanPorts: jest.fn(),
   },
 }));
+
+jest.mock('../../src/native/specs/NativeSpeedTestModule', () => ({
+  __esModule: true,
+  default: {
+    start: jest.fn(),
+    getStatus: jest.fn(),
+    cancel: jest.fn(() => Promise.resolve()),
+  },
+}));

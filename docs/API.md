@@ -223,3 +223,47 @@ the unicast responses: `{ from, server, location, st, usn }[]`.
 TCP connect scan of up to 512 ports in one selector round. Result:
 `{ address, ports: { port, status (open|refused|timeout|unreachable),
 connectMs }[] }`.
+
+## `NativeSpeedTestModule`
+
+Kotlin: [`speed/SpeedTestModule.kt`](../android/app/src/main/java/io/github/krumqnkata/networktoolkit/speed/SpeedTestModule.kt)
+· Engine: [`speed/SpeedTest.kt`](../android/app/src/main/java/io/github/krumqnkata/networktoolkit/speed/SpeedTest.kt)
+· TypeScript wrapper: [`src/native/speedTest.ts`](../src/native/speedTest.ts)
+
+Server: `https://speed.cloudflare.com` — `/__down?bytes=N` (download) and
+`/__up` (POST upload), the endpoints of Cloudflare's own web speed test. They
+are not a documented API and may change; they are defined in one place.
+
+### `start(phaseSeconds, streams): Promise<SpeedStatus>`
+
+Starts a test in the background (rejects with `E_BUSY` while one is running)
+and resolves with its first status. `phaseSeconds` is clamped to 3–30,
+`streams` to 1–8 (the app uses 10 s and 4).
+
+1. **Latency** — 21 requests for 0 bytes on a kept-alive connection; the first
+   (DNS, TCP, TLS setup) is discarded. RTT = request time − `cfSpeedWorker`
+   from `Server-Timing`. Reports the median and jitter (mean absolute
+   difference). Then 20 ICMP echoes (5 in parallel) to the server for packet
+   loss; `null` when the device does not allow ICMP.
+2. **Download** — `streams` connections each repeatedly fetch 25 MB chunks
+   for `phaseSeconds`. A latency probe runs every 400 ms alongside.
+3. **Upload** — the same with 8 MB POST bodies. Bytes are counted as they are
+   written to the socket.
+
+Throughput is the sustained rate after a 2 s warm-up (TCP slow start);
+`currentMbps` is the rate over the last second.
+
+### `getStatus(): Promise<SpeedStatus>` · `cancel(): Promise<void>`
+
+| Field                                       | Type                                                            |
+| ------------------------------------------- | --------------------------------------------------------------- |
+| `phase`                                     | `idle` `latency` `download` `upload` `done` `cancelled` `error` |
+| `progress`                                  | 0–1                                                             |
+| `currentMbps`                               | number \| null                                                  |
+| `downloadMbps`, `uploadMbps`                | number \| null                                                  |
+| `idleLatencyMs`, `jitterMs`                 | number \| null                                                  |
+| `downloadLatencyMs`, `uploadLatencyMs`      | number \| null — median latency under load                      |
+| `packetLossPercent`                         | number \| null                                                  |
+| `bytesDownloaded`, `bytesUploaded`          | number                                                          |
+| `serverColo`, `serverCity`, `serverCountry` | string \| null — from `cf-meta-*` response headers              |
+| `error`                                     | string \| null                                                  |
