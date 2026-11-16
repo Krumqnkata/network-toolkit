@@ -2,6 +2,7 @@ import { act, render, screen, userEvent } from '@testing-library/react-native';
 import React from 'react';
 
 import { App } from '../src/app/App';
+import NativeStorageModule from '../src/native/specs/NativeStorageModule';
 import NativeLanModule from '../src/native/specs/NativeLanModule';
 import NativeNetToolsModule from '../src/native/specs/NativeNetToolsModule';
 import NativeNetworkModule from '../src/native/specs/NativeNetworkModule';
@@ -38,6 +39,8 @@ describe('LAN scanner', () => {
   beforeEach(() => {
     useSettingsStore.setState(initial.settings, true);
     useLanStore.setState(initial.lan, true);
+    // These tests count fetch calls; keep the startup update check out of them.
+    NativeStorageModule.setSetting('update.auto', 'false');
     network.getNetworkSnapshot.mockResolvedValue(wifiSnapshot);
     lan.probeHosts.mockReset().mockImplementation(async hosts => ({
       hosts: hosts.map(address => ({

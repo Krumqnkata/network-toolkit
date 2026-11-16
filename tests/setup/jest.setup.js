@@ -1,4 +1,4 @@
-/* global jest */
+/* global jest, globalThis */
 
 // Safe-area insets are provided by native code; use the library's own mock.
 jest.mock(
@@ -136,3 +136,34 @@ jest.mock('../../src/native/specs/NativeStorageModule', () => {
   };
   return { __esModule: true, default: api };
 });
+
+jest.mock('../../src/native/specs/NativeUpdateModule', () => ({
+  __esModule: true,
+  default: {
+    getInstallInfo: jest.fn(() =>
+      Promise.resolve({
+        versionName: '1.0.0-rc.2',
+        versionCode: 1000000,
+        abis: ['arm64-v8a', 'armeabi-v7a'],
+        sdkInt: 34,
+        canRequestInstalls: true,
+        silentUpdates: true,
+        debuggable: false,
+      }),
+    ),
+    startDownload: jest.fn(() => Promise.resolve()),
+    getDownloadStatus: jest.fn(() =>
+      Promise.resolve({ state: 'idle', bytes: 0, total: 0, path: null, error: null }),
+    ),
+    canRequestInstalls: jest.fn(() => Promise.resolve(true)),
+    openInstallSettings: jest.fn(() => Promise.resolve()),
+    install: jest.fn(() => Promise.resolve()),
+    getInstallStatus: jest.fn(() => Promise.resolve({ state: 'idle', message: null })),
+  },
+}));
+
+// No real network access in tests. The default answer is an empty list, so the
+// startup update check finds nothing; tests override fetch where needed.
+globalThis.fetch = jest.fn(() =>
+  Promise.resolve({ ok: true, status: 200, text: () => Promise.resolve('[]') }),
+);

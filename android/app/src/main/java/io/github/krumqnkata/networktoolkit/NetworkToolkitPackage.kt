@@ -9,6 +9,7 @@ import io.github.krumqnkata.networktoolkit.lan.LanModule
 import io.github.krumqnkata.networktoolkit.network.NetworkModule
 import io.github.krumqnkata.networktoolkit.speed.SpeedTestModule
 import io.github.krumqnkata.networktoolkit.storage.StorageModule
+import io.github.krumqnkata.networktoolkit.update.UpdateModule
 import io.github.krumqnkata.networktoolkit.tools.NetToolsModule
 import io.github.krumqnkata.networktoolkit.wifi.WifiModule
 
@@ -22,6 +23,7 @@ class NetworkToolkitPackage : BaseReactPackage() {
             LanModule.NAME -> LanModule(reactContext)
             SpeedTestModule.NAME -> SpeedTestModule(reactContext)
             StorageModule.NAME -> StorageModule(reactContext)
+            UpdateModule.NAME -> UpdateModule(reactContext)
             else -> null
         }
 
@@ -34,6 +36,7 @@ class NetworkToolkitPackage : BaseReactPackage() {
                 LanModule.NAME,
                 SpeedTestModule.NAME,
                 StorageModule.NAME,
+                UpdateModule.NAME,
             ).associateWith { name ->
                 ReactModuleInfo(
                     name = name,

@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { autoUpdateOnStart } from '../features/updates/services/updater';
 import { hydrateSettings } from '../stores/settingsStore';
+import { logError } from '../utils/errors';
 import { RootNavigator } from './navigation/RootNavigator';
 import { ThemeProvider, useTheme } from './theme';
 
@@ -19,6 +21,7 @@ export function App() {
   const [ready, setReady] = useState(false);
   useEffect(() => {
     hydrateSettings().finally(() => setReady(true));
+    autoUpdateOnStart().catch(error => logError('update', error));
   }, []);
 
   if (!ready) return null;

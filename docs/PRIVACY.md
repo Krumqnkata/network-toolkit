@@ -45,5 +45,13 @@ public IP address, as every website does.
 | Connection Monitor    | The target you choose (default `1.1.1.1`)                                                                                                                      |
 | Health Check          | The same as Internet Reachability                                                                                                                              |
 
+## Updates
+
+With **Settings → Updates → Automatic updates** on (the default), the app asks
+GitHub (`api.github.com`, then `github.com` and its download servers) for the
+latest releases of this repository when it starts, at most every 6 hours, and
+downloads a newer APK if there is one. GitHub sees your IP address. Turn the
+setting off to stop all update checks; "Check now" then runs only when tapped.
+
 Reports are shared only when you tap **Share**, through Android's share sheet
 to the app you choose.
