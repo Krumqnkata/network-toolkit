@@ -92,7 +92,11 @@ export function NetworkRow({ network, color, connected, history, showDivider }: 
           {tags}
         </AppText>
         {network.bssid ? (
-          <AppText variant="caption" color="textMuted" style={{ fontFamily: 'monospace' }}>
+          <AppText
+            variant="caption"
+            color="textMuted"
+            style={{ fontFamily: theme.typography.mono.fontFamily }}
+          >
             {network.bssid}
           </AppText>
         ) : null}

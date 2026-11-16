@@ -72,21 +72,39 @@ export const radius = {
   pill: 999,
 } as const;
 
-/** Monospace is used for technical values (IP/MAC addresses, ports, dBm). */
+/**
+ * App fonts, bundled in android/app/src/main/res/font and registered in
+ * MainApplication: Inter for text (Latin and Cyrillic) and JetBrains Mono NL
+ * for technical values (IP/MAC addresses, ports, dBm).
+ */
 export const fontFamilies = {
-  sans: undefined,
-  mono: 'monospace',
+  sans: 'Inter',
+  mono: 'JetBrains Mono',
 } as const;
 
 export const typography = {
   /** Large measurement values (speed, signal) on the home screen. */
-  hero: { fontSize: 44, lineHeight: 50, fontWeight: '700', fontVariant: ['tabular-nums'] },
-  display: { fontSize: 28, lineHeight: 34, fontWeight: '700' },
-  title: { fontSize: 20, lineHeight: 26, fontWeight: '600' },
-  heading: { fontSize: 16, lineHeight: 22, fontWeight: '600' },
-  body: { fontSize: 15, lineHeight: 21, fontWeight: '400' },
-  caption: { fontSize: 13, lineHeight: 18, fontWeight: '400' },
+  hero: {
+    fontFamily: fontFamilies.sans,
+    fontSize: 44,
+    lineHeight: 52,
+    fontWeight: '700',
+    letterSpacing: -0.5,
+    fontVariant: ['tabular-nums'],
+  },
+  display: {
+    fontFamily: fontFamilies.sans,
+    fontSize: 28,
+    lineHeight: 36,
+    fontWeight: '700',
+    letterSpacing: -0.3,
+  },
+  title: { fontFamily: fontFamilies.sans, fontSize: 20, lineHeight: 28, fontWeight: '600' },
+  heading: { fontFamily: fontFamilies.sans, fontSize: 16, lineHeight: 22, fontWeight: '600' },
+  body: { fontFamily: fontFamilies.sans, fontSize: 15, lineHeight: 22, fontWeight: '400' },
+  caption: { fontFamily: fontFamilies.sans, fontSize: 13, lineHeight: 18, fontWeight: '400' },
   overline: {
+    fontFamily: fontFamilies.sans,
     fontSize: 11,
     lineHeight: 14,
     fontWeight: '600',
@@ -94,10 +112,10 @@ export const typography = {
     textTransform: 'uppercase',
   },
   mono: {
+    fontFamily: fontFamilies.mono,
     fontSize: 14,
     lineHeight: 20,
     fontWeight: '400',
-    fontFamily: fontFamilies.mono,
   },
 } as const;
 

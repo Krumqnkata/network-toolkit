@@ -737,6 +737,13 @@ export const en = {
       'To install updates, allow “Install unknown apps” for Network Toolkit. You only need to do this once.',
     allow: 'Allow',
     failed: (reason: string) => `Update failed: ${reason}`,
+    reasons: {
+      E_UPDATE_NOT_NEWER: 'the downloaded version is not newer than the installed one.',
+      E_UPDATE_SIGNATURE: 'the file is not signed with this app’s key, so it was not installed.',
+      E_UPDATE_PACKAGE: 'the file belongs to another app.',
+      E_UPDATE_INVALID_APK: 'the downloaded file is not a valid app.',
+      E_UPDATE_CHECKSUM: 'the download is damaged (checksum mismatch).',
+    },
     retry: 'Try again',
     unsupported: 'Updates are not available in development builds.',
     releaseNotes: 'Release notes',

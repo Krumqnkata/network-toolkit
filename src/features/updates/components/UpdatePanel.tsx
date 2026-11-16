@@ -20,7 +20,7 @@ export function UpdatePanel({ compact = false }: { compact?: boolean }) {
   const theme = useTheme();
   const s = useStrings();
   const t = s.updates;
-  const { phase, update, progress, error, info } = useUpdateStore();
+  const { phase, update, progress, error, errorCode, info } = useUpdateStore();
 
   const attention =
     phase === 'available' ||
@@ -64,7 +64,9 @@ export function UpdatePanel({ compact = false }: { compact?: boolean }) {
       message = info && !info.silentUpdates ? `${t.installing} ${t.confirmHint}` : t.installing;
       break;
     case 'error':
-      message = t.failed(error ?? '');
+      message = t.failed(
+        (errorCode && t.reasons[errorCode as keyof typeof t.reasons]) || error || '',
+      );
       action = (
         <Button
           testID="update-retry"

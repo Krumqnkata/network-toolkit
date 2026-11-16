@@ -1,0 +1,22 @@
+# Third-party notices
+
+Network Toolkit is licensed under AGPL-3.0-only (see [LICENSE](LICENSE)). It
+bundles the following third-party material, each under its own license.
+Dependencies installed from npm and Maven are listed in `package.json` and the
+Gradle build files and carry their own licenses.
+
+## Fonts
+
+| Font                | Version | Source                                                                | License                                                                     | Files                                                |
+| ------------------- | ------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Inter               | 4.1     | [rsms/inter](https://github.com/rsms/inter)                           | SIL Open Font License 1.1 — [text](third_party/fonts/Inter/LICENSE.txt)     | `android/app/src/main/res/font/inter_*.ttf`          |
+| JetBrains Mono (NL) | 2.304   | [JetBrains/JetBrainsMono](https://github.com/JetBrains/JetBrainsMono) | SIL Open Font License 1.1 — [text](third_party/fonts/JetBrainsMono/OFL.txt) | `android/app/src/main/res/font/jetbrains_mono_*.ttf` |
+
+The font files are unmodified copies from the official releases.
+
+## Data
+
+- **Bluetooth assigned numbers** (company identifiers, service and member
+  UUIDs) from the Bluetooth SIG's public
+  [assigned numbers repository](https://bitbucket.org/bluetooth-SIG/public),
+  converted to JSON in [`src/domain/data`](src/domain/data/README.md).

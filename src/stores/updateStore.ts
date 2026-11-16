@@ -20,6 +20,8 @@ interface UpdateState {
   /** 0–1 while downloading. */
   progress: number;
   error: string | null;
+  /** Native rejection code (E_UPDATE_NOT_NEWER, …) for a localized explanation. */
+  errorCode: string | null;
   info: InstallInfo | null;
   autoUpdate: boolean;
   lastCheckedAt: number | null;
@@ -31,6 +33,7 @@ export const useUpdateStore = create<UpdateState>()(set => ({
   update: null,
   progress: 0,
   error: null,
+  errorCode: null,
   info: null,
   autoUpdate: true,
   lastCheckedAt: null,

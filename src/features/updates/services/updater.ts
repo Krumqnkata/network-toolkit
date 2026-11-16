@@ -36,6 +36,19 @@ const releaseSchema = z.object({
 });
 
 const store = () => useUpdateStore.getState();
+
+/** Error state with the native code, so the UI can explain known cases in the user's language. */
+function failure(error: unknown) {
+  const appError = toAppError(error);
+  const nativeCode = (appError.cause as { code?: unknown } | undefined)?.code;
+  const errorCode =
+    typeof nativeCode === 'string'
+      ? nativeCode
+      : appError.message.startsWith('Checksum mismatch')
+      ? 'E_UPDATE_CHECKSUM'
+      : null;
+  return { phase: 'error' as const, error: appError.message, errorCode };
+}
 const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 
 async function fetchText(url: string, accept: string, timeoutMs = 15_000): Promise<string> {
@@ -74,7 +87,7 @@ export function setAutoUpdate(enabled: boolean): void {
 export async function checkForUpdates(): Promise<void> {
   const { phase } = store();
   if (phase === 'checking' || phase === 'downloading' || phase === 'installing') return;
-  store().set({ phase: 'checking', error: null });
+  store().set({ phase: 'checking', error: null, errorCode: null });
   try {
     const info = await getInstallInfo();
     store().set({ info });
@@ -95,7 +108,7 @@ export async function checkForUpdates(): Promise<void> {
     setSetting(KEYS.lastCheck, String(now)).catch(error => logError('update', error));
   } catch (error) {
     logError('update', error);
-    store().set({ phase: 'error', error: toAppError(error).message });
+    store().set(failure(error));
   }
 }
 
@@ -123,7 +136,7 @@ export async function installDownloaded(): Promise<void> {
     store().set({ phase: 'needs-permission' });
     return;
   }
-  store().set({ phase: 'installing', error: null });
+  store().set({ phase: 'installing', error: null, errorCode: null });
   try {
     await installUpdate(downloadedPath);
     // On success Android replaces the app and restarts its process; otherwise
@@ -136,7 +149,7 @@ export async function installDownloaded(): Promise<void> {
     }
   } catch (error) {
     logError('update', error);
-    store().set({ phase: 'error', error: toAppError(error).message });
+    store().set(failure(error));
   }
 }
 
@@ -144,7 +157,7 @@ export async function installDownloaded(): Promise<void> {
 export async function downloadAndInstall(): Promise<void> {
   const { update, phase } = store();
   if (!update || phase === 'downloading' || phase === 'installing') return;
-  store().set({ phase: 'downloading', progress: 0, error: null });
+  store().set({ phase: 'downloading', progress: 0, error: null, errorCode: null });
   try {
     const checksums = await fetchText(update.checksumsUrl, 'text/plain');
     const sha256 = checksumFor(checksums, update.apk.name);
@@ -153,7 +166,7 @@ export async function downloadAndInstall(): Promise<void> {
     downloadedPath = await waitForDownload();
   } catch (error) {
     logError('update', error);
-    store().set({ phase: 'error', error: toAppError(error).message });
+    store().set(failure(error));
     return;
   }
   await installDownloaded();
