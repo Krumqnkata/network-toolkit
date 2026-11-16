@@ -14,6 +14,7 @@ import { ReachabilityScreen } from './ReachabilityScreen';
 import { TlsCertificateScreen } from './TlsCertificateScreen';
 import { ConnectionMonitorScreen } from '../../connection-monitor/screens/ConnectionMonitorScreen';
 import { HealthCheckScreen } from '../../health-check/screens/HealthCheckScreen';
+import { BluetoothContent } from '../../bluetooth/screens/BluetoothContent';
 import { LanScannerScreen } from '../../lan-scanner/screens/LanScannerScreen';
 import { SpeedTestScreen } from '../../speed-test/screens/SpeedTestScreen';
 import { PortScannerScreen } from './PortScannerScreen';
@@ -47,7 +48,16 @@ export const TOOL_SCREENS: Partial<Record<ToolId, React.ComponentType<ToolScreen
   'speed-test': SpeedTestScreen,
   'connection-monitor': ConnectionMonitorScreen,
   'health-check': HealthCheckScreen,
+  'bluetooth-scanner': BluetoothScannerScreen,
 };
+
+function BluetoothScannerScreen() {
+  return (
+    <ToolFrame toolId="bluetooth-scanner">
+      <BluetoothContent />
+    </ToolFrame>
+  );
+}
 
 function NotAvailable({ toolId }: { toolId: ToolId }) {
   const s = useStrings();

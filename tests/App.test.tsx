@@ -37,7 +37,8 @@ describe('App shell', () => {
 
     await user.press(screen.getByRole('button', { name: /^Home, tab/ }));
     await user.press(screen.getByRole('button', { name: 'Open Devices' }));
-    expect(await screen.findByRole('header', { name: 'LAN Scanner' })).toBeOnTheScreen();
+    expect(await screen.findByRole('header', { name: 'Devices' })).toBeOnTheScreen();
+    expect(screen.getByTestId('lan-scan')).toBeOnTheScreen();
   });
 
   it('opens the tools list', async () => {

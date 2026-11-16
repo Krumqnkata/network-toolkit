@@ -7,7 +7,7 @@ export type MainTabParamList = {
   WifiAnalyzer: undefined;
   /** `autoStart` begins a test as soon as the tab opens (home "Start speed test"). */
   SpeedTest: { autoStart?: number } | undefined;
-  Devices: undefined;
+  Devices: { mode?: 'network' | 'bluetooth' } | undefined;
   Tools: undefined;
 };
 
@@ -17,6 +17,7 @@ export type RootStackParamList = {
   /** `host` pre-fills the tool's target (e.g. when opened from a LAN device). */
   Tool: { toolId: ToolId; host?: string };
   LanDevice: { address: string };
+  BluetoothDevice: { address: string };
   Settings: undefined;
 };
 

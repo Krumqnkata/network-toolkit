@@ -21,7 +21,8 @@ import { ErrorNotice, FormCard, ToolFrame } from '../../network-tools/components
 import { KIND_ICON } from '../components/deviceIcon';
 import { cancelLanScan, startLanScan } from '../services/lanScan';
 
-export function LanScannerScreen() {
+/** LAN scanner body, used by the Devices tab and the LAN Scanner tool screen. */
+export function LanScannerContent() {
   const theme = useTheme();
   const s = useStrings();
   const language = useLanguage();
@@ -40,7 +41,7 @@ export function LanScannerScreen() {
       : null;
 
   return (
-    <ToolFrame toolId="lan-scanner">
+    <>
       <FormCard>
         <AppText variant="caption" color="textSecondary">
           {t.intro}
@@ -114,7 +115,7 @@ export function LanScannerScreen() {
           {t.empty}
         </AppText>
       ) : null}
-    </ToolFrame>
+    </>
   );
 }
 
@@ -123,3 +124,11 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
+
+export function LanScannerScreen() {
+  return (
+    <ToolFrame toolId="lan-scanner">
+      <LanScannerContent />
+    </ToolFrame>
+  );
+}

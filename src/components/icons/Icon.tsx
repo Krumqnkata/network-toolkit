@@ -18,6 +18,37 @@ const icons = {
     </>
   ),
   arrowDown: <Path d="M12 4.5v15M6 13.5l6 6 6-6" />,
+  bluetooth: <Path d="M7 7.5l10 9-5 4.5V3l5 4.5-10 9" />,
+  headphones: (
+    <>
+      <Path d="M4 15v-3a8 8 0 0 1 16 0v3" />
+      <Path d="M4 15h3v5H5.5A1.5 1.5 0 0 1 4 18.5zM20 15h-3v5h1.5a1.5 1.5 0 0 0 1.5-1.5z" />
+    </>
+  ),
+  watch: (
+    <>
+      <Path d="M8 6.5h8v11H8z" />
+      <Path d="M9.5 6.5l.5-3.5h4l.5 3.5M9.5 17.5l.5 3.5h4l.5-3.5M12 10v2.5l1.5 1" />
+    </>
+  ),
+  keyboard: (
+    <>
+      <Path d="M3 7h18v10H3z" />
+      <Path d="M6.5 10.5h.01M10 10.5h.01M13.5 10.5h.01M17 10.5h.01M8 14h8" />
+    </>
+  ),
+  car: (
+    <>
+      <Path d="M4 16v-3.5L6.5 8h11l2.5 4.5V16z" />
+      <Path d="M4 16v2.5h3V16M17 16v2.5h3V16M7.5 13h.01M16.5 13h.01" />
+    </>
+  ),
+  tag: (
+    <>
+      <Circle cx={12} cy={12} r={7.5} />
+      <Circle cx={12} cy={12} r={2.5} />
+    </>
+  ),
   check: (
     <>
       <Circle cx={12} cy={12} r={9} />

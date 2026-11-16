@@ -13,7 +13,8 @@ export type ToolId =
   | 'lan-scanner'
   | 'speed-test'
   | 'connection-monitor'
-  | 'health-check';
+  | 'health-check'
+  | 'bluetooth-scanner';
 
 export type ToolCategory = 'diagnostics' | 'discovery' | 'web' | 'performance';
 
@@ -96,6 +97,13 @@ export const TOOLS: readonly ToolDefinition[] = [
     icon: 'lan',
     status: 'available',
     milestone: 6,
+  },
+  {
+    id: 'bluetooth-scanner',
+    category: 'discovery',
+    icon: 'bluetooth',
+    status: 'available',
+    milestone: 10,
   },
   {
     id: 'port-scanner',

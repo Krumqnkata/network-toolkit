@@ -9,6 +9,11 @@ Release notes.
 
 ## [Unreleased]
 
+## [1.0.0-rc.4] - 2026-11-16
+
+A simpler home screen and Bluetooth tools. This is also the first version that
+can be installed through the automatic updater added in rc.3.
+
 ### Changed
 
 - Simpler home screen for everyone: a diagram from your internet provider
@@ -25,6 +30,16 @@ Release notes.
 
 ### Added
 
+- Bluetooth scanner (Devices → Bluetooth, also in Tools): finds nearby
+  Bluetooth Low Energy devices and shows their name, maker (from the Bluetooth
+  SIG company and member UUID lists), a likely type (headphones, speaker,
+  watch, fitness device, keyboard, TV, tracker, car …) and how close they are
+  in plain words ("Very close", "In the room"), plus devices paired with the
+  phone. Scans stop after 2 minutes or when you leave.
+- "Find this device": live signal strength of one device, a trend ("Getting
+  closer" / "Moving away"), a signal history and a rough distance, to find a
+  lost earbud or tracker.
+- The Devices tab now switches between Network (LAN scanner) and Bluetooth.
 - Settings → Data: "Show my public IP and provider" (on by default) controls
   the public IP lookup of the home screen.
 
@@ -237,7 +252,8 @@ failed (see Fixed).
 - Tag-driven release workflow that builds, signs, verifies and publishes the
   APK, AAB and SHA-256 checksums.
 
-[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.3...HEAD
+[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.4...HEAD
+[1.0.0-rc.4]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.3...v1.0.0-rc.4
 [1.0.0-rc.3]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.2...v1.0.0-rc.3
 [1.0.0-rc.2]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.1...v1.0.0-rc.2
 [1.0.0-rc.1]: https://github.com/Krumqnkata/network-toolkit/compare/v0.2.0-beta.2...v1.0.0-rc.1

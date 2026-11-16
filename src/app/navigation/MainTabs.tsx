@@ -4,7 +4,7 @@ import React from 'react';
 import { Icon, type IconName } from '../../components/icons/Icon';
 import { DashboardScreen } from '../../features/dashboard/screens/DashboardScreen';
 import { ToolsScreen } from '../../features/network-tools/screens/ToolsScreen';
-import { LanScannerScreen } from '../../features/lan-scanner/screens/LanScannerScreen';
+import { DevicesScreen } from '../../features/devices/screens/DevicesScreen';
 import { SpeedTestScreen } from '../../features/speed-test/screens/SpeedTestScreen';
 import { WifiAnalyzerScreen } from '../../features/wifi-analyzer/screens/WifiAnalyzerScreen';
 import { useStrings } from '../../i18n';
@@ -62,7 +62,7 @@ export function MainTabs() {
         options={{ title: s.tabs.wifi }}
       />
       <Tab.Screen name="SpeedTest" component={SpeedTestScreen} options={{ title: s.tabs.speed }} />
-      <Tab.Screen name="Devices" component={LanScannerScreen} options={{ title: s.tabs.devices }} />
+      <Tab.Screen name="Devices" component={DevicesScreen} options={{ title: s.tabs.devices }} />
       <Tab.Screen name="Tools" component={ToolsScreen} options={{ title: s.tabs.tools }} />
     </Tab.Navigator>
   );

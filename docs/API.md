@@ -312,3 +312,20 @@ Kotlin: [`update/UpdateModule.kt`](../android/app/src/main/java/io/github/krumqn
 The release list comes from `GET https://api.github.com/repos/Krumqnkata/network-toolkit/releases`;
 the newest non-draft release above the installed version wins (pre-releases
 only while a pre-release is installed), using the per-ABI APK when present.
+
+## `NativeBluetoothModule`
+
+Kotlin: [`bluetooth/BluetoothModule.kt`](../android/app/src/main/java/io/github/krumqnkata/networktoolkit/bluetooth/BluetoothModule.kt)
+· TypeScript: [`src/native/bluetooth.ts`](../src/native/bluetooth.ts),
+[`src/features/bluetooth/services/bluetoothScan.ts`](../src/features/bluetooth/services/bluetoothScan.ts)
+
+| Method               | Notes                                                                                                                                                                                                                                                                              |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `getState()`         | `supported` (BLE), `enabled`, `scanPermission`, `connectPermission`, `needsLocation` (Android 8–11), `locationEnabled`, `scanning`                                                                                                                                                 |
+| `startScan()`        | BLE scan (`SCAN_MODE_LOW_LATENCY`, no filters); clears earlier results. Rejects `E_PERMISSION`, `E_BLUETOOTH_OFF`, `E_LOCATION_OFF` (Android 8–11) or `E_UNSUPPORTED`                                                                                                              |
+| `getScanResults()`   | `scanning`, `error` (native scan failure), `elapsedMs`, `devices`: `address`, `name` (advertised, or the system name with BLUETOOTH_CONNECT), `rssi`, `txPower`, `connectable`, `manufacturerIds`, 16-bit `serviceUuids`, `ageMs`, `seenForMs`, last 30 RSSI readings in `history` |
+| `stopScan()`         | Stops the scan; JS also stops it after 2 minutes or when the view unmounts                                                                                                                                                                                                         |
+| `getBondedDevices()` | Paired devices (`address`, `name`, `type`, `majorClass`); empty without BLUETOOTH_CONNECT                                                                                                                                                                                          |
+
+Company and UUID names come from the Bluetooth SIG assigned numbers bundled in
+[`src/domain/data`](../src/domain/data/README.md).
