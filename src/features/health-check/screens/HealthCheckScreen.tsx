@@ -18,6 +18,7 @@ import { logError } from '../../../utils/errors';
 import { ErrorNotice, FormCard, ToolFrame } from '../../network-tools/components/ToolFrame';
 import { useToolTask } from '../../network-tools/hooks/useToolTask';
 import { findingText, formatHealthReport } from '../../reports/formatReport';
+import { SegmentChain } from '../components/SegmentChain';
 import { healthReports, runHealthCheck, type HealthReport } from '../services/healthCheck';
 
 const SEVERITY_TONE: Record<Severity, BadgeTone> = {
@@ -68,6 +69,19 @@ export function HealthCheckScreen() {
       </FormCard>
 
       {error ? <ErrorNotice error={error} /> : null}
+
+      {running ? (
+        <AppText variant="caption" color="textSecondary" testID="locator-measuring">
+          {t.locator.measuring}
+        </AppText>
+      ) : null}
+
+      {result?.location ? (
+        <>
+          <SectionHeader title={t.locator.title} />
+          <SegmentChain location={result.location} transport={result.transport} />
+        </>
+      ) : null}
 
       {result ? (
         <>

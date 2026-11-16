@@ -18,12 +18,38 @@ export function findingText(finding: Finding, s: Strings): { title: string; advi
 }
 
 /** Plain-text health report for sharing (email, chat, support tickets). */
+function locationLines(report: HealthReport, s: Strings): string[] {
+  const location = report.location;
+  if (!location) return [];
+  const t = s.health.locator;
+  const verdict = location.verdict as keyof typeof t.verdict;
+  const names = {
+    local: report.transport === 'wifi' ? t.links.wifi : t.links.cable,
+    access: report.transport === 'cellular' ? t.links.radio : t.links.provider,
+    internet: t.links.internet,
+  };
+  return [
+    `${t.title} ${t.verdict[verdict] ?? t.verdict.unknown}`,
+    ...location.segments
+      .filter(segment => !(report.transport === 'cellular' && segment.id === 'local'))
+      .map(segment => {
+        const value =
+          segment.addedMs === null
+            ? t.noData
+            : t.linkValue(`+${Math.round(segment.addedMs)} ms`, segment.lossPercent ?? 0);
+        return `  ${names[segment.id]}: ${value}`;
+      }),
+    '',
+  ];
+}
+
 export function formatHealthReport(report: HealthReport, s: Strings, language: Language): string {
   const lines = [
     s.health.reportTitle,
     formatDateTime(report.createdAt, language),
     report.ssid ? `${s.dashboard.fields.ssid}: ${report.ssid}` : null,
     '',
+    ...locationLines(report, s),
     ...report.findings.flatMap(finding => {
       const text = findingText(finding, s);
       return [`[${s.health.severity[finding.severity]}] ${text.title}`, `  ${text.advice}`];

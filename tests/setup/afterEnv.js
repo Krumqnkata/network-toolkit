@@ -10,3 +10,10 @@ beforeEach(() => {
 beforeEach(() => {
   jest.requireActual('../../src/features/dashboard/services/homeData').homeProbes.enabled = false;
 });
+
+// The problem locator spaces its pings a quarter second apart; not in tests.
+beforeEach(() => {
+  jest.requireActual(
+    '../../src/features/health-check/services/problemLocator',
+  ).locatorTiming.spacingMs = 0;
+});

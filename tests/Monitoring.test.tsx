@@ -184,4 +184,39 @@ describe('Health Check', () => {
     expect(screen.getByText('Previous reports')).toBeOnTheScreen();
     expect(screen.getByText('1 problem · 1 warning')).toBeOnTheScreen();
   });
+
+  it('shows where the problem is along the connection', async () => {
+    network.getNetworkSnapshot.mockResolvedValue(wifiSnapshot);
+    // Router fast, provider's first router slow: the provider line is to blame.
+    tools.ping.mockImplementation(async (host, _family, ttl) => {
+      if (host === '1.1.1.1' && ttl === 1) {
+        return { ...probe(null), status: 'ttl-exceeded', from: '192.168.1.1' };
+      }
+      if (host === '1.1.1.1' && ttl === 2) {
+        return { ...probe(null), status: 'ttl-exceeded', from: '100.64.0.1' };
+      }
+      if (host === '100.64.0.1') return probe(140, host);
+      if (host === '1.1.1.1') return probe(150, host);
+      return probe(3, host);
+    });
+    const user = await openTool(/^Health Check/);
+
+    await user.press(screen.getByTestId('health-run'));
+
+    expect(await screen.findByTestId('segment-chain')).toBeOnTheScreen();
+    expect(screen.getByTestId('locator-verdict')).toHaveTextContent(
+      'The problem is the line between your router and your provider.',
+    );
+    expect(screen.getByTestId('chain-node-provider')).toHaveTextContent(/100\.64\.0\.1/);
+    expect(screen.getByTestId('chain-link-local')).toHaveTextContent('Wi-Fi+3 ms');
+    expect(screen.getByTestId('chain-link-access')).toHaveTextContent('Provider line+137 ms');
+
+    const share = jest
+      .spyOn(Share, 'share')
+      .mockResolvedValue({ action: 'sharedAction', activityType: undefined });
+    await user.press(screen.getByTestId('health-share'));
+    const message = (share.mock.calls[0]?.[0] as { message: string }).message;
+    expect(message).toContain('Where is the problem? The problem is the line between');
+    expect(message).toContain('Provider line: +137 ms');
+  });
 });
