@@ -18,9 +18,10 @@ native app.
 
 <!-- prettier-ignore -->
 > [!NOTE]
-> **Status: early development (milestones 1–8 of 9).** The dashboard, Wi-Fi
-> Analyzer, network tools, LAN scanner, speed test, connection monitor and
-> health check work; optimization towards 1.0 is next — see the [roadmap](#roadmap). The app has not yet been tested on a
+> **Status: 1.0 release candidate.** All nine milestones are implemented:
+> dashboard, Wi-Fi Analyzer, network tools, LAN scanner, speed test,
+> connection monitor and health check. The app has not yet been tested on a
+> wide range of physical devices, so releases stay pre-releases until it has — see the [roadmap](#roadmap). The app has not yet been tested on a
 > wide range of physical devices.
 
 ## Features
@@ -48,12 +49,14 @@ Design principles:
 - **Permissions in context.** Nothing is requested on first launch; each
   permission is requested when the feature that needs it is used
   ([details](docs/PERMISSIONS.md)).
+- **Private by design.** No accounts, ads or analytics; history stays on the
+  device ([privacy](docs/PRIVACY.md)).
 - **For networks you manage.** Scanning tools are intended for networks you
   own or are authorized to test.
 
 ## Screenshots
 
-Screenshots will be added once the first functional screens are available.
+Screenshots will be added once they are taken on a real device.
 
 ## Tech stack
 
@@ -71,10 +74,12 @@ Screenshots will be added once the first functional screens are available.
 
 ## Installation
 
-Once the first version is released, signed APKs will be available on the
+Signed APKs are published on the
 [Releases](https://github.com/Krumqnkata/network-toolkit/releases) page:
 
-1. Download `NetworkToolkit-vX.Y.Z.apk` and `checksums.txt` from the latest release.
+1. Download the APK for your phone from the latest release —
+   `NetworkToolkit-vX.Y.Z-arm64-v8a.apk` for almost every current phone, or the
+   universal `NetworkToolkit-vX.Y.Z.apk` if unsure — and `checksums.txt`.
 2. Optionally verify the download: `sha256sum -c checksums.txt`.
 3. Open the APK on your phone and allow installation from that source when
    Android asks.
@@ -116,17 +121,17 @@ Read more in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Roadmap
 
-| #   | Milestone           | Scope                                                          | Status  |
-| --- | ------------------- | -------------------------------------------------------------- | ------- |
-| 1   | Foundation          | Project setup, architecture, navigation, theme, CI/CD          | Done    |
-| 2   | Native bridge       | Turbo Native Module infrastructure, typed and validated bridge | Done    |
-| 3   | Network information | Connection, IP, gateway, DNS, Wi-Fi signal on the dashboard    | Done    |
-| 4   | Wi-Fi Analyzer      | Scanning, channels, RSSI, charts, overlap analysis             | Done    |
-| 5   | Network diagnostics | Ping, DNS lookup, traceroute, HTTP and TLS tools               | Done    |
-| 6   | LAN Scanner         | Device discovery, device identification, port scanning         | Done    |
-| 7   | Speed test          | Download, upload, latency, jitter, packet loss                 | Done    |
-| 8   | Advanced features   | History, monitoring, automatic diagnostics, reports            | Done    |
-| 9   | Optimization        | Performance, battery, compatibility, 1.0 release               | Planned |
+| #   | Milestone           | Scope                                                          | Status |
+| --- | ------------------- | -------------------------------------------------------------- | ------ |
+| 1   | Foundation          | Project setup, architecture, navigation, theme, CI/CD          | Done   |
+| 2   | Native bridge       | Turbo Native Module infrastructure, typed and validated bridge | Done   |
+| 3   | Network information | Connection, IP, gateway, DNS, Wi-Fi signal on the dashboard    | Done   |
+| 4   | Wi-Fi Analyzer      | Scanning, channels, RSSI, charts, overlap analysis             | Done   |
+| 5   | Network diagnostics | Ping, DNS lookup, traceroute, HTTP and TLS tools               | Done   |
+| 6   | LAN Scanner         | Device discovery, device identification, port scanning         | Done   |
+| 7   | Speed test          | Download, upload, latency, jitter, packet loss                 | Done   |
+| 8   | Advanced features   | History, monitoring, automatic diagnostics, reports            | Done   |
+| 9   | Optimization        | Performance, battery, compatibility, 1.0 release               | RC     |
 
 The first public version (MVP) covers milestones 1–5: dashboard, network
 information, Wi-Fi Analyzer, ping and DNS lookup.
