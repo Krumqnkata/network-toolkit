@@ -16,7 +16,8 @@ export type ToolId =
   | 'health-check'
   | 'bluetooth-scanner'
   | 'network-map'
-  | 'wifi-survey';
+  | 'wifi-survey'
+  | 'security-check';
 
 /** Groups shown on the Tools tab, from everyday checks to expert tools. */
 export type ToolCategory = 'check' | 'network' | 'lookup' | 'web';
@@ -43,7 +44,7 @@ export const TOOLS: readonly ToolDefinition[] = [
   { id: 'health-check', category: 'check', icon: 'heart', status: 'available', milestone: 8 },
   { id: 'wifi-survey', category: 'check', icon: 'wifi', status: 'available', milestone: 11 },
   { id: 'speed-test', category: 'check', icon: 'gauge', status: 'available', milestone: 7 },
-  { id: 'reachability', category: 'check', icon: 'shield', status: 'available', milestone: 5 },
+  { id: 'reachability', category: 'check', icon: 'globe', status: 'available', milestone: 5 },
   { id: 'connection-monitor', category: 'check', icon: 'chart', status: 'available', milestone: 8 },
   { id: 'network-map', category: 'network', icon: 'map', status: 'available', milestone: 10 },
   { id: 'lan-scanner', category: 'network', icon: 'lan', status: 'available', milestone: 6 },
@@ -54,6 +55,7 @@ export const TOOLS: readonly ToolDefinition[] = [
     status: 'available',
     milestone: 10,
   },
+  { id: 'security-check', category: 'network', icon: 'shield', status: 'available', milestone: 12 },
   { id: 'port-scanner', category: 'network', icon: 'plug', status: 'available', milestone: 6 },
   { id: 'ping', category: 'lookup', icon: 'pulse', status: 'available', milestone: 5 },
   { id: 'traceroute', category: 'lookup', icon: 'route', status: 'available', milestone: 5 },
