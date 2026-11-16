@@ -18,9 +18,10 @@ native app.
 
 <!-- prettier-ignore -->
 > [!NOTE]
-> **Status: early development (milestones 1–4 of 9).** The live network
-> dashboard and the Wi-Fi Analyzer work; the network tools are next — see the
-> [roadmap](#roadmap). Only a test pre-release has been published so far.
+> **Status: early development (milestones 1–5 of 9).** The live network
+> dashboard, the Wi-Fi Analyzer and the network tools work; the LAN scanner is
+> next — see the [roadmap](#roadmap). The app has not yet been tested on a
+> wide range of physical devices.
 
 ## Features
 
@@ -31,8 +32,8 @@ implemented in the current code.
 | ------------------------ | --------------------------------------------------------------------------------------------- | --------- |
 | **Dashboard**            | Connection type, IP, gateway, DNS, Wi-Fi signal, internet reachability, quick access to tools | Available |
 | **Wi-Fi Analyzer**       | 2.4 / 5 / 6 GHz scans, SSID/BSSID, RSSI, channels, overlap analysis, signal history           | Available |
-| **Network Tools**        | Ping, traceroute, DNS & reverse DNS, port scanner, HTTP headers, TLS certificates, IP info    | Planned   |
-| **LAN Scanner**          | TCP-based host discovery, hostnames, MAC vendors (where available), open ports                | Planned   |
+| **Network Tools**        | Ping, traceroute, DNS & reverse DNS, reachability, HTTP headers, TLS certificates, IP info    | Available |
+| **LAN Scanner**          | TCP-based host discovery, hostnames, MAC vendors (where available), port scanner              | Planned   |
 | **Internet Diagnostics** | Download / upload speed, latency, jitter, packet loss, DNS timing, history                    | Planned   |
 | **Advanced Diagnostics** | Connection monitoring, outage tracking, automatic problem detection, PDF/JSON reports         | Planned   |
 
@@ -121,7 +122,7 @@ Read more in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | 2   | Native bridge       | Turbo Native Module infrastructure, typed and validated bridge | Done    |
 | 3   | Network information | Connection, IP, gateway, DNS, Wi-Fi signal on the dashboard    | Done    |
 | 4   | Wi-Fi Analyzer      | Scanning, channels, RSSI, charts, overlap analysis             | Done    |
-| 5   | Network diagnostics | Ping, DNS lookup, traceroute, HTTP and TLS tools               | Planned |
+| 5   | Network diagnostics | Ping, DNS lookup, traceroute, HTTP and TLS tools               | Done    |
 | 6   | LAN Scanner         | Device discovery, vendor lookup, port scanning                 | Planned |
 | 7   | Speed test          | Download, upload, latency, jitter, packet loss                 | Planned |
 | 8   | Advanced features   | History, monitoring, automatic diagnostics, reports            | Planned |

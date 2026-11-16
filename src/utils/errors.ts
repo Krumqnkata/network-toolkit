@@ -3,6 +3,10 @@ export type AppErrorCode =
   | 'invalid-native-data'
   | 'permission-denied'
   | 'network'
+  | 'invalid-input'
+  | 'unknown-host'
+  | 'timeout'
+  | 'unsupported'
   | 'unknown';
 
 /** The single error type surfaced to the UI. */
@@ -22,6 +26,10 @@ const NATIVE_CODE_MAP: Record<string, AppErrorCode> = {
   E_PERMISSION: 'permission-denied',
   E_NETWORK: 'network',
   E_WIFI: 'network',
+  E_INVALID_INPUT: 'invalid-input',
+  E_UNKNOWN_HOST: 'unknown-host',
+  E_TIMEOUT: 'timeout',
+  E_UNSUPPORTED: 'unsupported',
 };
 
 /** Normalizes anything thrown (including native promise rejections) into an AppError. */

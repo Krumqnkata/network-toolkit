@@ -24,6 +24,30 @@ Scanning is throttled by Android: a foreground app may scan 4 times per
 2 minutes (Android 9+). The analyzer auto-scans every 30 seconds, and shows a
 notice when a manual scan was throttled and older results are displayed.
 
+### Network tools (no extra permissions)
+
+The tools in milestone 5 only need `INTERNET`:
+
+- **Ping and traceroute** run the system `/system/bin/ping` (iputils), which
+  Android lets unprivileged apps use for ICMP echo. Apps cannot open raw
+  sockets, so where `ping` is missing or blocked, Ping falls back to timing a
+  TCP connect and the UI says so; traceroute is then unavailable. The host is
+  validated and resolved first, so only a numeric address reaches `ping`.
+- **Cleartext HTTP** is allowed by
+  [`network_security_config.xml`](../android/app/src/main/res/xml/network_security_config.xml)
+  so that the HTTP Headers tool can inspect `http://` URLs and the
+  reachability check can use Android's own captive-portal probe
+  (`http://connectivitycheck.gstatic.com/generate_204`). Only system CAs are
+  trusted.
+- **TLS Certificate** records the platform's trust verdict instead of aborting
+  the handshake, so it can show expired or self-signed certificates. That
+  connection is closed right after the handshake and never carries data.
+- **External services**: the reachability check contacts the gateway,
+  `example.com` (DNS), `1.1.1.1`, `2606:4700:4700::1111` and Google's
+  `generate_204` endpoints; IP Information contacts Cloudflare
+  (`/cdn-cgi/trace`) and Team Cymru's DNS service. Both run only when the user
+  taps the button.
+
 ### Why not `NEARBY_WIFI_DEVICES`?
 
 Per the official [Wi-Fi permissions guide](https://developer.android.com/develop/connectivity/wifi/wifi-permissions),

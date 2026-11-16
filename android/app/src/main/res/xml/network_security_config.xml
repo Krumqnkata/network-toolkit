@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Network Toolkit inspects user-entered http:// URLs (HTTP Headers) and runs
+  Android's own captive-portal check (Internet Reachability), both of which
+  need cleartext HTTP. The app never sends personal data, so cleartext is
+  permitted for all hosts. Certificate trust stays the platform default:
+  only system CAs are trusted for normal app traffic.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
