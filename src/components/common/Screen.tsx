@@ -118,6 +118,11 @@ export function Screen({
           {children}
         </View>
       )}
+      {/* Edge-to-edge: keeps scrolled content from running under the clock and icons. */}
+      <View
+        pointerEvents="none"
+        style={[styles.statusBar, { height: insets.top, backgroundColor: theme.colors.background }]}
+      />
     </View>
   );
 }
@@ -130,6 +135,12 @@ const styles = StyleSheet.create({
   },
   root: {
     flex: 1,
+  },
+  statusBar: {
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
   },
   title: {
     flex: 1,

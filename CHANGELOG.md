@@ -9,6 +9,26 @@ Release notes.
 
 ## [Unreleased]
 
+## [1.3.1] - 2026-11-16
+
+### Fixed
+
+Found on a phone with a larger system font and Bulgarian:
+
+- Text no longer runs under the clock and status icons when you scroll; the
+  status bar area now has the app's background.
+- Tab names ("Устройства", "Инструменти") use the whole tab width and shrink
+  slightly instead of ending in "…".
+- Home diagram: the provider's name, the router and the phone shrink to fit on
+  two lines, and IP addresses on one, instead of being cut at the screen edge
+  or ending in "…".
+- Home speed card: "Download", "Upload" and "Ping" and their numbers shrink to
+  fit their columns instead of running into each other.
+- Response-time names and values, segmented controls and badges shrink to
+  fit; in Wi-Fi by room the badges moved below the room name.
+- A Bulgarian sentence on the home screen still used the English word
+  "latency".
+
 ## [1.3.0] - 2026-11-16
 
 ### Added
@@ -434,7 +454,8 @@ failed (see Fixed).
 - Tag-driven release workflow that builds, signs, verifies and publishes the
   APK, AAB and SHA-256 checksums.
 
-[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.3.1...HEAD
+[1.3.1]: https://github.com/Krumqnkata/network-toolkit/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/Krumqnkata/network-toolkit/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/Krumqnkata/network-toolkit/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/Krumqnkata/network-toolkit/compare/v1.1.0...v1.1.1

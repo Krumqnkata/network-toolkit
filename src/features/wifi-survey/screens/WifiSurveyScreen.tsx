@@ -224,14 +224,9 @@ export function WifiSurveyScreen() {
                   ]}
                 >
                   <View style={[styles.row, { gap: theme.spacing.sm }]}>
-                    <AppText variant="heading" style={styles.flex} numberOfLines={1}>
+                    <AppText variant="heading" style={styles.flex}>
                       {room.room}
                     </AppText>
-                    {analysis.best === room.room && survey.rooms.length > 1 ? (
-                      <Badge label={t.best} tone="success" />
-                    ) : null}
-                    {analysis.worst === room.room ? <Badge label={t.worst} tone="danger" /> : null}
-                    <Badge label={t.ratings[rating]} tone={RATING_TONE[rating]} />
                     <Pressable
                       testID={`survey-remove-${room.room}`}
                       accessibilityRole="button"
@@ -242,6 +237,14 @@ export function WifiSurveyScreen() {
                     >
                       <Icon name="close" color={theme.colors.textMuted} size={18} />
                     </Pressable>
+                  </View>
+                  {/* Badges on their own line, so long Bulgarian labels never squeeze the name. */}
+                  <View style={[styles.row, styles.wrap, { gap: theme.spacing.xs }]}>
+                    <Badge label={t.ratings[rating]} tone={RATING_TONE[rating]} />
+                    {analysis.best === room.room && survey.rooms.length > 1 ? (
+                      <Badge label={t.best} tone="success" />
+                    ) : null}
+                    {analysis.worst === room.room ? <Badge label={t.worst} tone="danger" /> : null}
                   </View>
                   <View
                     style={[

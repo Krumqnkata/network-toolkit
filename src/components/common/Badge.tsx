@@ -28,7 +28,7 @@ export function Badge({ label, tone = 'neutral' }: { label: string; tone?: Badge
         },
       ]}
     >
-      <AppText variant="overline" color={color} numberOfLines={1}>
+      <AppText variant="overline" color={color} fit>
         {label}
       </AppText>
     </View>

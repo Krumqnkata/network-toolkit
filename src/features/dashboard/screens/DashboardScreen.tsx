@@ -358,34 +358,34 @@ export function DashboardScreen() {
       />
       {speed ? (
         <Card testID="home-speed" style={{ gap: theme.spacing.sm }}>
-          <View style={[styles.row, { gap: theme.spacing.lg }]}>
+          <View style={[styles.row, { gap: theme.spacing.md }]}>
             <View style={styles.flex}>
               <View style={[styles.row, { gap: theme.spacing.xs }]}>
                 <Icon name="arrowDown" color={theme.colors.accent} size={16} />
-                <AppText variant="caption" color="textSecondary">
+                <AppText variant="caption" color="textSecondary" style={styles.flex} fit>
                   {t.download}
                 </AppText>
               </View>
-              <AppText variant="display" testID="home-download">
+              <AppText variant="display" testID="home-download" fit>
                 {formatMbps(speed.downloadMbps)}
               </AppText>
             </View>
             <View style={styles.flex}>
               <View style={[styles.row, { gap: theme.spacing.xs }]}>
                 <Icon name="arrowUp" color={theme.colors.info} size={16} />
-                <AppText variant="caption" color="textSecondary">
+                <AppText variant="caption" color="textSecondary" style={styles.flex} fit>
                   {t.upload}
                 </AppText>
               </View>
-              <AppText variant="display" testID="home-upload">
+              <AppText variant="display" testID="home-upload" fit>
                 {formatMbps(speed.uploadMbps)}
               </AppText>
             </View>
             <View style={styles.flex}>
-              <AppText variant="caption" color="textSecondary">
+              <AppText variant="caption" color="textSecondary" fit>
                 {t.ping}
               </AppText>
-              <AppText variant="display">
+              <AppText variant="display" fit>
                 {speed.idleLatencyMs === null ? '—' : Math.round(speed.idleLatencyMs)}
               </AppText>
             </View>

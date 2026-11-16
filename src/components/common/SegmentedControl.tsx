@@ -61,6 +61,7 @@ export function SegmentedControl<T extends string>({
               variant="caption"
               color={selected ? 'onAccent' : 'textSecondary'}
               style={styles.label}
+              fit
             >
               {option.label}
             </AppText>

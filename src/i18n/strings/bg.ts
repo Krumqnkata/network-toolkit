@@ -789,7 +789,7 @@ export const bg: Strings = {
     wifiUnnamed: 'Wi-Fi',
     speed: 'Скорост',
     lastTest: (time: string) => `Последен тест · ${time}`,
-    noSpeed: 'Измери изтегляне, качване и latency.',
+    noSpeed: 'Измери изтегляне, качване и забавяне.',
     runSpeed: 'Тест на скоростта',
     download: 'Изтегляне',
     upload: 'Качване',
