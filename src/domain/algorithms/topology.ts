@@ -13,8 +13,8 @@ import { frequencyToBand, type WifiBand } from './wifi';
 
 export type TopoNodeType =
   | 'internet'
+  | 'provider'
   | 'hop'
-  | 'more'
   | 'operator'
   | 'router'
   | 'ap'
@@ -29,15 +29,22 @@ export type LinkState = 'good' | 'warn' | 'bad' | 'unknown';
 /** What a traceroute hop is, judged from its address. */
 export type HopRole = 'private' | 'cgnat' | 'public' | 'silent';
 
+export interface TopologyHop {
+  ttl: number;
+  address: string | null;
+  rttMs: number | null;
+  status: 'reply' | 'timeout' | 'ttl-exceeded' | 'unreachable';
+}
+
 export interface TopoNode {
   id: string;
   type: TopoNodeType;
-  /** Device kind for icons (`DeviceKind` / `BluetoothKind`), or the node type. */
+  /** Device kind for pictures (`DeviceKind` / `BluetoothKind`), or the node type. */
   kind: string;
   /** Name found by a scan; null = the UI shows a generic label for the type. */
   name: string | null;
   address: string | null;
-  /** Extra line: model, Wi-Fi bands, hop count… */
+  /** Extra line: model, Wi-Fi bands… */
   detail: string | null;
   /** Round-trip time from this phone, when measured. */
   rttMs: number | null;
@@ -47,7 +54,9 @@ export interface TopoNode {
   /** Delay this link adds (ms), when it can be told apart. */
   linkMs: number | null;
   hopRole?: HopRole;
-  /** Hidden hops (`more` node), devices or Wi-Fi bands. */
+  /** Routers of the provider and the internet that this node stands for. */
+  hops?: TopologyHop[];
+  /** Radios (BSSIDs) of an access point. */
   count?: number;
   bands?: WifiBand[];
   /** The access point this phone is connected to. */
@@ -55,13 +64,6 @@ export interface TopoNode {
   signalDbm?: number | null;
   /** Maker of the access point, from its BSSID (IEEE registry). */
   vendor?: string | null;
-}
-
-export interface TopologyHop {
-  ttl: number;
-  address: string | null;
-  rttMs: number | null;
-  status: 'reply' | 'timeout' | 'ttl-exceeded' | 'unreachable';
 }
 
 export interface TopologyInput {
@@ -76,6 +78,8 @@ export interface TopologyInput {
     rssi: number | null;
   } | null;
   operator: string | null;
+  /** Internet provider's name (from the public IP lookup), when known. */
+  providerName: string | null;
   /** Round-trip time to the gateway. */
   gatewayRttMs: number | null;
   target: string;
@@ -101,8 +105,6 @@ export interface TopologyInput {
 
 export interface Topology {
   nodes: TopoNode[];
-  /** Hops between the router and the internet that were not drawn. */
-  hiddenHops: number;
   /** LAN devices left out because the map would get too big. */
   hiddenDevices: number;
   /** A private router answered after the gateway: two routers doing NAT. */
@@ -111,8 +113,6 @@ export interface Topology {
   reached: boolean;
 }
 
-/** Path hops drawn between the router and the internet; the rest collapse. */
-export const MAX_PATH_HOPS = 4;
 export const MAX_LAN_DEVICES = 40;
 export const MAX_BLUETOOTH = 6;
 /** Access points weaker than this are probably a neighbour's network with the same name. */
@@ -210,6 +210,14 @@ function node(partial: Partial<TopoNode> & Pick<TopoNode, 'id' | 'type'>): TopoN
 const added = (outer: number | null, inner: number | null) =>
   outer === null || inner === null ? null : Math.max(0, Math.round((outer - inner) * 10) / 10);
 
+/**
+ * Builds the tree, top-down:
+ *
+ *   internet ← provider (its routers collapsed) ← [second router] ← router ← [access points] ← phone
+ *
+ * On mobile data: internet ← operator ← phone. LAN devices hang off the
+ * router, Bluetooth devices off the phone.
+ */
 export function buildTopology(input: TopologyInput): Topology {
   const nodes: TopoNode[] = [];
   const cellular = input.transport === 'cellular';
@@ -232,21 +240,6 @@ export function buildTopology(input: TopologyInput): Topology {
   const doubleNat = !cellular && path.some(hop => hopRole(hop.address) === 'private');
   const cgnat = path.some(hop => hopRole(hop.address) === 'cgnat');
 
-  // On mobile data the first answering hop is the operator's network.
-  let operatorHop: TopologyHop | null = null;
-  if (cellular) {
-    const index = path.findIndex(hop => hop.address);
-    // Silent hops before it are inside the operator's radio network too.
-    if (index >= 0) operatorHop = path.splice(0, index + 1)[index] ?? null;
-  }
-
-  let shown = path;
-  let hiddenHops = 0;
-  if (path.length > MAX_PATH_HOPS) {
-    hiddenHops = path.length - (MAX_PATH_HOPS - 1);
-    shown = [...path.slice(0, MAX_PATH_HOPS - 2), ...path.slice(path.length - 1)];
-  }
-
   const internet = node({
     id: 'internet',
     type: 'internet',
@@ -255,43 +248,17 @@ export function buildTopology(input: TopologyInput): Topology {
   });
   nodes.push(internet);
 
-  // Top-down: internet ← last hop ← … ← first hop ← router.
-  let above: TopoNode = internet;
-  const chain = [...shown].reverse();
-  chain.forEach((hop, index) => {
-    if (hiddenHops > 0 && index === 1) {
-      const more = node({
-        id: 'more',
-        type: 'more',
-        parent: above.id,
-        link: 'path',
-        count: hiddenHops,
-      });
-      nodes.push(more);
-      above = more;
-    }
-    const hopNode = node({
-      id: `hop-${hop.ttl}`,
-      type: 'hop',
-      kind: hopRole(hop.address) === 'private' ? 'router' : 'hop',
-      address: hop.address,
-      detail: `TTL ${hop.ttl}`,
-      rttMs: hop.rttMs,
-      parent: above.id,
-      link: 'path',
-      hopRole: hopRole(hop.address),
-    });
-    nodes.push(hopNode);
-    above = hopNode;
-  });
-
-  const rateUp = (child: TopoNode, parent: TopoNode, limits: [number, number]) => {
-    child.linkMs = parent.type === 'more' ? null : added(parent.rttMs, child.rttMs);
+  const linkUp = (child: TopoNode, parent: TopoNode, limits: [number, number]) => {
+    child.parent = parent.id;
+    child.linkMs = added(parent.rttMs, child.rttMs);
     child.linkState = rateLink(child.linkMs, limits);
   };
 
   let local: TopoNode;
   if (cellular) {
+    // The first answering hop is the operator's network; silent hops before it belong to it too.
+    const index = path.findIndex(hop => hop.address);
+    const operatorHop = index >= 0 ? path[index]! : null;
     local = node({
       id: 'operator',
       type: 'operator',
@@ -299,11 +266,48 @@ export function buildTopology(input: TopologyInput): Topology {
       name: input.operator,
       address: operatorHop?.address ?? null,
       rttMs: operatorHop?.rttMs ?? null,
-      parent: above.id,
       link: 'path',
+      hops: path.slice(index + 1),
     });
+    linkUp(local, internet, LINK_LIMITS.internet);
     nodes.push(local);
   } else {
+    // Private routers right after the gateway are other routers at home (double NAT).
+    const firstPublic = path.findIndex(hop => hopRole(hop.address) !== 'private');
+    const homeRouters = firstPublic < 0 ? path : path.slice(0, firstPublic);
+    const providerHops = firstPublic < 0 ? [] : path.slice(firstPublic);
+    let above = internet;
+    if (providerHops.length) {
+      const first = providerHops.find(hop => hop.address) ?? null;
+      const provider = node({
+        id: 'provider',
+        type: 'provider',
+        kind: 'provider',
+        name: input.providerName,
+        address: first?.address ?? null,
+        rttMs: first?.rttMs ?? null,
+        link: 'path',
+        hopRole: hopRole(first?.address ?? null),
+        hops: providerHops,
+      });
+      linkUp(provider, internet, LINK_LIMITS.internet);
+      nodes.push(provider);
+      above = provider;
+    }
+    for (const hop of [...homeRouters].reverse()) {
+      const homeRouter = node({
+        id: `hop-${hop.ttl}`,
+        type: 'hop',
+        kind: 'router',
+        address: hop.address,
+        rttMs: hop.rttMs,
+        link: 'path',
+        hopRole: 'private',
+      });
+      linkUp(homeRouter, above, LINK_LIMITS.path);
+      nodes.push(homeRouter);
+      above = homeRouter;
+    }
     local = node({
       id: 'router',
       type: 'router',
@@ -312,17 +316,10 @@ export function buildTopology(input: TopologyInput): Topology {
       address: input.gateway,
       detail: input.wifi?.ssid ?? null,
       rttMs: input.gatewayRttMs,
-      parent: above.id,
       link: 'path',
     });
+    linkUp(local, above, above === internet ? LINK_LIMITS.internet : LINK_LIMITS.path);
     nodes.push(local);
-  }
-
-  // Rate the path links now that every node has its round-trip time.
-  for (const item of nodes) {
-    const parent = nodes.find(other => other.id === item.parent);
-    if (!parent) continue;
-    rateUp(item, parent, parent.type === 'internet' ? LINK_LIMITS.internet : LINK_LIMITS.path);
   }
   if (!reached) {
     const top = nodes.find(item => item.parent === 'internet');
@@ -339,12 +336,13 @@ export function buildTopology(input: TopologyInput): Topology {
     const groups = groupAccessPoints(ssid, input.networks, input.wifi?.bssid ?? null);
     if (groups.length > 1) {
       groups.forEach((group, index) => {
+        const vendor = groupVendor(group.bssids);
         const ap = node({
           id: `ap-${index}`,
           type: 'ap',
           kind: 'ap',
-          name: groupVendor(group.bssids),
-          vendor: groupVendor(group.bssids),
+          name: vendor,
+          vendor,
           address: group.bssids[0] ?? null,
           detail: group.bands.map(band => `${band} GHz`).join(' · ') || null,
           parent: local.id,
@@ -428,7 +426,7 @@ export function buildTopology(input: TopologyInput): Topology {
     );
   }
 
-  return { nodes, hiddenHops, hiddenDevices, doubleNat, cgnat, reached };
+  return { nodes, hiddenDevices, doubleNat, cgnat, reached };
 }
 
 /** First registered maker among an access point's BSSIDs (random ones have none). */
@@ -448,75 +446,4 @@ function compareAddress(a: string, b: string): number {
     if (diff !== 0) return diff;
   }
   return a.localeCompare(b);
-}
-
-// ── Layout ──────────────────────────────────────────────────────────────────
-
-export const NODE_WIDTH = 84;
-export const NODE_HEIGHT = 92;
-export const ROW_GAP = 28;
-
-export interface TopoLayout {
-  width: number;
-  height: number;
-  /** Centre of each node's icon. */
-  positions: Record<string, { x: number; y: number }>;
-}
-
-/** Row of each node type, top to bottom. */
-const TIER_OF: Record<TopoNodeType, number> = {
-  internet: 0,
-  hop: 1,
-  more: 1,
-  operator: 2,
-  router: 2,
-  ap: 3,
-  self: 4,
-  lan: 5,
-  bluetooth: 6,
-};
-
-/**
- * Rows top to bottom: internet, each path hop, router, access points, this
- * phone, LAN devices (wrapped), Bluetooth devices. Nodes in a row are spread
- * evenly across `width`.
- */
-export function layoutTopology(topology: Topology, width: number): TopoLayout {
-  const perRow = Math.max(2, Math.floor(width / NODE_WIDTH));
-  const rows: TopoNode[][] = [];
-  // Hops keep their own row each, in path order (internet at the top).
-  const pathOrder = topology.nodes.filter(item => item.type === 'hop' || item.type === 'more');
-  const tiers = new Map<number, TopoNode[]>();
-  for (const item of topology.nodes) {
-    if (item.type === 'hop' || item.type === 'more') continue;
-    const tier = TIER_OF[item.type];
-    tiers.set(tier, [...(tiers.get(tier) ?? []), item]);
-  }
-  const pushWrapped = (items: TopoNode[]) => {
-    for (let i = 0; i < items.length; i += perRow) rows.push(items.slice(i, i + perRow));
-  };
-  pushWrapped(tiers.get(0) ?? []);
-  for (const hop of pathOrder) rows.push([hop]);
-  for (const tier of [2, 3, 4, 5, 6]) pushWrapped(tiers.get(tier) ?? []);
-
-  const positions: TopoLayout['positions'] = {};
-  rows.forEach((row, rowIndex) => {
-    const y = rowIndex * (NODE_HEIGHT + ROW_GAP) + NODE_HEIGHT / 2 - 14;
-    // An odd number of access points would put one right on the router's
-    // line down to the devices; leave the centre free instead.
-    const isAccessPoints = row[0]?.type === 'ap' && row.length % 2 === 1 && row.length < perRow;
-    const slots = isAccessPoints ? row.length + 1 : row.length;
-    const step = width / slots;
-    let slot = 0;
-    for (const item of row) {
-      if (isAccessPoints && slot === Math.floor(slots / 2)) slot++;
-      positions[item.id] = { x: Math.round(step * (slot + 0.5)), y };
-      slot++;
-    }
-  });
-  return {
-    width,
-    height: rows.length * (NODE_HEIGHT + ROW_GAP) - ROW_GAP + 8,
-    positions,
-  };
 }

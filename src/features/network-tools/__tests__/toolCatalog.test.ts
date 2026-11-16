@@ -50,6 +50,6 @@ describe('toolsByCategory', () => {
     const onlyPing: ToolDefinition[] = TOOLS.filter(tool => tool.id === 'ping');
     const groups = toolsByCategory(onlyPing);
     expect(groups).toHaveLength(1);
-    expect(groups[0]?.category).toBe('diagnostics');
+    expect(groups[0]?.category).toBe('lookup');
   });
 });

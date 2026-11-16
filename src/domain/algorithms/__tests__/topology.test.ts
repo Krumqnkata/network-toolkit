@@ -3,7 +3,6 @@ import {
   buildTopology,
   groupAccessPoints,
   hopRole,
-  layoutTopology,
   rateLink,
   type TopologyHop,
   type TopologyInput,
@@ -22,7 +21,7 @@ const reply = (ttl: number, rttMs: number): TopologyHop => ({
   status: 'reply',
 });
 
-function input(overrides: Partial<TopologyInput> = {}): TopologyInput {
+function topologyInput(overrides: Partial<TopologyInput> = {}): TopologyInput {
   return {
     transport: 'wifi',
     gateway: '192.168.1.1',
@@ -30,6 +29,7 @@ function input(overrides: Partial<TopologyInput> = {}): TopologyInput {
     deviceName: 'Pixel 9',
     wifi: { ssid: 'Home', bssid: 'aa:bb:cc:dd:ee:01', frequencyMhz: 5180, rssi: -55 },
     operator: null,
+    providerName: 'Example Telecom',
     gatewayRttMs: 3,
     target: '1.1.1.1',
     hops: [hop(1, '192.168.1.1', 3), hop(2, '85.11.0.1', 9), reply(3, 15)],
@@ -106,17 +106,23 @@ describe('helpers', () => {
 
 describe('buildTopology', () => {
   it('draws internet → provider → router → phone and the LAN devices', () => {
-    const topology = buildTopology(input());
+    const topology = buildTopology(topologyInput());
     expect(topology.nodes.map(node => node.id)).toEqual([
       'internet',
-      'hop-2',
+      'provider',
       'router',
       'self',
       'lan-192.168.1.40',
     ]);
-    expect(byId(topology, 'hop-2')).toMatchObject({ parent: 'internet', linkMs: 6 });
+    expect(byId(topology, 'provider')).toMatchObject({
+      parent: 'internet',
+      name: 'Example Telecom',
+      address: '85.11.0.1',
+      linkMs: 6,
+      hops: [{ ttl: 2, address: '85.11.0.1' }],
+    });
     expect(byId(topology, 'router')).toMatchObject({
-      parent: 'hop-2',
+      parent: 'provider',
       name: 'Archer AX55',
       bands: ['2.4', '5'],
       linkMs: 6,
@@ -136,7 +142,7 @@ describe('buildTopology', () => {
 
   it('attaches the phone to its access point in a mesh network', () => {
     const topology = buildTopology(
-      input({
+      topologyInput({
         networks: [
           { ssid: 'Home', bssid: 'aa:bb:cc:dd:ee:01', frequencyMhz: 5180, rssi: -55 },
           { ssid: 'Home', bssid: 'aa:bb:cc:11:22:01', frequencyMhz: 5180, rssi: -60 },
@@ -149,9 +155,9 @@ describe('buildTopology', () => {
     expect(byId(topology, 'lan-192.168.1.40')?.parent).toBe('router');
   });
 
-  it('collapses long paths, merges silent hops and spots double NAT and CGNAT', () => {
+  it('collapses the provider path, keeps a second home router and spots double NAT and CGNAT', () => {
     const topology = buildTopology(
-      input({
+      topologyInput({
         hops: [
           hop(1, '192.168.1.1', 3),
           hop(2, '192.168.0.1', 4),
@@ -159,41 +165,56 @@ describe('buildTopology', () => {
           hop(4, null, null),
           hop(5, null, null),
           hop(6, '85.11.0.1', 12),
-          hop(7, '85.11.0.9', 14),
-          hop(8, '141.101.0.1', 20),
-          reply(9, 22),
+          hop(7, '141.101.0.1', 20),
+          reply(8, 22),
         ],
       }),
     );
-    // Path: 192.168.0.1, 100.64.0.1, (silent), 85.11.0.1, 85.11.0.9, 141.101.0.1 → 6 hops.
-    expect(topology.hiddenHops).toBe(3);
     expect(topology.nodes.map(node => node.id)).toEqual([
       'internet',
-      'hop-8',
-      'more',
-      'hop-3',
+      'provider',
       'hop-2',
       'router',
       'self',
       'lan-192.168.1.40',
     ]);
-    expect(byId(topology, 'more')?.count).toBe(3);
-    expect(byId(topology, 'hop-3')?.linkMs).toBeNull();
-    expect(byId(topology, 'hop-2')).toMatchObject({ kind: 'router', hopRole: 'private' });
+    // Silent hops are merged; the provider stands for all routers after the home ones.
+    expect(byId(topology, 'provider')?.hops?.map(item => item.address)).toEqual([
+      '100.64.0.1',
+      null,
+      '85.11.0.1',
+      '141.101.0.1',
+    ]);
+    expect(byId(topology, 'provider')).toMatchObject({ hopRole: 'cgnat', linkMs: 12 });
+    expect(byId(topology, 'hop-2')).toMatchObject({
+      kind: 'router',
+      hopRole: 'private',
+      parent: 'provider',
+      linkMs: 6,
+    });
+    expect(byId(topology, 'router')).toMatchObject({ parent: 'hop-2', linkMs: 1 });
     expect(topology).toMatchObject({ doubleNat: true, cgnat: true });
   });
 
   it('marks the internet link as broken when the target never answered', () => {
     const topology = buildTopology(
-      input({ hops: [hop(1, '192.168.1.1', 3), hop(2, null, null), hop(3, null, null)] }),
+      topologyInput({ hops: [hop(1, '192.168.1.1', 3), hop(2, null, null), hop(3, null, null)] }),
     );
     expect(topology.reached).toBe(false);
-    expect(byId(topology, 'hop-2')).toMatchObject({ parent: 'internet', linkState: 'bad' });
+    expect(byId(topology, 'provider')).toMatchObject({ parent: 'internet', linkState: 'bad' });
+  });
+
+  it('links the router straight to the internet when no hop answered', () => {
+    const topology = buildTopology(
+      topologyInput({ hops: [hop(1, '192.168.1.1', 3), reply(2, 15)] }),
+    );
+    expect(byId(topology, 'provider')).toBeUndefined();
+    expect(byId(topology, 'router')).toMatchObject({ parent: 'internet', linkMs: 12 });
   });
 
   it('draws the operator on mobile data, without LAN devices', () => {
     const topology = buildTopology(
-      input({
+      topologyInput({
         transport: 'cellular',
         gateway: null,
         wifi: null,
@@ -202,8 +223,13 @@ describe('buildTopology', () => {
         hops: [hop(1, null, null), hop(2, '10.64.0.1', 45), hop(3, '62.0.0.1', 50), reply(4, 60)],
       }),
     );
-    expect(topology.nodes.map(node => node.id)).toEqual(['internet', 'hop-3', 'operator', 'self']);
-    expect(byId(topology, 'operator')).toMatchObject({ name: 'A1', address: '10.64.0.1' });
+    expect(topology.nodes.map(node => node.id)).toEqual(['internet', 'operator', 'self']);
+    expect(byId(topology, 'operator')).toMatchObject({
+      name: 'A1',
+      address: '10.64.0.1',
+      linkMs: 15,
+      hops: [{ ttl: 3, address: '62.0.0.1' }],
+    });
     expect(byId(topology, 'self')).toMatchObject({
       link: 'cellular',
       linkMs: 45,
@@ -228,49 +254,10 @@ describe('buildTopology', () => {
       kind: 'unknown',
       rssi: -50 - i,
     }));
-    const topology = buildTopology(input({ lan, bluetooth }));
+    const topology = buildTopology(topologyInput({ lan, bluetooth }));
     expect(topology.hiddenDevices).toBe(5);
     const bt = topology.nodes.filter(node => node.type === 'bluetooth');
     expect(bt).toHaveLength(6);
     expect(bt[0]).toMatchObject({ parent: 'self', signalDbm: -50 });
-  });
-});
-
-describe('layoutTopology', () => {
-  it('stacks the tiers and wraps device rows', () => {
-    const lan = Array.from({ length: 6 }, (_, i) => ({
-      address: `192.168.1.${100 + i}`,
-      name: null,
-      kind: 'unknown',
-      model: null,
-      rttMs: 5,
-      isSelf: false,
-      isGateway: false,
-    }));
-    const topology = buildTopology(input({ lan }));
-    const layout = layoutTopology(topology, 360); // 4 nodes per row
-    const y = (id: string) => layout.positions[id]!.y;
-    expect(y('internet')).toBeLessThan(y('hop-2'));
-    expect(y('hop-2')).toBeLessThan(y('router'));
-    expect(y('router')).toBeLessThan(y('self'));
-    expect(y('self')).toBeLessThan(y('lan-192.168.1.100'));
-    expect(y('lan-192.168.1.104')).toBeGreaterThan(y('lan-192.168.1.103'));
-    expect(layout.positions.router!.x).toBe(180);
-    expect(layout.height).toBeGreaterThan(y('lan-192.168.1.105'));
-  });
-
-  it('keeps the centre free for an odd number of access points', () => {
-    const topology = buildTopology(
-      input({
-        networks: [
-          { ssid: 'Home', bssid: 'aa:bb:cc:dd:ee:01', frequencyMhz: 5180, rssi: -55 },
-          { ssid: 'Home', bssid: 'aa:bb:cc:11:22:01', frequencyMhz: 5180, rssi: -60 },
-          { ssid: 'Home', bssid: 'aa:bb:cc:33:44:01', frequencyMhz: 5180, rssi: -65 },
-        ],
-      }),
-    );
-    const layout = layoutTopology(topology, 400);
-    const xs = ['ap-0', 'ap-1', 'ap-2'].map(id => layout.positions[id]!.x);
-    expect(xs).not.toContain(200);
   });
 });

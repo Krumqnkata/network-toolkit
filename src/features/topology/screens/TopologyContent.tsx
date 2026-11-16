@@ -1,20 +1,37 @@
 import { useNavigation } from '@react-navigation/native';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
+import type Svg from 'react-native-svg';
 
 import { useTheme } from '../../../app/theme';
-import { AppText, Badge, Button, Card, InfoRow } from '../../../components/common';
+import { AppText, Badge, Button, Card, InfoRow, SectionHeader } from '../../../components/common';
 import { guessBluetoothKind } from '../../../domain/algorithms/bluetooth';
 import { displayName, guessKind, modelName } from '../../../domain/algorithms/devices';
 import { buildTopology, type TopoNode, type Topology } from '../../../domain/algorithms/topology';
-import { formatTime, useLanguage, useStrings } from '../../../i18n';
+import { formatDateTime, formatTime, useLanguage, useStrings } from '../../../i18n';
+import { shareFile } from '../../../native/export';
 import { useBluetoothStore } from '../../../stores/bluetoothStore';
+import { useHomeStore } from '../../../stores/homeStore';
 import { isLanScanning, useLanStore } from '../../../stores/lanStore';
 import { useTopologyStore } from '../../../stores/topologyStore';
 import { useWifiScanStore } from '../../../stores/wifiScanStore';
+import { logError, toAppError, type AppError } from '../../../utils/errors';
 import { ErrorNotice, FormCard } from '../../network-tools/components/ToolFrame';
-import { TopologyMap, useNodeTitle } from '../components/TopologyMap';
+import {
+  TopologyMap,
+  nodeTitle,
+  sceneLabels,
+  scenePalette,
+  useNodeTitle,
+} from '../components/TopologyMap';
+import { SceneSvg } from '../scene/SceneSvg';
+import { buildMapScene, type MapScene } from '../scene/scene';
+import { sceneToSvg } from '../scene/primitives';
+import { exportBaseName, formatTopologyText, topologyJson } from '../services/mapExport';
 import { TRACE_TARGET, buildTopologyMap, cancelTopologyMap } from '../services/topologyScan';
+
+/** Width of exported images, independent of the phone's screen. */
+const EXPORT_WIDTH = 420;
 
 /** Combines the map's own measurements with the LAN, Wi-Fi and Bluetooth stores. */
 function useTopology(): Topology | null {
@@ -22,6 +39,7 @@ function useTopology(): Topology | null {
   const lan = useLanStore(state => state.devices);
   const networks = useWifiScanStore(state => state.result?.networks ?? null);
   const bluetooth = useBluetoothStore(state => state.devices);
+  const providerName = useHomeStore(state => state.publicInfo?.provider ?? null);
 
   return useMemo(() => {
     if (!snapshot || snapshot.transport === 'none') return null;
@@ -43,6 +61,7 @@ function useTopology(): Topology | null {
           }
         : null,
       operator: snapshot.cellularOperator,
+      providerName,
       gatewayRttMs,
       target: TRACE_TARGET,
       hops,
@@ -63,8 +82,10 @@ function useTopology(): Topology | null {
         rssi: device.rssi,
       })),
     });
-  }, [snapshot, hops, gatewayRttMs, lan, networks, bluetooth]);
+  }, [snapshot, hops, gatewayRttMs, lan, networks, bluetooth, providerName]);
 }
+
+type ExportKind = 'png' | 'svg' | 'txt' | 'json';
 
 /** Network map body, shown in the Devices tab. */
 export function TopologyContent() {
@@ -80,6 +101,9 @@ export function TopologyContent() {
   // Measured on layout; until then, the window minus the screen's side padding.
   const [width, setWidth] = useState(Math.max(0, Math.floor(window.width - 2 * theme.spacing.lg)));
   const [selected, setSelected] = useState<string | null>(null);
+  const [exportScene, setExportScene] = useState<MapScene | null>(null);
+  const [exportError, setExportError] = useState<AppError | null>(null);
+  const exportRef = useRef<Svg>(null);
   const building = phase === 'building';
   const tracing =
     building && !hops.some(hop => hop.status === 'reply' || hop.status === 'unreachable');
@@ -95,6 +119,78 @@ export function TopologyContent() {
     : null;
 
   const selectedNode = topology?.nodes.find(node => node.id === selected) ?? null;
+  const ssid = snapshot?.wifi?.ssid ?? null;
+  const meta = {
+    title: ssid ? t.exportTitleNamed(ssid) : t.title,
+    subtitle: formatDateTime(builtAt ?? Date.now(), language),
+  };
+
+  const exportMap = async (kind: ExportKind) => {
+    if (!topology) return;
+    setExportError(null);
+    const base = exportBaseName(builtAt ?? Date.now());
+    const scene = () =>
+      buildMapScene(topology, {
+        width: EXPORT_WIDTH,
+        palette: scenePalette(theme, theme.colors.background),
+        title: node => nodeTitle(node, s),
+        labels: sceneLabels(s),
+        header: meta,
+        legend: {
+          good: t.states.good,
+          warn: t.states.warn,
+          bad: t.states.bad,
+          wireless: t.links.wireless,
+          footer: t.exportFooter,
+        },
+      });
+    try {
+      if (kind === 'png') {
+        // Drawn off-screen at a fixed width; the image is taken once it is laid out.
+        setExportScene(scene());
+        return;
+      }
+      if (kind === 'svg') await shareFile(`${base}.svg`, sceneToSvg(scene()), { title: t.title });
+      if (kind === 'txt') {
+        await shareFile(`${base}.txt`, formatTopologyText(topology, s, meta), { title: t.title });
+      }
+      if (kind === 'json') {
+        await shareFile(
+          `${base}.json`,
+          topologyJson(topology, { createdAt: builtAt ?? Date.now(), ssid }),
+          {
+            title: t.title,
+          },
+        );
+      }
+    } catch (caught) {
+      logError('topology-export', caught);
+      setExportError(toAppError(caught));
+    }
+  };
+
+  const capturePng = () => {
+    const svg = exportRef.current as unknown as {
+      toDataURL?: (callback: (base64: string) => void) => void;
+    } | null;
+    const scene = exportScene;
+    setExportScene(null);
+    if (!scene) return;
+    const base = exportBaseName(builtAt ?? Date.now());
+    if (!svg?.toDataURL) {
+      // No raster support (e.g. tests): fall back to the vector drawing.
+      shareFile(`${base}.svg`, sceneToSvg(scene), { title: t.title }).catch(caught =>
+        setExportError(toAppError(caught)),
+      );
+      return;
+    }
+    svg.toDataURL(base64 => {
+      shareFile(`${base}.png`, base64, { base64: true, title: t.title }).catch(caught => {
+        logError('topology-export', caught);
+        setExportError(toAppError(caught));
+      });
+    });
+  };
 
   return (
     <>
@@ -140,7 +236,7 @@ export function TopologyContent() {
         <>
           <Card padded={false}>
             <View
-              style={{ paddingVertical: theme.spacing.lg }}
+              style={{ paddingVertical: theme.spacing.sm }}
               onLayout={event => setWidth(Math.floor(event.nativeEvent.layout.width))}
             >
               {width > 0 ? (
@@ -161,7 +257,52 @@ export function TopologyContent() {
             />
           ) : null}
           <Notes topology={topology} />
+
+          <SectionHeader title={t.export.title} />
+          <Card>
+            <AppText variant="caption" color="textSecondary">
+              {t.export.hint}
+            </AppText>
+            <View style={[styles.row, { gap: theme.spacing.sm, marginTop: theme.spacing.md }]}>
+              <Button
+                testID="topology-export-png"
+                label={t.export.png}
+                variant="secondary"
+                busy={exportScene !== null}
+                onPress={() => exportMap('png')}
+              />
+              <Button
+                testID="topology-export-svg"
+                label={t.export.svg}
+                variant="secondary"
+                onPress={() => exportMap('svg')}
+              />
+              <Button
+                testID="topology-export-txt"
+                label={t.export.text}
+                variant="secondary"
+                onPress={() => exportMap('txt')}
+              />
+              <Button
+                testID="topology-export-json"
+                label={t.export.json}
+                variant="secondary"
+                onPress={() => exportMap('json')}
+              />
+            </View>
+          </Card>
+          {exportError ? <ErrorNotice error={exportError} /> : null}
         </>
+      ) : null}
+
+      {exportScene ? (
+        <View
+          pointerEvents="none"
+          style={[styles.offscreen, { width: exportScene.width, height: exportScene.height }]}
+          onLayout={() => setTimeout(capturePng, 50)}
+        >
+          <SceneSvg ref={exportRef} scene={exportScene} />
+        </View>
       ) : null}
     </>
   );
@@ -191,12 +332,8 @@ function NodeDetails({
         </AppText>
         {node.connected ? <Badge label={t.connected} tone="success" /> : null}
       </View>
-      <InfoRow
-        label={t.fields.type}
-        value={t.types[node.type === 'more' ? 'hop' : node.type]}
-        mono={false}
-      />
-      {node.hopRole ? (
+      <InfoRow label={t.fields.type} value={t.types[node.type]} mono={false} />
+      {node.hopRole && node.type !== 'provider' ? (
         <AppText variant="caption" color="textSecondary" style={{ marginBottom: theme.spacing.sm }}>
           {t.hopRoles[node.hopRole]}
         </AppText>
@@ -204,7 +341,11 @@ function NodeDetails({
       {node.address ? <InfoRow label={t.fields.address} value={node.address} /> : null}
       {node.vendor ? <InfoRow label={t.fields.vendor} value={node.vendor} mono={false} /> : null}
       {node.detail && node.type !== 'ap' ? (
-        <InfoRow label={t.fields.model} value={node.detail} mono={false} />
+        <InfoRow
+          label={node.type === 'router' ? t.fields.network : t.fields.model}
+          value={node.detail}
+          mono={false}
+        />
       ) : null}
       {node.bands?.length ? (
         <InfoRow
@@ -232,6 +373,20 @@ function NodeDetails({
       ) : null}
       {node.linkMs !== null && node.link !== 'lan' ? (
         <InfoRow label={t.fields.addedDelay} value={`+${ms(node.linkMs)}`} />
+      ) : null}
+      {node.hops?.length ? (
+        <View testID="topology-hops" style={{ marginTop: theme.spacing.sm }}>
+          <AppText variant="caption" color="textSecondary">
+            {t.fields.hops(node.hops.length)}
+          </AppText>
+          {node.hops.map(hop => (
+            <InfoRow
+              key={hop.ttl}
+              label={`TTL ${hop.ttl}`}
+              value={`${hop.address ?? '*'}${hop.rttMs !== null ? ` · ${ms(hop.rttMs)}` : ''}`}
+            />
+          ))}
+        </View>
       ) : null}
       <View style={[styles.row, { gap: theme.spacing.sm, marginTop: theme.spacing.md }]}>
         {node.type === 'lan' && node.address ? (
@@ -268,18 +423,22 @@ function Notes({ topology }: { topology: Topology }) {
   const theme = useTheme();
   const t = useStrings().topology;
   const notes: { id: string; text: string; tone: 'warning' | 'info' }[] = [];
-  if (topology.doubleNat)
+  if (topology.doubleNat) {
     notes.push({ id: 'double-nat', text: t.notes.doubleNat, tone: 'warning' });
+  }
   if (topology.cgnat) notes.push({ id: 'cgnat', text: t.notes.cgnat, tone: 'info' });
-  if (!topology.reached && topology.nodes.some(node => node.type === 'hop'))
+  if (!topology.reached && topology.nodes.some(node => node.parent === 'internet')) {
     notes.push({ id: 'not-reached', text: t.notes.notReached, tone: 'warning' });
-  if (topology.hiddenDevices > 0)
+  }
+  if (topology.hiddenDevices > 0) {
     notes.push({ id: 'hidden', text: t.notes.hiddenDevices(topology.hiddenDevices), tone: 'info' });
+  }
   if (
     topology.nodes.some(node => node.type === 'ap') &&
     topology.nodes.some(node => node.type === 'lan')
-  )
+  ) {
     notes.push({ id: 'placement', text: t.notes.placement, tone: 'info' });
+  }
 
   return (
     <Card>
@@ -305,6 +464,12 @@ function Notes({ topology }: { topology: Topology }) {
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
+  },
+  offscreen: {
+    left: -10000,
+    opacity: 0,
+    position: 'absolute',
+    top: 0,
   },
   row: {
     alignItems: 'center',

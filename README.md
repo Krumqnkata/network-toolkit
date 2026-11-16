@@ -57,7 +57,18 @@ Design principles:
 
 ## Screenshots
 
-Screenshots will be added once they are taken on a real device.
+|                                                         Home                                                          |                                               Wi-Fi Analyzer                                                |                                    Speed test                                     |
+| :-------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------: |
+|    <img src="docs/screenshots/01-home.png" width="240" alt="Home: provider, router and phone with response times">    |      <img src="docs/screenshots/02-wifi.png" width="240" alt="Wi-Fi Analyzer with the channel graph">       |   <img src="docs/screenshots/03-speed.png" width="240" alt="Speed test result">   |
+|                                                      **Devices**                                                      |                                               **Network map**                                               |                                     **Tools**                                     |
+| <img src="docs/screenshots/04-devices.png" width="240" alt="Devices found on the network, with their type and maker"> | <img src="docs/screenshots/05-map.png" width="240" alt="Self-building network map with equipment pictures"> | <img src="docs/screenshots/06-tools.png" width="240" alt="Tools grouped by task"> |
+|                                               **Where is the problem?**                                               |                                                                                                             |                                                                                   |
+|     <img src="docs/screenshots/07-health.png" width="240" alt="Health check showing each part of the connection">     |                                                                                                             |                                                                                   |
+
+> These images are rendered from the app's own UI code with sample data (a
+> web build of the screens, not captures from a phone), so fonts and spacing
+> may differ slightly from Android. The devices, names and addresses shown are
+> examples.
 
 ## Tech stack
 

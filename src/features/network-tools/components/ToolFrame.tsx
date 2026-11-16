@@ -1,4 +1,4 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -11,13 +11,17 @@ import type { ToolId } from '../toolCatalog';
 /** Screen frame shared by every tool: title, description and a back button. */
 export function ToolFrame({ toolId, children }: { toolId: ToolId; children: React.ReactNode }) {
   const navigation = useNavigation();
+  const route = useRoute();
   const s = useStrings();
   const text = s.tools.items[toolId];
+  // Tool screens pushed over the tabs get a back button; a tool shown as a tab
+  // (Speed) is a top-level screen and has none.
+  const pushed = route.name !== 'SpeedTest' && navigation.canGoBack();
   return (
     <Screen
       title={text.name}
       subtitle={text.description}
-      onBack={navigation.canGoBack() ? () => navigation.goBack() : undefined}
+      onBack={pushed ? () => navigation.goBack() : undefined}
       backLabel={s.netTools.back}
     >
       {children}

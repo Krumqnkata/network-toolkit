@@ -14,6 +14,7 @@ import { ReachabilityScreen } from './ReachabilityScreen';
 import { TlsCertificateScreen } from './TlsCertificateScreen';
 import { ConnectionMonitorScreen } from '../../connection-monitor/screens/ConnectionMonitorScreen';
 import { HealthCheckScreen } from '../../health-check/screens/HealthCheckScreen';
+import { TopologyContent } from '../../topology/screens/TopologyContent';
 import { BluetoothContent } from '../../bluetooth/screens/BluetoothContent';
 import { LanScannerScreen } from '../../lan-scanner/screens/LanScannerScreen';
 import { SpeedTestScreen } from '../../speed-test/screens/SpeedTestScreen';
@@ -49,7 +50,16 @@ export const TOOL_SCREENS: Partial<Record<ToolId, React.ComponentType<ToolScreen
   'connection-monitor': ConnectionMonitorScreen,
   'health-check': HealthCheckScreen,
   'bluetooth-scanner': BluetoothScannerScreen,
+  'network-map': NetworkMapScreen,
 };
+
+function NetworkMapScreen() {
+  return (
+    <ToolFrame toolId="network-map">
+      <TopologyContent />
+    </ToolFrame>
+  );
+}
 
 function BluetoothScannerScreen() {
   return (

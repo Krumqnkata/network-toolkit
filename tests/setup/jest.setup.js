@@ -189,6 +189,11 @@ globalThis.fetch = jest.fn(() =>
   Promise.resolve({ ok: true, status: 200, text: () => Promise.resolve('[]') }),
 );
 
+jest.mock('../../src/native/specs/NativeExportModule', () => ({
+  __esModule: true,
+  default: { shareFile: jest.fn(() => Promise.resolve()) },
+}));
+
 jest.mock('../../src/native/specs/NativeBluetoothModule', () => ({
   __esModule: true,
   default: {

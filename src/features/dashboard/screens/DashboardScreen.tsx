@@ -15,6 +15,7 @@ import {
 } from '../../../components/common';
 import { Icon } from '../../../components/icons/Icon';
 import { LocationNotice } from '../../../components/permissions/LocationNotice';
+import { displayName } from '../../../domain/algorithms/devices';
 import { isIPv4 } from '../../../domain/algorithms/ip';
 import { statsOf } from '../../../domain/algorithms/monitor';
 import {
@@ -25,6 +26,7 @@ import {
   type ConnectionSummary,
 } from '../../../domain/algorithms/plain';
 import { formatMbps } from '../../../domain/algorithms/speed';
+import { macVendor } from '../../../domain/algorithms/vendor';
 import type { NetworkSnapshot, WifiLink } from '../../../domain/models/network';
 import { formatDateTime, formatTime, useLanguage, useStrings } from '../../../i18n';
 import { useHomeStore, type LatencyTarget } from '../../../stores/homeStore';
@@ -152,7 +154,11 @@ export function DashboardScreen() {
     ethernet: t.connection.ethernet,
     none: t.connection.none,
   };
-  const title = snapshot ? titleByTransport[transport] ?? t.connection.other : s.dashboard.title;
+  const title = snapshot
+    ? (transport === 'wifi' ? snapshot.wifi?.ssid : null) ??
+      titleByTransport[transport] ??
+      t.connection.other
+    : s.dashboard.title;
 
   const localIp =
     snapshot?.addresses.find(address => address.family === 'ipv4')?.address ??
@@ -163,6 +169,18 @@ export function DashboardScreen() {
     transport === 'cellular' && snapshot?.cellularOperator
       ? snapshot.cellularOperator
       : publicInfo?.provider ?? (showPublicInfo && !publicInfo ? t.loadingProvider : t.provider);
+  // The router: its name from the LAN scan, or the maker of the Wi-Fi access point.
+  const gatewayDevice = useLanStore(state =>
+    gateway ? state.devices.find(device => device.address === gateway) ?? null : null,
+  );
+  const routerName =
+    (gatewayDevice ? displayName(gatewayDevice) : null) ??
+    macVendor(wifi?.bssid ?? null) ??
+    t.gatewayLabel;
+  const siteTimes = SITE_TARGETS.map(target => latency[target.id]).filter(
+    (value): value is number => typeof value === 'number',
+  );
+  const internetMs = siteTimes.length ? Math.min(...siteTimes) : null;
   const statusNode = snapshot?.isCaptivePortal
     ? { text: t.portal, color: 'warning' as const }
     : online
@@ -264,21 +282,48 @@ export function DashboardScreen() {
 
       {snapshot && transport !== 'none' ? (
         <ConnectionDiagram
-          accessibilityLabel={`${providerName} ${publicInfo?.ip ?? ''} — ${statusNode.text} — ${
-            snapshot.deviceName ?? t.thisPhone
-          } ${localIp ?? ''}`}
-          lineColor={statusNode.color}
-          left={{
-            icon: transport === 'cellular' ? 'antenna' : 'globe',
-            title: providerName,
-            subtitle: publicInfo?.ip ?? null,
-            status: statusNode,
-          }}
-          right={{
-            icon: 'phone',
-            title: snapshot.deviceName ?? t.thisPhone,
-            subtitle: localIp,
-          }}
+          accessibilityLabel={[
+            `${providerName} ${publicInfo?.ip ?? ''}`,
+            statusNode.text,
+            gateway && transport !== 'cellular' ? `${routerName} ${gateway}` : null,
+            `${snapshot.deviceName ?? t.thisPhone} ${localIp ?? ''}`,
+          ]
+            .filter(Boolean)
+            .join(' — ')}
+          nodes={[
+            {
+              id: 'provider',
+              picture: transport === 'cellular' ? 'operator' : 'provider',
+              title: providerName,
+              subtitle: publicInfo?.ip ?? null,
+              status: statusNode,
+            },
+            ...(gateway && transport !== 'cellular'
+              ? [{ id: 'router', picture: 'router', title: routerName, subtitle: gateway }]
+              : []),
+            {
+              id: 'device',
+              picture: 'phone',
+              title: snapshot.deviceName ?? t.thisPhone,
+              subtitle: localIp,
+            },
+          ]}
+          links={[
+            {
+              color: statusNode.color,
+              label: internetMs !== null ? `${Math.round(internetMs)} ms` : null,
+              dashed: transport === 'cellular',
+            },
+            ...(gateway && transport !== 'cellular'
+              ? [
+                  {
+                    color: 'success' as const,
+                    label: latency.gateway != null ? `${Math.round(latency.gateway)} ms` : null,
+                    dashed: transport === 'wifi',
+                  },
+                ]
+              : []),
+          ]}
         />
       ) : null}
 
@@ -423,7 +468,7 @@ export function DashboardScreen() {
         />
         <HomeTile
           testID="home-health"
-          icon="pulse"
+          icon="heart"
           title={t.health}
           value={
             health
@@ -446,7 +491,7 @@ export function DashboardScreen() {
         />
         <HomeTile
           testID="home-monitor"
-          icon="route"
+          icon="chart"
           title={t.monitor}
           value={monitorRunning ? t.monitorLive(formatMs(monitorStats.avgMs, s)) : t.monitorIdle}
           valueColor={monitorRunning ? 'accent' : 'textSecondary'}
@@ -455,7 +500,7 @@ export function DashboardScreen() {
         />
         <HomeTile
           testID="home-ip"
-          icon="globe"
+          icon="pin"
           title={t.publicIp}
           value={publicInfo?.ip ?? t.publicIpValue}
           accessibilityLabel={t.open(t.publicIp)}

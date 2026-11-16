@@ -13,12 +13,12 @@ import {
   ProgressBar,
   SectionHeader,
 } from '../../../components/common';
+import { EquipmentPicture } from '../../../components/illustrations/EquipmentPicture';
 import { Icon } from '../../../components/icons/Icon';
 import { displayName, guessKind, modelName } from '../../../domain/algorithms/devices';
 import { formatTime, useLanguage, useStrings } from '../../../i18n';
 import { isLanScanning, useLanStore } from '../../../stores/lanStore';
 import { ErrorNotice, FormCard, ToolFrame } from '../../network-tools/components/ToolFrame';
-import { KIND_ICON } from '../components/deviceIcon';
 import { cancelLanScan, startLanScan } from '../services/lanScan';
 
 /** LAN scanner body, used by the Devices tab and the LAN Scanner tool screen. */
@@ -94,7 +94,7 @@ export function LanScannerContent() {
                   subtitle={[device.address, model].filter(Boolean).join(' · ')}
                   showDivider={index < devices.length - 1}
                   onPress={() => navigation.navigate('LanDevice', { address: device.address })}
-                  leading={<Icon name={KIND_ICON[kind]} color={theme.colors.accent} />}
+                  leading={<EquipmentPicture kind={kind} size={40} />}
                   trailing={
                     device.isSelf ? (
                       <Badge label={t.thisDevice} tone="accent" />

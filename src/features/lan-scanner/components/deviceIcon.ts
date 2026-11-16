@@ -3,6 +3,7 @@ import type { DeviceKind } from '../../../domain/algorithms/devices';
 
 export const KIND_ICON: Record<DeviceKind, IconName> = {
   router: 'router',
+  switch: 'lan',
   phone: 'phone',
   computer: 'computer',
   printer: 'printer',

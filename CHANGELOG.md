@@ -9,6 +9,35 @@ Release notes.
 
 ## [Unreleased]
 
+### Added
+
+- **Network map export:** share the map as an image (PNG), a drawing (SVG), a
+  text report or data (JSON) from the share menu — save it to Files or Drive or
+  send it in a chat.
+- **Equipment pictures:** the map, the home screen, the device list and the
+  health check now show original illustrations of the equipment (cloud,
+  provider, cell tower, router, switch, mesh access point, phone, laptop,
+  printer, TV, storage, camera, smart plug and Bluetooth gadgets).
+- **Network switches** are recognised as their own device type.
+- Screenshots in the README.
+
+### Changed
+
+- **Network map redrawn:** the provider's routers collapse into one
+  "Internet provider" node (tap it for every hop), a second home router
+  (double NAT) stays visible, and devices hang off a line at the side so no
+  line crosses a name.
+- **Home:** the title is your Wi-Fi network's name; the diagram shows
+  provider → router → this phone with response times on the links; response
+  times sit in four even columns instead of a row that was cut off.
+- **Tools** are grouped by task — Check my connection, My network, Look up &
+  trace, Websites & security — and every tool has its own icon. The network
+  map is also listed there.
+- **Speed test:** the gauge and the start button come first; the technical
+  details moved below. The Speed tab no longer shows a "Tools" back link.
+- Shorter, plainer introductions on the device and map screens; the settings
+  icon is now a gear.
+
 ## [1.1.0-rc.1] - 2026-11-16
 
 Release candidate for 1.1: smarter diagnostics, a self-building network map

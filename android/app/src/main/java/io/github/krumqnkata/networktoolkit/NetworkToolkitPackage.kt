@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
 import io.github.krumqnkata.networktoolkit.bluetooth.BluetoothModule
+import io.github.krumqnkata.networktoolkit.export.ExportModule
 import io.github.krumqnkata.networktoolkit.lan.LanModule
 import io.github.krumqnkata.networktoolkit.network.NetworkModule
 import io.github.krumqnkata.networktoolkit.speed.SpeedTestModule
@@ -26,6 +27,7 @@ class NetworkToolkitPackage : BaseReactPackage() {
             StorageModule.NAME -> StorageModule(reactContext)
             UpdateModule.NAME -> UpdateModule(reactContext)
             BluetoothModule.NAME -> BluetoothModule(reactContext)
+            ExportModule.NAME -> ExportModule(reactContext)
             else -> null
         }
 
@@ -40,6 +42,7 @@ class NetworkToolkitPackage : BaseReactPackage() {
                 StorageModule.NAME,
                 UpdateModule.NAME,
                 BluetoothModule.NAME,
+                ExportModule.NAME,
             ).associateWith { name ->
                 ReactModuleInfo(
                     name = name,
