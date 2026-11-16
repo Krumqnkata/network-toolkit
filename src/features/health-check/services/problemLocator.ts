@@ -1,4 +1,5 @@
 import { isIPv4 } from '../../../domain/algorithms/ip';
+import { hasLocalNetwork } from '../../../services/permissions/localNetworkPermission';
 import {
   analyzeSegments,
   providerHop,
@@ -66,7 +67,10 @@ async function findProvider(gateway: string | null): Promise<string | null> {
  * internet in parallel, then decides which segment causes trouble.
  */
 export async function locateProblem(snapshot: NetworkSnapshot): Promise<ProblemLocation> {
-  const gateway = snapshot.transport === 'cellular' ? null : snapshot.gateways.find(isIPv4) ?? null;
+  const gateway =
+    snapshot.transport === 'cellular' || !(await hasLocalNetwork())
+      ? null
+      : snapshot.gateways.find(isIPv4) ?? null;
   const [gatewaySeries, provider, internet] = await Promise.all([
     gateway ? probeSeries(gateway) : Promise.resolve(null),
     findProvider(gateway),

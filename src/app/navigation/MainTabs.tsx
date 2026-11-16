@@ -48,7 +48,14 @@ export function MainTabs() {
           backgroundColor: theme.colors.tabBar,
           borderTopColor: theme.colors.border,
         },
-        tabBarLabelStyle: { fontFamily: fontFamilies.sans, fontSize: 11, fontWeight: '600' },
+        tabBarLabelStyle: {
+          fontFamily: fontFamilies.sans,
+          fontSize: 11,
+          lineHeight: 14,
+          fontWeight: '600',
+        },
+        // The tab bar has a fixed height; scaled labels would be cut off.
+        tabBarAllowFontScaling: false,
         tabBarIcon: TAB_ICONS[route.name],
       })}
     >

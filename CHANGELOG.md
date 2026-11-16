@@ -9,6 +9,29 @@ Release notes.
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-11-16
+
+### Fixed
+
+- **Text cut off on some phones:** titles and badges lost their last letter
+  (Android measures text without letter spacing, so the spacing was removed
+  from titles and reduced on small labels); very large system font sizes are
+  now capped where layouts would break, and tab labels no longer scale past
+  the tab bar.
+- **Content hidden under the navigation bar** at the bottom of Settings, tool
+  and device screens (edge-to-edge insets are now respected there).
+- Badges such as "GATEWAY" are no longer squeezed by a long name next to them.
+
+### Changed
+
+- **Settings button** on every tab, in the same top-right spot: a larger gear
+  in a tinted rounded square.
+- **Android 17:** the app now targets Android 17 (API 37) and asks for the new
+  "local network" permission (Nearby devices) when you start a device scan,
+  the network map, a health check or a tool aimed at a home address. If you
+  already allowed Bluetooth, Android does not ask again. Without it, the
+  internet tools keep working.
+
 ## [1.1.0] - 2026-11-16
 
 Stable release with everything from 1.1.0-rc.1 (where is the problem,
@@ -374,7 +397,8 @@ failed (see Fixed).
 - Tag-driven release workflow that builds, signs, verifies and publishes the
   APK, AAB and SHA-256 checksums.
 
-[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/Krumqnkata/network-toolkit/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/Krumqnkata/network-toolkit/compare/v1.1.0-rc.1...v1.1.0
 [1.1.0-rc.1]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0...v1.1.0-rc.1
 [1.0.0]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.5...v1.0.0

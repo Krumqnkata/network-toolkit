@@ -1,4 +1,5 @@
 import { getSetting, setSetting } from '../../../database/storage';
+import { hasLocalNetwork } from '../../../services/permissions/localNetworkPermission';
 import { providerDisplayName } from '../../../domain/algorithms/plain';
 import { ping } from '../../../native/netTools';
 import { useHomeStore, type LatencyTarget } from '../../../stores/homeStore';
@@ -28,10 +29,13 @@ let latencyRun = 0;
 export async function refreshLatency(targets: readonly LatencyTarget[]): Promise<void> {
   if (!homeProbes.enabled) return;
   const run = ++latencyRun;
+  const local = await hasLocalNetwork();
   useHomeStore.getState().set({ latencyLoading: true });
   const results = await Promise.all(
     targets.map(async target => {
       if (!target.host) return [target.id, null] as const;
+      // The router is on the local network; the home screen never asks for that permission.
+      if (target.id === 'gateway' && !local) return [target.id, null] as const;
       try {
         const probe = await ping(target.host, { timeoutMs: 2000 });
         return [target.id, probe.status === 'reply' ? probe.rttMs : null] as const;

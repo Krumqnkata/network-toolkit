@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../app/theme';
@@ -42,6 +43,8 @@ export function Screen({
 }: ScreenProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  // Inside the tabs the tab bar already keeps clear of the navigation bar.
+  const inTabs = useContext(BottomTabBarHeightContext) !== undefined;
 
   const header = (
     <View style={{ marginBottom: theme.spacing.xl, gap: theme.spacing.xs }}>
@@ -83,8 +86,9 @@ export function Screen({
 
   const contentStyle = {
     paddingTop: insets.top + theme.spacing.xl,
-    paddingHorizontal: theme.spacing.lg,
-    paddingBottom: theme.spacing.xxl,
+    paddingLeft: insets.left + theme.spacing.lg,
+    paddingRight: insets.right + theme.spacing.lg,
+    paddingBottom: (inTabs ? 0 : insets.bottom) + theme.spacing.xxl,
     gap: theme.spacing.lg,
   };
 

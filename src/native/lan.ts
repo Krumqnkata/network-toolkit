@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import { toAppError } from '../utils/errors';
 import { parseNative } from './netTools';
+import { ensureLocalNetworkFor } from '../services/permissions/localNetworkPermission';
 import NativeLanModule from './specs/NativeLanModule';
 
 const hostProbeSchema = z.object({
@@ -109,6 +110,7 @@ export async function scanPorts(
   ports: number[],
   timeoutMs: number,
 ): Promise<{ address: string; ports: PortResult[] }> {
+  await ensureLocalNetworkFor(host);
   return call(
     z.object({ address: z.string(), ports: z.array(portResultSchema) }),
     'port scan',

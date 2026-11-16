@@ -6,19 +6,20 @@ for which permissions the app declares and why.
 
 ## Declared today
 
-| Permission                                    | Since | Why                                                                                                                                            | Runtime prompt                                                                       |
-| --------------------------------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| `INTERNET`                                    | 0.1.0 | Network diagnostics, and Metro bundler connection in debug builds                                                                              | No (normal)                                                                          |
-| `ACCESS_NETWORK_STATE`                        | 0.2.0 | Connection type, `NetworkCapabilities`, `LinkProperties` (IP, gateway, DNS)                                                                    | No (normal)                                                                          |
-| `ACCESS_WIFI_STATE`                           | 0.2.0 | Current Wi-Fi link (signal, frequency, link speed, standard, security) and `getScanResults()`                                                  | No (normal)                                                                          |
-| `CHANGE_WIFI_STATE`                           | 0.2.0 | Required by `WifiManager.startScan()`                                                                                                          | No (normal)                                                                          |
-| `ACCESS_FINE_LOCATION`                        | 0.2.0 | SSID/BSSID of the current network, and `startScan()` / `getScanResults()` on **every** Android version, including 13+                          | Yes — from the Dashboard Wi-Fi card or the Wi-Fi Analyzer, on user request           |
-| `REQUEST_INSTALL_PACKAGES`                    | 1.0.0 | Installing self-updates downloaded from this app's GitHub releases                                                                             | No — the user allows "Install unknown apps" for the app once, from the update prompt |
-| `UPDATE_PACKAGES_WITHOUT_USER_ACTION`         | 1.0.0 | Android 12+: lets the app update itself without a confirmation dialog (`PackageInstaller.SessionParams.setRequireUserAction`)                  | No (normal)                                                                          |
-| `BLUETOOTH_SCAN` (Android 12+)                | 1.0.0 | Bluetooth scanner. Declared with `neverForLocation`: the app never derives location from scans (Android then filters some beacon-only adverts) | Yes — "Nearby devices", from the Bluetooth view, on user request                     |
-| `BLUETOOTH_CONNECT` (Android 12+)             | 1.0.0 | Names of nearby and paired devices                                                                                                             | Yes — same "Nearby devices" dialog                                                   |
-| `BLUETOOTH`, `BLUETOOTH_ADMIN` (≤ Android 11) | 1.0.0 | Bluetooth scanning on older versions (`maxSdkVersion="30"`); these versions also require precise location for scans                            | No (normal)                                                                          |
-| `ACCESS_COARSE_LOCATION`                      | 0.2.0 | Must be requested together with fine location on Android 12+                                                                                   | Yes — same dialog                                                                    |
+| Permission                                    | Since | Why                                                                                                                                                           | Runtime prompt                                                                                  |
+| --------------------------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `INTERNET`                                    | 0.1.0 | Network diagnostics, and Metro bundler connection in debug builds                                                                                             | No (normal)                                                                                     |
+| `ACCESS_NETWORK_STATE`                        | 0.2.0 | Connection type, `NetworkCapabilities`, `LinkProperties` (IP, gateway, DNS)                                                                                   | No (normal)                                                                                     |
+| `ACCESS_WIFI_STATE`                           | 0.2.0 | Current Wi-Fi link (signal, frequency, link speed, standard, security) and `getScanResults()`                                                                 | No (normal)                                                                                     |
+| `CHANGE_WIFI_STATE`                           | 0.2.0 | Required by `WifiManager.startScan()`                                                                                                                         | No (normal)                                                                                     |
+| `ACCESS_FINE_LOCATION`                        | 0.2.0 | SSID/BSSID of the current network, and `startScan()` / `getScanResults()` on **every** Android version, including 13+                                         | Yes — from the Dashboard Wi-Fi card or the Wi-Fi Analyzer, on user request                      |
+| `REQUEST_INSTALL_PACKAGES`                    | 1.0.0 | Installing self-updates downloaded from this app's GitHub releases                                                                                            | No — the user allows "Install unknown apps" for the app once, from the update prompt            |
+| `UPDATE_PACKAGES_WITHOUT_USER_ACTION`         | 1.0.0 | Android 12+: lets the app update itself without a confirmation dialog (`PackageInstaller.SessionParams.setRequireUserAction`)                                 | No (normal)                                                                                     |
+| `BLUETOOTH_SCAN` (Android 12+)                | 1.0.0 | Bluetooth scanner. Declared with `neverForLocation`: the app never derives location from scans (Android then filters some beacon-only adverts)                | Yes — "Nearby devices", from the Bluetooth view, on user request                                |
+| `BLUETOOTH_CONNECT` (Android 12+)             | 1.0.0 | Names of nearby and paired devices                                                                                                                            | Yes — same "Nearby devices" dialog                                                              |
+| `BLUETOOTH`, `BLUETOOTH_ADMIN` (≤ Android 11) | 1.0.0 | Bluetooth scanning on older versions (`maxSdkVersion="30"`); these versions also require precise location for scans                                           | No (normal)                                                                                     |
+| `ACCESS_COARSE_LOCATION`                      | 0.2.0 | Must be requested together with fine location on Android 12+                                                                                                  | Yes — same dialog                                                                               |
+| `ACCESS_LOCAL_NETWORK` (Android 17+)          | 1.1.1 | Talking to the router and devices on the home network: LAN scanner, network map, device identification, router measurements, tools aimed at a private address | Yes — "Nearby devices", asked only when one of these is started; no prompt from the home screen |
 
 Location is never read, stored or transmitted; the permission only unlocks the
 Wi-Fi data Android ties to it. SSIDs, BSSIDs and scan results also require
@@ -55,15 +56,24 @@ The tools in milestone 5 only need `INTERNET`:
 
 ### LAN scanner and local network access
 
-The LAN scanner (milestone 6) also needs only `INTERNET`, because the app
-targets SDK 36. Per the official
-[local network permission guide](https://developer.android.com/privacy-and-security/local-network-permission),
-apps targeting SDK 36 or lower get an implicit grant of `ACCESS_LOCAL_NETWORK`
-and must **not** declare or request it. Raising `targetSdk` to 37 makes local
-network traffic (TCP, UDP, mDNS, `NsdManager`) blocked by default; before that
-the app must declare `ACCESS_LOCAL_NETWORK`, request it from the LAN scanner
-with an explanation, and handle denial (TCP then times out, UDP fails with
-`EPERM`).
+The app targets SDK 37, so on Android 17 and newer local network traffic
+(TCP, UDP, mDNS, SSDP, NetBIOS, pings to the router) needs the
+`ACCESS_LOCAL_NETWORK` runtime permission
+([official guide](https://developer.android.com/privacy-and-security/local-network-permission)).
+It is in the `NEARBY_DEVICES` group, so a user who allowed Bluetooth is not
+asked again. On Android 16 and older it is granted implicitly with `INTERNET`
+and never requested.
+
+How the app asks (`src/services/permissions/localNetworkPermission.ts`):
+
+- Only when the user starts something that needs it: a LAN scan, the network
+  map, a health check, or a tool (ping, traceroute, port scan, HTTP, TLS,
+  monitor) aimed at a private, link-local or `.local` address.
+- The home screen never asks; it simply skips the router measurement.
+- When refused, the screen shows what the permission is for and a button to
+  allow it again, or to open the app settings after "Don't allow again".
+  Without it, the map still shows the path to the internet and the health
+  check measures everything except the router.
 
 Other Android limits the scanner works within:
 
@@ -97,11 +107,7 @@ Wi-Fi Aware or Wi-Fi RTT).
 
 Each row is added to the manifest in the milestone that needs it. Behavior must
 be re-checked against the official Android documentation at that time, since it
-differs between Android versions.
-
-| Permission / API                     | Milestone | Purpose                                                                    | Notes                                                                                               |
-| ------------------------------------ | --------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| `ACCESS_LOCAL_NETWORK` (Android 17+) | 9         | LAN scanner, port scanner, gateway checks once `targetSdk` is raised to 37 | Runtime permission in the `NEARBY_DEVICES` group; must be requested in context from the LAN scanner |
+differs between Android versions. Nothing is planned at the moment.
 
 ## Handling rules
 

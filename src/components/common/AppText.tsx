@@ -3,6 +3,12 @@ import { Text, type TextProps, type TextStyle } from 'react-native';
 
 import { useTheme, type ThemeColors, type TypographyVariant } from '../../app/theme';
 
+/**
+ * Text follows the system font size up to this factor. Beyond it, fixed-size
+ * elements (tab bar, badges, diagrams) would cut text off.
+ */
+export const MAX_FONT_SCALE = 1.3;
+
 export interface AppTextProps extends TextProps {
   variant?: TypographyVariant;
   color?: keyof ThemeColors;
@@ -20,6 +26,7 @@ export function AppText({
   const theme = useTheme();
   return (
     <Text
+      maxFontSizeMultiplier={MAX_FONT_SCALE}
       {...rest}
       style={[
         theme.typography[variant],

@@ -1,4 +1,8 @@
 import { isIPv4 } from '../../../domain/algorithms/ip';
+import {
+  hasLocalNetwork,
+  requestLocalNetwork,
+} from '../../../services/permissions/localNetworkPermission';
 import type { TopologyHop } from '../../../domain/algorithms/topology';
 import { getNetworkSnapshot } from '../../../native/network';
 import { ping } from '../../../native/netTools';
@@ -62,6 +66,12 @@ async function trace(active: () => boolean): Promise<void> {
   }
 }
 
+/** Asks for local network access; the map still draws the internet path without it. */
+async function allowLocal(): Promise<boolean> {
+  if (await hasLocalNetwork()) return true;
+  return (await requestLocalNetwork()) === 'granted';
+}
+
 /** Measures everything the map shows. Re-running cancels the previous build. */
 export async function buildTopologyMap(): Promise<void> {
   const store = useTopologyStore.getState();
@@ -79,7 +89,7 @@ export async function buildTopologyMap(): Promise<void> {
       return;
     }
 
-    const local = snapshot.transport !== 'cellular';
+    const local = snapshot.transport !== 'cellular' && (await allowLocal());
     const gateway = local ? snapshot.gateways.find(isIPv4) ?? null : null;
     const lan = useLanStore.getState();
     const scanning = isLanScanning(lan.phase);

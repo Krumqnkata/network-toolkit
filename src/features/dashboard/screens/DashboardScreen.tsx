@@ -13,6 +13,7 @@ import {
   Screen,
   SectionHeader,
 } from '../../../components/common';
+import { SettingsButton } from '../../../components/common/SettingsButton';
 import { Icon } from '../../../components/icons/Icon';
 import { LocationNotice } from '../../../components/permissions/LocationNotice';
 import { displayName } from '../../../domain/algorithms/devices';
@@ -232,29 +233,13 @@ export function DashboardScreen() {
   const use = speedUse(speed?.downloadMbps ?? null);
   const blocker = snapshot && hasWifi(snapshot) ? ssidBlocker(snapshot) : null;
 
-  const settingsButton = (
-    <Pressable
-      testID="open-settings"
-      accessibilityRole="button"
-      accessibilityLabel={t.settings}
-      hitSlop={12}
-      onPress={() => navigation.navigate('Settings')}
-      style={[
-        styles.iconButton,
-        { backgroundColor: theme.colors.surfaceRaised, borderRadius: theme.radius.pill },
-      ]}
-    >
-      <Icon name="settings" color={theme.colors.textSecondary} size={22} />
-    </Pressable>
-  );
-
   return (
     <Screen
       overline={t.overline}
       title={title}
       onRefresh={onRefresh}
       refreshing={refreshing}
-      headerAction={settingsButton}
+      headerAction={<SettingsButton />}
     >
       <UpdatePanel compact />
 
@@ -578,12 +563,6 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-  },
-  iconButton: {
-    alignItems: 'center',
-    height: 40,
-    justifyContent: 'center',
-    width: 40,
   },
   loading: {
     alignItems: 'center',

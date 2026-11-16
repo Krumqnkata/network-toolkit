@@ -75,6 +75,11 @@ export const en = {
     signal: 'Signal',
   },
   permissions: {
+    localNetworkTitle: 'Allow access to your home network',
+    localNetworkBody:
+      'Android 17 asks before apps talk to the router and devices on your network. Network Toolkit needs it to find devices, draw the map and measure your router. It does not affect the internet.',
+    localNetworkBlocked:
+      'Access to the home network is turned off. Open the app settings, then Permissions, then Nearby devices, and allow it.',
     ssidTitle: 'Show the network name',
     ssidBody:
       'Android only reveals the Wi-Fi name (SSID) and access point (BSSID) to apps with precise location access. Network Toolkit does not read, store or send your location.',

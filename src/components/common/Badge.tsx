@@ -28,7 +28,7 @@ export function Badge({ label, tone = 'neutral' }: { label: string; tone?: Badge
         },
       ]}
     >
-      <AppText variant="overline" color={color}>
+      <AppText variant="overline" color={color} numberOfLines={1}>
         {label}
       </AppText>
     </View>
@@ -39,6 +39,8 @@ const styles = StyleSheet.create({
   badge: {
     alignSelf: 'flex-start',
     borderWidth: 1,
+    // Never squeezed by a long title next to it.
+    flexShrink: 0,
     paddingVertical: 2,
   },
 });

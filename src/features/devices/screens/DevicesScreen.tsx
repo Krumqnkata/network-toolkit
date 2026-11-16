@@ -1,6 +1,7 @@
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 
+import { SettingsButton } from '../../../components/common/SettingsButton';
 import type { MainTabParamList } from '../../../app/navigation/types';
 import { Screen, SegmentedControl } from '../../../components/common';
 import { useStrings } from '../../../i18n';
@@ -21,7 +22,7 @@ export function DevicesScreen() {
   }, [route.params?.mode]);
 
   return (
-    <Screen title={s.devices.title}>
+    <Screen title={s.devices.title} headerAction={<SettingsButton />}>
       <SegmentedControl
         testID="devices-mode"
         accessibilityLabel={s.devices.title}
