@@ -3,7 +3,10 @@ import { create } from 'zustand';
 import type { LanDevice } from '../domain/algorithms/devices';
 import type { AppError } from '../utils/errors';
 
-export type LanScanPhase = 'idle' | 'probing' | 'naming' | 'done';
+export type LanScanPhase = 'idle' | 'probing' | 'naming' | 'identifying' | 'done';
+
+export const isLanScanning = (phase: LanScanPhase) =>
+  phase === 'probing' || phase === 'naming' || phase === 'identifying';
 
 export interface LanScanInfo {
   cidr: string;

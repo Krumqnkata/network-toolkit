@@ -3,7 +3,7 @@ import type { TopologyHop } from '../../../domain/algorithms/topology';
 import { getNetworkSnapshot } from '../../../native/network';
 import { ping } from '../../../native/netTools';
 import { getCachedWifiScan } from '../../../native/wifi';
-import { useLanStore } from '../../../stores/lanStore';
+import { isLanScanning, useLanStore } from '../../../stores/lanStore';
 import { useTopologyStore } from '../../../stores/topologyStore';
 import { useWifiScanStore } from '../../../stores/wifiScanStore';
 import { logError, toAppError } from '../../../utils/errors';
@@ -82,7 +82,7 @@ export async function buildTopologyMap(): Promise<void> {
     const local = snapshot.transport !== 'cellular';
     const gateway = local ? snapshot.gateways.find(isIPv4) ?? null : null;
     const lan = useLanStore.getState();
-    const scanning = lan.phase === 'probing' || lan.phase === 'naming';
+    const scanning = isLanScanning(lan.phase);
 
     const tasks: Promise<unknown>[] = [trace(active)];
     if (gateway) {

@@ -115,3 +115,26 @@ export async function scanPorts(
     () => NativeLanModule.scanPorts(host, ports, timeoutMs),
   );
 }
+
+const bannerSchema = z.object({
+  address: z.string(),
+  port: z.number().int(),
+  text: z.string(),
+  bytes: z.number().int().nonnegative(),
+  connectMs: z.number().nonnegative(),
+});
+
+export type Banner = z.infer<typeof bannerSchema>;
+
+/** Greeting or reply of a service on a local device (SSH, HTTP…). Private addresses only. */
+export function readBanner(
+  host: string,
+  port: number,
+  payload = '',
+  options: { maxBytes?: number; timeoutMs?: number } = {},
+): Promise<Banner> {
+  const { maxBytes = 4096, timeoutMs = 2000 } = options;
+  return call(bannerSchema, 'banner', () =>
+    NativeLanModule.readBanner(host, port, payload, maxBytes, timeoutMs),
+  );
+}

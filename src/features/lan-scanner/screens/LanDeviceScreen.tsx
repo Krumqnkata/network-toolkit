@@ -15,9 +15,15 @@ import {
 } from '../../../components/common';
 import { Icon } from '../../../components/icons/Icon';
 import { displayName, guessKind, modelName } from '../../../domain/algorithms/devices';
+import {
+  certificateName,
+  certificateOrganization,
+  identify,
+} from '../../../domain/algorithms/fingerprint';
 import { serviceName } from '../../../domain/algorithms/ports';
 import { isRandomizedMac } from '../../../domain/algorithms/subnet';
 import { useStrings } from '../../../i18n';
+import type { LanDevice } from '../../../domain/algorithms/devices';
 import { useLanStore } from '../../../stores/lanStore';
 import { formatMs } from '../../network-tools/components/ToolFrame';
 import { KIND_ICON } from '../components/deviceIcon';
@@ -114,6 +120,8 @@ export function LanDeviceScreen({ route, navigation }: Props) {
         </View>
       )}
 
+      {device.fingerprint ? <IdentificationCard device={device} /> : null}
+
       {device.openPorts.length > 0 ? (
         <>
           <SectionHeader title={d.openPorts} />
@@ -153,6 +161,60 @@ export function LanDeviceScreen({ route, navigation }: Props) {
         </>
       ) : null}
     </Screen>
+  );
+}
+
+function IdentificationCard({ device }: { device: LanDevice }) {
+  const d = useStrings().lan.device;
+  const fingerprint = device.fingerprint;
+  if (!fingerprint) return null;
+  const { brand } = identify(fingerprint);
+  const { http, ssh } = fingerprint;
+  const certificate = certificateName(fingerprint.tlsSubject);
+  const issuer =
+    certificateOrganization(fingerprint.tlsIssuer) ?? certificateName(fingerprint.tlsIssuer);
+  const rows: { id: string; label: string; value: string }[] = [];
+  if (fingerprint.os && fingerprint.ttl !== null) {
+    rows.push({
+      id: 'os',
+      label: d.os,
+      value: d.osValue(d.osFamilies[fingerprint.os], fingerprint.ttl),
+    });
+  }
+  if (brand) rows.push({ id: 'brand', label: d.brand, value: brand });
+  if (fingerprint.vendor) rows.push({ id: 'vendor', label: d.vendor, value: fingerprint.vendor });
+  if (http?.title || http?.realm) {
+    rows.push({ id: 'web-title', label: d.webTitle, value: (http.title ?? http.realm) as string });
+  }
+  if (http?.server) rows.push({ id: 'web-server', label: d.webServer, value: http.server });
+  if (ssh) rows.push({ id: 'ssh', label: d.ssh, value: d.sshValue(ssh.software, ssh.os) });
+  if (certificate) rows.push({ id: 'certificate', label: d.certificate, value: certificate });
+  if (certificate && issuer && issuer !== certificate) {
+    rows.push({ id: 'issuer', label: d.certificateIssuer, value: issuer });
+  }
+
+  return (
+    <>
+      <SectionHeader title={d.identification} />
+      <Card testID="device-identification">
+        {rows.length ? (
+          rows.map(row => (
+            <InfoRow
+              key={row.id}
+              testID={`ident-${row.id}`}
+              label={row.label}
+              value={row.value}
+              mono={false}
+            />
+          ))
+        ) : (
+          <AppText color="textSecondary">{d.nothingFound}</AppText>
+        )}
+        <AppText variant="caption" color="textMuted">
+          {d.identificationHint}
+        </AppText>
+      </Card>
+    </>
   );
 }
 

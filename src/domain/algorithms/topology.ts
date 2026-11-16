@@ -8,6 +8,7 @@
  * are drawn under the router; only this phone is attached to its own AP.
  */
 import { isPrivateIPv4 } from './ip';
+import { macVendor } from './vendor';
 import { frequencyToBand, type WifiBand } from './wifi';
 
 export type TopoNodeType =
@@ -52,6 +53,8 @@ export interface TopoNode {
   /** The access point this phone is connected to. */
   connected?: boolean;
   signalDbm?: number | null;
+  /** Maker of the access point, from its BSSID (IEEE registry). */
+  vendor?: string | null;
 }
 
 export interface TopologyHop {
@@ -340,6 +343,8 @@ export function buildTopology(input: TopologyInput): Topology {
           id: `ap-${index}`,
           type: 'ap',
           kind: 'ap',
+          name: groupVendor(group.bssids),
+          vendor: groupVendor(group.bssids),
           address: group.bssids[0] ?? null,
           detail: group.bands.map(band => `${band} GHz`).join(' · ') || null,
           parent: local.id,
@@ -354,6 +359,7 @@ export function buildTopology(input: TopologyInput): Topology {
       });
     } else if (groups[0]) {
       local.bands = groups[0].bands;
+      local.vendor = groupVendor(groups[0].bssids);
     }
   }
 
@@ -423,6 +429,15 @@ export function buildTopology(input: TopologyInput): Topology {
   }
 
   return { nodes, hiddenHops, hiddenDevices, doubleNat, cgnat, reached };
+}
+
+/** First registered maker among an access point's BSSIDs (random ones have none). */
+function groupVendor(bssids: readonly string[]): string | null {
+  for (const bssid of bssids) {
+    const vendor = macVendor(bssid);
+    if (vendor) return vendor;
+  }
+  return null;
 }
 
 function compareAddress(a: string, b: string): number {

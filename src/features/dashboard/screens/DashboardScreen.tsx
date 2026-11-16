@@ -28,7 +28,7 @@ import { formatMbps } from '../../../domain/algorithms/speed';
 import type { NetworkSnapshot, WifiLink } from '../../../domain/models/network';
 import { formatDateTime, formatTime, useLanguage, useStrings } from '../../../i18n';
 import { useHomeStore, type LatencyTarget } from '../../../stores/homeStore';
-import { useLanStore } from '../../../stores/lanStore';
+import { isLanScanning, useLanStore } from '../../../stores/lanStore';
 import { useMonitorStore } from '../../../stores/monitorStore';
 import { useSpeedTestStore } from '../../../stores/speedTestStore';
 import { logError } from '../../../utils/errors';
@@ -412,7 +412,7 @@ export function DashboardScreen() {
           icon="lan"
           title={t.devices}
           value={
-            lanPhase === 'probing' || lanPhase === 'naming'
+            isLanScanning(lanPhase)
               ? t.devicesScanning
               : lanDevices > 0
               ? t.devicesValue(lanDevices)

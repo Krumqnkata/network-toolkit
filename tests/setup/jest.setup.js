@@ -46,6 +46,7 @@ jest.mock('../../src/native/specs/NativeLanModule', () => ({
     mdnsQuery: jest.fn(),
     ssdpSearch: jest.fn(),
     scanPorts: jest.fn(),
+    readBanner: jest.fn(() => Promise.reject(new Error('connection refused'))),
   },
 }));
 

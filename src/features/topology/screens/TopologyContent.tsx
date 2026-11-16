@@ -9,7 +9,7 @@ import { displayName, guessKind, modelName } from '../../../domain/algorithms/de
 import { buildTopology, type TopoNode, type Topology } from '../../../domain/algorithms/topology';
 import { formatTime, useLanguage, useStrings } from '../../../i18n';
 import { useBluetoothStore } from '../../../stores/bluetoothStore';
-import { useLanStore } from '../../../stores/lanStore';
+import { isLanScanning, useLanStore } from '../../../stores/lanStore';
 import { useTopologyStore } from '../../../stores/topologyStore';
 import { useWifiScanStore } from '../../../stores/wifiScanStore';
 import { ErrorNotice, FormCard } from '../../network-tools/components/ToolFrame';
@@ -87,7 +87,7 @@ export function TopologyContent() {
   const status = building
     ? tracing
       ? t.tracing(hops.length)
-      : lanPhase === 'probing' || lanPhase === 'naming'
+      : isLanScanning(lanPhase)
       ? t.findingDevices(lanCount)
       : null
     : builtAt
@@ -202,6 +202,7 @@ function NodeDetails({
         </AppText>
       ) : null}
       {node.address ? <InfoRow label={t.fields.address} value={node.address} /> : null}
+      {node.vendor ? <InfoRow label={t.fields.vendor} value={node.vendor} mono={false} /> : null}
       {node.detail && node.type !== 'ap' ? (
         <InfoRow label={t.fields.model} value={node.detail} mono={false} />
       ) : null}

@@ -16,7 +16,7 @@ import {
 import { Icon } from '../../../components/icons/Icon';
 import { displayName, guessKind, modelName } from '../../../domain/algorithms/devices';
 import { formatTime, useLanguage, useStrings } from '../../../i18n';
-import { useLanStore } from '../../../stores/lanStore';
+import { isLanScanning, useLanStore } from '../../../stores/lanStore';
 import { ErrorNotice, FormCard, ToolFrame } from '../../network-tools/components/ToolFrame';
 import { KIND_ICON } from '../components/deviceIcon';
 import { cancelLanScan, startLanScan } from '../services/lanScan';
@@ -29,13 +29,15 @@ export function LanScannerContent() {
   const t = s.lan;
   const navigation = useNavigation();
   const { phase, progress, devices, info, error } = useLanStore();
-  const scanning = phase === 'probing' || phase === 'naming';
+  const scanning = isLanScanning(phase);
 
   const status =
     phase === 'probing'
       ? t.probing(Math.round((progress / 0.8) * 100))
       : phase === 'naming'
       ? t.naming
+      : phase === 'identifying'
+      ? t.identifying
       : info?.finishedAt
       ? t.lastScan(formatTime(info.finishedAt, language))
       : null;

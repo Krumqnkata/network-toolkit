@@ -14,6 +14,7 @@ import {
   supportsWps,
   type RssiSample,
 } from '../../../domain/algorithms/wifiAnalysis';
+import { macVendor } from '../../../domain/algorithms/vendor';
 import type { ScannedNetwork } from '../../../domain/models/wifiScan';
 import { useStrings } from '../../../i18n';
 
@@ -46,6 +47,9 @@ export function NetworkRow({ network, color, connected, history, showDivider }: 
     .filter(Boolean)
     .join(' · ');
 
+  // Access points rarely randomize their BSSID, so the registry names the maker.
+  const vendor = macVendor(network.bssid);
+
   return (
     <View
       accessible
@@ -56,6 +60,7 @@ export function NetworkRow({ network, color, connected, history, showDivider }: 
         details,
         tags,
         network.bssid,
+        vendor,
       ]
         .filter(Boolean)
         .join(', ')}
@@ -97,7 +102,7 @@ export function NetworkRow({ network, color, connected, history, showDivider }: 
             color="textMuted"
             style={{ fontFamily: theme.typography.mono.fontFamily }}
           >
-            {network.bssid}
+            {vendor ? `${network.bssid} · ${vendor}` : network.bssid}
           </AppText>
         ) : null}
       </View>

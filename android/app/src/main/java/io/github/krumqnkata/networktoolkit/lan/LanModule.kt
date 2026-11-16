@@ -175,6 +175,30 @@ class LanModule(reactContext: ReactApplicationContext) : NativeLanModuleSpec(rea
             }
         }
 
+    override fun readBanner(
+        host: String,
+        port: Double,
+        payload: String,
+        maxBytes: Double,
+        timeoutMs: Double,
+        promise: Promise,
+    ) = execute(promise) {
+        val banner = BannerReader.read(
+            requireIp(host),
+            HostInput.requirePort(port.toInt()),
+            payload,
+            maxBytes.toInt(),
+            timeout(timeoutMs),
+        )
+        Arguments.createMap().apply {
+            putString("address", banner.address)
+            putInt("port", banner.port)
+            putString("text", banner.text)
+            putInt("bytes", banner.bytes)
+            putDouble("connectMs", banner.connectMs)
+        }
+    }
+
     private fun requireIp(value: String): InetAddress {
         val trimmed = value.trim()
         require(HostInput.isIpLiteral(trimmed)) { "Not an IP address: $value" }

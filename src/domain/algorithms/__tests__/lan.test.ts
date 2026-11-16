@@ -35,6 +35,7 @@ const device = (overrides: Partial<LanDevice> = {}): LanDevice => ({
   workgroup: null,
   mac: null,
   upnp: null,
+  fingerprint: null,
   ...overrides,
 });
 
