@@ -11,13 +11,30 @@ Release notes.
 
 ## [0.2.0-beta.2] - 2026-11-16
 
-First feature pre-release: the MVP (milestones 1–5). It has not yet been
-tested on physical devices; please report problems in the issue tracker.
+First feature pre-release: the MVP (milestones 1–5) plus the LAN scanner
+(milestone 6). It has not yet been tested on physical devices; please report
+problems in the issue tracker.
 `v0.2.0-beta.1` was tagged but never published because its release build
 failed (see Fixed).
 
 ### Added
 
+- LAN Scanner (milestone 6): sweeps the Wi-Fi/Ethernet subnet (up to a /22;
+  larger subnets are reduced to the /24 around the phone) with parallel
+  non-blocking TCP connects to common ports plus ICMP for silent hosts, and
+  discovers devices that announce themselves via mDNS/DNS-SD and SSDP/UPnP.
+  Devices are named from UPnP descriptions, mDNS TXT records, NetBIOS,
+  reverse DNS and mDNS host names, and categorized (router, phone, computer,
+  printer, TV, speaker, storage, camera, smart home). Results stay available
+  while the app is open; scans can be stopped.
+- Device details with model, host names, NetBIOS workgroup and MAC (when the
+  device reports it), mDNS services, open discovery ports, and shortcuts to
+  Ping, Port Scanner and the device's web interface.
+- Port Scanner: TCP connect scan of a common-ports preset, 1–1024 or a custom
+  list/range, in batches of 256 with a 1 s timeout, showing open ports with
+  service names and closed/no-reply counts.
+- `NativeLanModule` (Kotlin): batched NIO connect prober, NetBIOS node status,
+  mDNS legacy-unicast and SSDP discovery without a multicast lock.
 - Network tools (milestone 5), all reachable from the Tools tab:
   - **Ping** — repeated or continuous ICMP echo via the system `ping`, with
     loss, min/avg/max, jitter and a latency chart; IPv4/IPv6 selection; falls
