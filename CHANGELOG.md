@@ -9,6 +9,11 @@ Release notes.
 
 ## [Unreleased]
 
+## [0.2.0-beta.1] - 2026-11-16
+
+First feature pre-release: the MVP (milestones 1–5). It has not yet been
+tested on physical devices; please report problems in the issue tracker.
+
 ### Added
 
 - Network tools (milestone 5), all reachable from the Tools tab:
@@ -91,5 +96,6 @@ Release notes.
 - Tag-driven release workflow that builds, signs, verifies and publishes the
   APK, AAB and SHA-256 checksums.
 
-[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v0.1.0-alpha.1...HEAD
+[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v0.2.0-beta.1...HEAD
+[0.2.0-beta.1]: https://github.com/Krumqnkata/network-toolkit/compare/v0.1.0-alpha.1...v0.2.0-beta.1
 [0.1.0-alpha.1]: https://github.com/Krumqnkata/network-toolkit/releases/tag/v0.1.0-alpha.1
