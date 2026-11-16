@@ -6,10 +6,11 @@ import { Screen, SegmentedControl } from '../../../components/common';
 import { useStrings } from '../../../i18n';
 import { BluetoothContent } from '../../bluetooth/screens/BluetoothContent';
 import { LanScannerContent } from '../../lan-scanner/screens/LanScannerScreen';
+import { TopologyContent } from '../../topology/screens/TopologyContent';
 
-export type DevicesMode = 'network' | 'bluetooth';
+export type DevicesMode = 'network' | 'bluetooth' | 'map';
 
-/** Devices tab: devices on the network (LAN scan) or nearby over Bluetooth. */
+/** Devices tab: devices on the network (LAN scan), nearby over Bluetooth, or the network map. */
 export function DevicesScreen() {
   const s = useStrings();
   const route = useRoute<RouteProp<MainTabParamList, 'Devices'>>();
@@ -27,11 +28,18 @@ export function DevicesScreen() {
         options={[
           { value: 'network', label: s.devices.network },
           { value: 'bluetooth', label: s.devices.bluetooth },
+          { value: 'map', label: s.devices.map },
         ]}
         value={mode}
         onChange={setMode}
       />
-      {mode === 'network' ? <LanScannerContent /> : <BluetoothContent />}
+      {mode === 'network' ? (
+        <LanScannerContent />
+      ) : mode === 'bluetooth' ? (
+        <BluetoothContent />
+      ) : (
+        <TopologyContent />
+      )}
     </Screen>
   );
 }

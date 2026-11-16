@@ -17,6 +17,14 @@ Release notes.
   delay and loss it adds. A plain-language verdict says whether the Wi-Fi or
   mobile signal, the router, the provider's line or the internet beyond it is
   to blame, with advice. The result is included in shared reports.
+- **Network map** (Devices → Map). Builds itself by measuring the network:
+  the path to the internet (TTL-limited pings), your router, every access
+  point that broadcasts your network's name (mesh), the devices found by the
+  LAN scanner and nearby Bluetooth devices. Lines are coloured by the delay
+  each link adds, and wireless links are dashed. Tap a node for its address,
+  response time and what it is, and to open device details or ping it.
+  Double NAT and provider CGNAT are detected and explained. Packets are not
+  captured: Android does not allow that without root.
 
 ## [1.0.0] - 2026-11-16
 
