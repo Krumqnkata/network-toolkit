@@ -9,6 +9,26 @@ Release notes.
 
 ## [Unreleased]
 
+## [1.0.0-rc.5] - 2026-11-16
+
+### Fixed
+
+- Automatic updates between pre-releases were refused with "The APK is not
+  newer than the installed version": every `1.0.0-rc.N` had the same Android
+  `versionCode`. The versionCode now includes the pre-release stage
+  (`major·10⁷ + minor·10⁵ + patch·10³ + stage`, where alpha.N = 100+N,
+  beta.N = 300+N, rc.N = 500+N and a release = 999), so each build is higher
+  than the previous one. All new codes are above those of rc.1–rc.4, so
+  installed copies update normally; rc.4 is skipped.
+- Update errors are explained in the app's language instead of the native
+  English message.
+
+### Changed
+
+- New app icon (adaptive, with a themed monochrome variant for Android 13+).
+- New fonts with full Bulgarian and English support: Inter for text and
+  JetBrains Mono (without ligatures) for technical values.
+
 ## [1.0.0-rc.4] - 2026-11-16
 
 A simpler home screen and Bluetooth tools. This is also the first version that
@@ -252,7 +272,8 @@ failed (see Fixed).
 - Tag-driven release workflow that builds, signs, verifies and publishes the
   APK, AAB and SHA-256 checksums.
 
-[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.4...HEAD
+[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.5...HEAD
+[1.0.0-rc.5]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.4...v1.0.0-rc.5
 [1.0.0-rc.4]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.3...v1.0.0-rc.4
 [1.0.0-rc.3]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.2...v1.0.0-rc.3
 [1.0.0-rc.2]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.1...v1.0.0-rc.2

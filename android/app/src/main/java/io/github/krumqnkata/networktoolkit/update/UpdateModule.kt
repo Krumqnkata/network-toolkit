@@ -120,12 +120,12 @@ class UpdateModule(reactContext: ReactApplicationContext) : NativeUpdateModuleSp
                 UpdateState.install = InstallStatus("installing", null)
                 commit(file)
                 promise.resolve(null)
+            } catch (error: UpdateRejected) {
+                UpdateState.install = InstallStatus("failure", error.message)
+                promise.reject(error.code, error.message ?: "Invalid update", error)
             } catch (error: IllegalArgumentException) {
                 UpdateState.install = InstallStatus("failure", error.message)
                 promise.reject("E_INVALID_INPUT", error.message ?: "Invalid update", error)
-            } catch (error: SecurityException) {
-                UpdateState.install = InstallStatus("failure", error.message)
-                promise.reject("E_UPDATE_SIGNATURE", error.message ?: "Update is not signed by this app's key", error)
             } catch (error: Exception) {
                 UpdateState.install = InstallStatus("failure", error.message)
                 promise.reject("E_UPDATE", error.message ?: "Install failed", error)
@@ -196,14 +196,22 @@ class UpdateModule(reactContext: ReactApplicationContext) : NativeUpdateModuleSp
     /** Same package, newer version, same signing certificate as the installed app. */
     private fun verifyApk(file: File) {
         val flags = signingFlags()
-        val candidate = archiveInfo(file, flags) ?: throw IllegalArgumentException("The file is not a valid APK")
-        require(candidate.packageName == context.packageName) { "The APK belongs to another app" }
+        val candidate = archiveInfo(file, flags)
+            ?: throw UpdateRejected("E_UPDATE_INVALID_APK", "The file is not a valid APK")
+        if (candidate.packageName != context.packageName) {
+            throw UpdateRejected("E_UPDATE_PACKAGE", "The APK belongs to another app")
+        }
         val installed = packageInfo(context.packageName, flags)
-        require(versionCode(candidate) > versionCode(installed)) { "The APK is not newer than the installed version" }
+        if (versionCode(candidate) <= versionCode(installed)) {
+            throw UpdateRejected("E_UPDATE_NOT_NEWER", "The APK is not newer than the installed version")
+        }
         if (!UpdateRules.sameSigners(signers(installed), signers(candidate))) {
-            throw SecurityException("The APK is not signed with this app's key")
+            throw UpdateRejected("E_UPDATE_SIGNATURE", "The APK is not signed with this app's key")
         }
     }
+
+    /** A downloaded APK that must not be installed; `code` lets the UI explain why. */
+    private class UpdateRejected(val code: String, message: String) : Exception(message)
 
     private fun commit(file: File) {
         val installer = context.packageManager.packageInstaller

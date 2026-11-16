@@ -9,6 +9,7 @@ import { SpeedTestScreen } from '../../features/speed-test/screens/SpeedTestScre
 import { WifiAnalyzerScreen } from '../../features/wifi-analyzer/screens/WifiAnalyzerScreen';
 import { useStrings } from '../../i18n';
 import { useTheme } from '../theme';
+import { fontFamilies } from '../theme/tokens';
 import type { MainTabParamList } from './types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -47,7 +48,7 @@ export function MainTabs() {
           backgroundColor: theme.colors.tabBar,
           borderTopColor: theme.colors.border,
         },
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
+        tabBarLabelStyle: { fontFamily: fontFamilies.sans, fontSize: 11, fontWeight: '600' },
         tabBarIcon: TAB_ICONS[route.name],
       })}
     >

@@ -14,21 +14,29 @@ react {
 
 /**
  * Versioning — package.json is the single source of truth.
- * versionName = package.json "version" (SemVer, e.g. 1.2.3 or 1.2.3-beta.1)
- * versionCode = major * 1_000_000 + minor * 1_000 + patch
+ * versionName = package.json "version": X.Y.Z or X.Y.Z-(alpha|beta|rc).N
+ * versionCode = major * 10_000_000 + minor * 100_000 + patch * 1_000 + stage
+ *   stage = alpha.N → 100 + N, beta.N → 300 + N, rc.N → 500 + N, release → 999
+ * so every pre-release has its own, increasing versionCode (Android and the
+ * in-app updater only install a higher versionCode). Releases up to 1.0.0-rc.4
+ * used major * 1_000_000 + minor * 1_000 + patch; every code of this scheme is
+ * higher, so those builds update normally.
  * The release workflow checks that the Git tag matches package.json.
  */
 def packageJson = new JsonSlurper().parse(rootProject.file("../package.json"))
 def appVersionName = packageJson.version as String
-def semver = appVersionName =~ /^(\d+)\.(\d+)\.(\d+)(?:-[0-9A-Za-z.-]+)?$/
+def semver = appVersionName =~ /^(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)\.(\d+))?$/
 if (!semver.matches()) {
-    throw new GradleException("package.json version '${appVersionName}' is not valid SemVer")
+    throw new GradleException("package.json version '${appVersionName}' must be X.Y.Z or X.Y.Z-(alpha|beta|rc).N")
 }
 def (major, minor, patch) = [semver.group(1), semver.group(2), semver.group(3)].collect { it.toInteger() }
-if (minor > 999 || patch > 999) {
-    throw new GradleException("Minor and patch versions must be <= 999 to fit the versionCode scheme")
+def stage = semver.group(4)
+def stageNumber = semver.group(5) ? semver.group(5).toInteger() : 0
+if (major > 200 || minor > 99 || patch > 99 || stageNumber < 1 && stage || stageNumber > 199) {
+    throw new GradleException("Version '${appVersionName}' does not fit the versionCode scheme")
 }
-def appVersionCode = major * 1_000_000 + minor * 1_000 + patch
+def stageRank = stage ? [alpha: 100, beta: 300, rc: 500][stage] + stageNumber : 999
+def appVersionCode = major * 10_000_000 + minor * 100_000 + patch * 1_000 + stageRank
 
 /**
  * Release signing. Credentials are never stored in the repository: they come

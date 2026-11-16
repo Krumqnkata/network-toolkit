@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/assets/logo.svg" alt="Network Toolkit logo" width="112" height="112" />
+<img src="docs/assets/icon.png" alt="Network Toolkit logo" width="112" height="112" />
 
 # Network Toolkit
 
@@ -153,3 +153,6 @@ privately as described in [SECURITY.md](SECURITY.md).
 
 Network Toolkit is free software, licensed under the
 [GNU Affero General Public License v3.0 only](LICENSE) (`AGPL-3.0-only`).
+
+Bundled fonts (Inter, JetBrains Mono) and data are listed in
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

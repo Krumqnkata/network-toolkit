@@ -31,7 +31,11 @@ Keystores (`*.keystore`, except the public debug keystore) are ignored by Git.
 
 1. Make sure `main` is green in CI.
 2. Update the version in `package.json` (this drives `versionName` and
-   `versionCode` in the Android build).
+   `versionCode` in the Android build). Versions must be `X.Y.Z` or
+   `X.Y.Z-(alpha|beta|rc).N`; the versionCode is
+   `major·10⁷ + minor·10⁵ + patch·10³ + stage` (alpha.N = 100+N, beta.N =
+   300+N, rc.N = 500+N, release = 999), so every build is higher than the one
+   before — the in-app updater and Android refuse anything else.
 3. In `CHANGELOG.md`, rename **Unreleased** to `## [X.Y.Z] - YYYY-MM-DD` and
    start a new empty **Unreleased** section.
 4. Commit (`chore(release): vX.Y.Z`), merge to `main`, then tag and push:
