@@ -89,7 +89,6 @@ export const typography = {
     fontSize: 44,
     lineHeight: 52,
     fontWeight: '700',
-    letterSpacing: -0.5,
     fontVariant: ['tabular-nums'],
   },
   display: {
@@ -97,7 +96,6 @@ export const typography = {
     fontSize: 28,
     lineHeight: 36,
     fontWeight: '700',
-    letterSpacing: -0.3,
   },
   title: { fontFamily: fontFamilies.sans, fontSize: 20, lineHeight: 28, fontWeight: '600' },
   heading: { fontFamily: fontFamilies.sans, fontSize: 16, lineHeight: 22, fontWeight: '600' },
@@ -108,7 +106,9 @@ export const typography = {
     fontSize: 11,
     lineHeight: 14,
     fontWeight: '600',
-    letterSpacing: 1.2,
+    // Small positive spacing only: Android measures text without it, and a
+    // wide value cuts the last letter off.
+    letterSpacing: 0.4,
     textTransform: 'uppercase',
   },
   mono: {

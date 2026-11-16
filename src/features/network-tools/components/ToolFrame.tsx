@@ -1,5 +1,8 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { isLocalNetworkError } from '../../../services/permissions/localNetworkPermission';
+import { LocalNetworkNotice } from '../../../components/permissions/LocalNetworkNotice';
 import React from 'react';
+import { SettingsButton } from '../../../components/common/SettingsButton';
 import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../../app/theme';
@@ -23,6 +26,7 @@ export function ToolFrame({ toolId, children }: { toolId: ToolId; children: Reac
       subtitle={text.description}
       onBack={pushed ? () => navigation.goBack() : undefined}
       backLabel={s.netTools.back}
+      headerAction={pushed ? undefined : <SettingsButton />}
     >
       {children}
     </Screen>
@@ -46,6 +50,7 @@ export function errorTitle(error: AppError, s: Strings): string {
 export function ErrorNotice({ error }: { error: AppError }) {
   const theme = useTheme();
   const s = useStrings();
+  if (isLocalNetworkError(error)) return <LocalNetworkNotice />;
   return (
     <Card testID="tool-error" accessibilityLiveRegion="polite">
       <View style={[styles.column, { gap: theme.spacing.xs }]}>

@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+import {
+  hasLocalNetwork,
+  requestLocalNetwork,
+} from '../../../services/permissions/localNetworkPermission';
 import { speedResults } from '../../../database/repositories';
 import { Repository } from '../../../database/storage';
 import { diagnose, type Finding } from '../../../domain/algorithms/diagnosis';
@@ -60,6 +64,14 @@ export async function runHealthCheck(
   onCheck?: (result: CheckResult) => void,
 ): Promise<HealthReport> {
   const snapshot = await getNetworkSnapshot();
+  // Asked here, by the user's tap; without it the router can't be measured.
+  if (
+    snapshot.transport !== 'none' &&
+    snapshot.transport !== 'cellular' &&
+    !(await hasLocalNetwork())
+  ) {
+    await requestLocalNetwork();
+  }
   // The segment probes take a few seconds; they run alongside the checks.
   const locationPromise: Promise<ProblemLocation | null> =
     snapshot.transport === 'none'

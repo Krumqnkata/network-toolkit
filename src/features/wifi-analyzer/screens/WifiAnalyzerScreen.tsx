@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { SettingsButton } from '../../../components/common/SettingsButton';
 import { StyleSheet, Switch, View } from 'react-native';
 
 import { useTheme } from '../../../app/theme';
@@ -75,7 +76,7 @@ export function WifiAnalyzerScreen() {
   const wifiOff = result !== null && result.locationEnabled && !result.wifiEnabled;
 
   return (
-    <Screen title={a.title} subtitle={a.subtitle}>
+    <Screen title={a.title} subtitle={a.subtitle} headerAction={<SettingsButton />}>
       {needsPermission ? (
         <LocationNotice purpose="scan" reason="permission" onGranted={onPermissionGranted} />
       ) : null}

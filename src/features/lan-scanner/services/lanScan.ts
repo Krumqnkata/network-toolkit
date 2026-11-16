@@ -7,6 +7,7 @@ import {
   type MdnsService,
   type UpnpInfo,
 } from '../../../domain/algorithms/devices';
+import { ensureLocalNetwork } from '../../../services/permissions/localNetworkPermission';
 import { DNS_RECORD_TYPES } from '../../../domain/algorithms/dns';
 import { isIPv4, reverseDnsName } from '../../../domain/algorithms/ip';
 import { chunk, DISCOVERY_PORTS } from '../../../domain/algorithms/ports';
@@ -237,6 +238,7 @@ export async function startLanScan(): Promise<void> {
   update({ runId, phase: 'probing', progress: 0, devices: [], error: null });
 
   try {
+    await ensureLocalNetwork();
     const target = scanTargetFrom(await getNetworkSnapshot());
     const range = scanRange(target.localAddress, target.prefixLength);
     if (!range) throw new AppError('unsupported', 'This network is too small to scan.');

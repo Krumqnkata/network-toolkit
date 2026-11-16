@@ -1,5 +1,6 @@
 import { act, render, screen, userEvent } from '@testing-library/react-native';
 import React from 'react';
+import { PermissionsAndroid, Platform } from 'react-native';
 
 import { App } from '../src/app/App';
 import NativeStorageModule from '../src/native/specs/NativeStorageModule';
@@ -241,6 +242,23 @@ describe('LAN scanner', () => {
     expect(screen.getByTestId('ident-web-server')).toHaveTextContent(/nginx/);
     expect(screen.getByTestId('ident-ssh')).toHaveTextContent(/OpenSSH 8\.2p1/);
     expect(screen.getByText('Storage')).toBeOnTheScreen();
+  });
+
+  it('asks for local network access on Android 17 and explains a refusal', async () => {
+    jest.spyOn(Platform, 'Version', 'get').mockReturnValue(37);
+    jest.spyOn(PermissionsAndroid, 'check').mockResolvedValue(false);
+    const request = jest
+      .spyOn(PermissionsAndroid, 'request')
+      .mockResolvedValue(PermissionsAndroid.RESULTS.DENIED);
+    const user = await openTool(/^LAN Scanner/);
+
+    await user.press(screen.getByTestId('lan-scan'));
+
+    expect(await screen.findByTestId('local-network-notice')).toHaveTextContent(
+      /Allow access to your home network/,
+    );
+    expect(request).toHaveBeenCalledWith('android.permission.ACCESS_LOCAL_NETWORK');
+    expect(lan.probeHosts).not.toHaveBeenCalled();
   });
 
   it('explains that a scan needs Wi-Fi or Ethernet', async () => {

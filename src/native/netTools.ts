@@ -9,7 +9,10 @@ import type {
   TlsResult,
 } from '../domain/models/netTools';
 import { AppError, toAppError } from '../utils/errors';
+import { ensureLocalNetworkFor } from '../services/permissions/localNetworkPermission';
 import NativeNetToolsModule from './specs/NativeNetToolsModule';
+
+const hostOf = (url: string) => /^[a-z]+:\/\/(\[[^\]]+\]|[^/:?#]+)/i.exec(url)?.[1];
 
 const familySchema = z.enum(['ipv4', 'ipv6']);
 
@@ -100,7 +103,14 @@ export function parseNative<T>(schema: z.ZodType<T>, raw: unknown, what: string)
   return result.data;
 }
 
-async function call<T>(schema: z.ZodType<T>, what: string, fn: () => Promise<unknown>): Promise<T> {
+async function call<T>(
+  schema: z.ZodType<T>,
+  what: string,
+  fn: () => Promise<unknown>,
+  host?: string,
+): Promise<T> {
+  // Android 17+: a home address needs the local network permission first.
+  if (host) await ensureLocalNetworkFor(host);
   let raw: unknown;
   try {
     raw = await fn();
@@ -119,8 +129,11 @@ export interface PingOptions {
 
 export function ping(host: string, options: PingOptions = {}): Promise<PingProbe> {
   const { family = 'any', ttl = 0, timeoutMs = 2000 } = options;
-  return call(pingProbeSchema, 'ping', () =>
-    NativeNetToolsModule.ping(host, family, ttl, timeoutMs),
+  return call(
+    pingProbeSchema,
+    'ping',
+    () => NativeNetToolsModule.ping(host, family, ttl, timeoutMs),
+    host,
   );
 }
 
@@ -142,8 +155,11 @@ export function tcpConnect(
   family: AddressFamily = 'any',
   timeoutMs = 3000,
 ): Promise<TcpConnectResult> {
-  return call(tcpConnectResultSchema, 'TCP', () =>
-    NativeNetToolsModule.tcpConnect(host, port, family, timeoutMs),
+  return call(
+    tcpConnectResultSchema,
+    'TCP',
+    () => NativeNetToolsModule.tcpConnect(host, port, family, timeoutMs),
+    host,
   );
 }
 
@@ -153,11 +169,19 @@ export function httpRequest(
   maxRedirects = 10,
   timeoutMs = 10_000,
 ): Promise<HttpResult> {
-  return call(httpResultSchema, 'HTTP', () =>
-    NativeNetToolsModule.httpRequest(url, method, maxRedirects, timeoutMs),
+  return call(
+    httpResultSchema,
+    'HTTP',
+    () => NativeNetToolsModule.httpRequest(url, method, maxRedirects, timeoutMs),
+    hostOf(url),
   );
 }
 
 export function tlsInspect(host: string, port = 443, timeoutMs = 10_000): Promise<TlsResult> {
-  return call(tlsResultSchema, 'TLS', () => NativeNetToolsModule.tlsInspect(host, port, timeoutMs));
+  return call(
+    tlsResultSchema,
+    'TLS',
+    () => NativeNetToolsModule.tlsInspect(host, port, timeoutMs),
+    host,
+  );
 }

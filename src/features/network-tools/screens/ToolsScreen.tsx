@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
+import { SettingsButton } from '../../../components/common/SettingsButton';
 import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../../app/theme';
@@ -27,7 +28,7 @@ export function ToolsScreen() {
   };
 
   return (
-    <Screen title={s.tools.title} subtitle={s.tools.subtitle}>
+    <Screen title={s.tools.title} subtitle={s.tools.subtitle} headerAction={<SettingsButton />}>
       {groups.map(({ category, tools }) => (
         <React.Fragment key={category}>
           <SectionHeader title={s.tools.categories[category]} />
