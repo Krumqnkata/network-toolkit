@@ -542,6 +542,50 @@ export const en = {
       `${problems} ${problems === 1 ? 'problem' : 'problems'} · ${warnings} ${
         warnings === 1 ? 'warning' : 'warnings'
       }`,
+    locator: {
+      title: 'Where is the problem?',
+      measuring: 'Measuring each part of the connection…',
+      nodes: {
+        phone: 'This phone',
+        router: 'Router',
+        provider: 'Provider',
+        operator: 'Mobile operator',
+        internet: 'Internet',
+      },
+      links: {
+        wifi: 'Wi-Fi',
+        cable: 'Cable',
+        provider: 'Provider line',
+        radio: 'Mobile network',
+        internet: 'Internet',
+      },
+      linkValue: (ms: string, loss: number) => (loss > 0 ? `${ms} · ${loss}% lost` : ms),
+      noData: 'no data',
+      verdict: {
+        none: 'Every part of the connection looks fine.',
+        'local-wifi': 'The problem is the Wi-Fi between this phone and the router.',
+        'local-radio': 'The problem is the mobile network signal.',
+        router: 'The router does not answer: it may be frozen.',
+        access: 'The problem is the line between your router and your provider.',
+        internet: 'The problem is beyond your provider, on the internet.',
+        offline: 'Not connected to any network.',
+        unknown: 'The internet could not be reached, so the cause is unclear.',
+      },
+      advice: {
+        none: 'If something still feels slow, the website or service itself may be busy.',
+        'local-wifi':
+          'Move closer to the router, remove obstacles, or switch to 5 GHz. Restarting the router can help.',
+        'local-radio':
+          'Move to a spot with better coverage, near a window or outdoors, or use Wi-Fi.',
+        router: 'Restart the router by unplugging it for 30 seconds.',
+        access:
+          'Restart the modem/router. If it continues, contact your provider with this report.',
+        internet:
+          'This is usually temporary. Try again later or contact your provider if it persists.',
+        offline: 'Turn on Wi-Fi or mobile data.',
+        unknown: 'Check that the router is connected to the internet, then run the check again.',
+      },
+    },
     items: {
       offline: {
         title: 'Not connected',
