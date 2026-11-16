@@ -9,10 +9,12 @@ Release notes.
 
 ## [Unreleased]
 
-## [0.2.0-beta.1] - 2026-11-16
+## [0.2.0-beta.2] - 2026-11-16
 
 First feature pre-release: the MVP (milestones 1–5). It has not yet been
 tested on physical devices; please report problems in the issue tracker.
+`v0.2.0-beta.1` was tagged but never published because its release build
+failed (see Fixed).
 
 ### Added
 
@@ -74,6 +76,14 @@ tested on physical devices; please report problems in the issue tracker.
   when location services are off.
 - Kotlin unit tests for network value normalization.
 
+### Fixed
+
+- Release builds failed while bundling JavaScript: Zod 4 uses
+  `export * as … from`, which the React Native Babel preset does not
+  transform. Added `@babel/plugin-transform-export-namespace-from`, and CI now
+  bundles the release JavaScript on every pull request so this is caught
+  before tagging.
+
 ## [0.1.0-alpha.1] - 2026-11-15
 
 > **Test pre-release.** This build verifies the signed release pipeline. It
@@ -96,6 +106,6 @@ tested on physical devices; please report problems in the issue tracker.
 - Tag-driven release workflow that builds, signs, verifies and publishes the
   APK, AAB and SHA-256 checksums.
 
-[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v0.2.0-beta.1...HEAD
-[0.2.0-beta.1]: https://github.com/Krumqnkata/network-toolkit/compare/v0.1.0-alpha.1...v0.2.0-beta.1
+[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v0.2.0-beta.2...HEAD
+[0.2.0-beta.2]: https://github.com/Krumqnkata/network-toolkit/compare/v0.1.0-alpha.1...v0.2.0-beta.2
 [0.1.0-alpha.1]: https://github.com/Krumqnkata/network-toolkit/releases/tag/v0.1.0-alpha.1

@@ -42,6 +42,14 @@ jobs:
       - name: Jest (unit + component tests) with coverage
         run: npm run test:coverage -- --ci
 
+      # Debug builds load JS from Metro, so only a release bundle catches Babel
+      # transform problems (e.g. syntax in dependencies) before a release.
+      - name: Bundle release JavaScript
+        run: >-
+          npx react-native bundle --platform android --dev false --minify true
+          --entry-file index.js --bundle-output "$RUNNER_TEMP/index.android.bundle"
+          --assets-dest "$RUNNER_TEMP/assets"
+
       - name: Audit runtime dependencies
         run: npm audit --omit=dev --audit-level=high
 
