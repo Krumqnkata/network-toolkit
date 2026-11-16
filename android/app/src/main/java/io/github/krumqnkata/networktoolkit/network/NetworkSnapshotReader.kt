@@ -102,7 +102,7 @@ class NetworkSnapshotReader(context: Context) {
         val info: WifiInfo = manager.connectionInfo ?: return null
         if (info.supplicantState != SupplicantState.COMPLETED) return null
 
-        val sdk = Build.VERSION.SDK_INT
+        // Version checks use Build.VERSION.SDK_INT directly so Android lint can verify them.
         return WifiLink(
             ssid = NetworkFormat.normalizeSsid(info.ssid),
             bssid = NetworkFormat.normalizeBssid(info.bssid),
@@ -110,12 +110,31 @@ class NetworkSnapshotReader(context: Context) {
             rssi = NetworkFormat.normalizeRssi(info.rssi),
             frequencyMhz = NetworkFormat.positiveOrNull(info.frequency),
             linkSpeedMbps = NetworkFormat.positiveOrNull(info.linkSpeed),
-            txLinkSpeedMbps = if (sdk >= Build.VERSION_CODES.Q) NetworkFormat.positiveOrNull(info.txLinkSpeedMbps) else null,
-            rxLinkSpeedMbps = if (sdk >= Build.VERSION_CODES.Q) NetworkFormat.positiveOrNull(info.rxLinkSpeedMbps) else null,
-            maxTxLinkSpeedMbps =
-                if (sdk >= Build.VERSION_CODES.R) NetworkFormat.positiveOrNull(info.maxSupportedTxLinkSpeedMbps) else null,
-            wifiStandard = if (sdk >= Build.VERSION_CODES.R) NetworkFormat.positiveOrNull(info.wifiStandard) else null,
-            security = if (sdk >= Build.VERSION_CODES.S) securityName(info.currentSecurityType) else null,
+            txLinkSpeedMbps = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                NetworkFormat.positiveOrNull(info.txLinkSpeedMbps)
+            } else {
+                null
+            },
+            rxLinkSpeedMbps = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                NetworkFormat.positiveOrNull(info.rxLinkSpeedMbps)
+            } else {
+                null
+            },
+            maxTxLinkSpeedMbps = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                NetworkFormat.positiveOrNull(info.maxSupportedTxLinkSpeedMbps)
+            } else {
+                null
+            },
+            wifiStandard = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                NetworkFormat.positiveOrNull(info.wifiStandard)
+            } else {
+                null
+            },
+            security = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                securityName(info.currentSecurityType)
+            } else {
+                null
+            },
         )
     }
 
