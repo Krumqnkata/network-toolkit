@@ -52,7 +52,27 @@ jest.mock('../../src/native/specs/NativeLanModule', () => ({
 jest.mock('../../src/native/specs/NativeSpeedTestModule', () => ({
   __esModule: true,
   default: {
-    start: jest.fn(),
+    // A started test reports the latency phase first; tests override as needed.
+    start: jest.fn(() =>
+      Promise.resolve({
+        phase: 'latency',
+        progress: 0,
+        currentMbps: null,
+        downloadMbps: null,
+        uploadMbps: null,
+        idleLatencyMs: null,
+        jitterMs: null,
+        downloadLatencyMs: null,
+        uploadLatencyMs: null,
+        packetLossPercent: null,
+        bytesDownloaded: 0,
+        bytesUploaded: 0,
+        serverColo: null,
+        serverCity: null,
+        serverCountry: null,
+        error: null,
+      }),
+    ),
     // Idle by default: the Speed tab reads the status when it is first shown.
     getStatus: jest.fn(() =>
       Promise.resolve({

@@ -9,6 +9,25 @@ Release notes.
 
 ## [Unreleased]
 
+### Changed
+
+- Simpler home screen for everyone: a diagram from your internet provider
+  (name and public IP) to this phone (name and local IP) with an "Online"
+  status, a one-sentence summary ("Your internet is working well."), a large
+  "Start speed test" button that starts the test right away, the latest result
+  with what it is good for ("Great for 4K video and video calls"), a "What
+  affects your speed" card and response times to google.com, youtube.com,
+  cloudflare.com and your router. IP, DNS and channel details are folded into
+  "Technical details".
+- Mobile data: operator, network generation (5G/4G/3G/2G) and signal in dBm
+  with a plain rating, read from Android's signal report (no extra
+  permission), and the device name from the system settings.
+
+### Added
+
+- Settings → Data: "Show my public IP and provider" (on by default) controls
+  the public IP lookup of the home screen.
+
 ## [1.0.0-rc.3] - 2026-11-16
 
 ### Added

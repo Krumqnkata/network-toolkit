@@ -5,7 +5,8 @@ import type { ToolId } from '../../features/network-tools/toolCatalog';
 export type MainTabParamList = {
   Dashboard: undefined;
   WifiAnalyzer: undefined;
-  SpeedTest: undefined;
+  /** `autoStart` begins a test as soon as the tab opens (home "Start speed test"). */
+  SpeedTest: { autoStart?: number } | undefined;
   Devices: undefined;
   Tools: undefined;
 };

@@ -36,27 +36,30 @@ SSID and BSSID additionally require precise location (`ACCESS_FINE_LOCATION`)
 **and** location services turned on; otherwise they are `null`, and
 `locationPermission` / `locationEnabled` tell the UI why.
 
-| Field                                  | Type                                                          | Source / notes                                                   |
-| -------------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `timestamp`                            | number (ms)                                                   | Time of the read                                                 |
-| `transport`                            | `wifi` `cellular` `ethernet` `bluetooth` `vpn` `other` `none` | Primary transport of the active network                          |
-| `isVpn`                                | boolean                                                       | `TRANSPORT_VPN`                                                  |
-| `hasInternet`                          | boolean                                                       | `NET_CAPABILITY_INTERNET`                                        |
-| `isValidated`                          | boolean                                                       | `NET_CAPABILITY_VALIDATED` — Android's connectivity check passed |
-| `isCaptivePortal`                      | boolean                                                       | `NET_CAPABILITY_CAPTIVE_PORTAL`                                  |
-| `isMetered`                            | boolean                                                       | Absence of `NET_CAPABILITY_NOT_METERED`                          |
-| `downstreamKbps`, `upstreamKbps`       | number \| null                                                | Link bandwidth **estimates** from Android                        |
-| `interfaceName`                        | string \| null                                                | e.g. `wlan0`, `rmnet_data0`                                      |
-| `addresses`                            | `IpAddress[]`                                                 | `address`, `prefixLength`, `family` (`ipv4`/`ipv6`), `scope`     |
-| `gateways`                             | string[]                                                      | Gateways of default routes                                       |
-| `dnsServers`                           | string[]                                                      | DNS servers of the active network                                |
-| `privateDnsActive`, `privateDnsServer` | boolean/string \| null                                        | Android 9+                                                       |
-| `domains`                              | string \| null                                                | Search domains                                                   |
-| `mtu`                                  | number \| null                                                | Android 10+                                                      |
-| `wifi`                                 | `WifiLink` \| null                                            | Present while associated to Wi-Fi, also when a VPN is active     |
-| `cellularOperator`                     | string \| null                                                | `TelephonyManager.getNetworkOperatorName()` on mobile data       |
-| `locationPermission`                   | boolean                                                       | Precise location granted                                         |
-| `locationEnabled`                      | boolean                                                       | Location services on                                             |
+| Field                                  | Type                                                          | Source / notes                                                               |
+| -------------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `timestamp`                            | number (ms)                                                   | Time of the read                                                             |
+| `transport`                            | `wifi` `cellular` `ethernet` `bluetooth` `vpn` `other` `none` | Primary transport of the active network                                      |
+| `isVpn`                                | boolean                                                       | `TRANSPORT_VPN`                                                              |
+| `hasInternet`                          | boolean                                                       | `NET_CAPABILITY_INTERNET`                                                    |
+| `isValidated`                          | boolean                                                       | `NET_CAPABILITY_VALIDATED` — Android's connectivity check passed             |
+| `isCaptivePortal`                      | boolean                                                       | `NET_CAPABILITY_CAPTIVE_PORTAL`                                              |
+| `isMetered`                            | boolean                                                       | Absence of `NET_CAPABILITY_NOT_METERED`                                      |
+| `downstreamKbps`, `upstreamKbps`       | number \| null                                                | Link bandwidth **estimates** from Android                                    |
+| `interfaceName`                        | string \| null                                                | e.g. `wlan0`, `rmnet_data0`                                                  |
+| `addresses`                            | `IpAddress[]`                                                 | `address`, `prefixLength`, `family` (`ipv4`/`ipv6`), `scope`                 |
+| `gateways`                             | string[]                                                      | Gateways of default routes                                                   |
+| `dnsServers`                           | string[]                                                      | DNS servers of the active network                                            |
+| `privateDnsActive`, `privateDnsServer` | boolean/string \| null                                        | Android 9+                                                                   |
+| `domains`                              | string \| null                                                | Search domains                                                               |
+| `mtu`                                  | number \| null                                                | Android 10+                                                                  |
+| `wifi`                                 | `WifiLink` \| null                                            | Present while associated to Wi-Fi, also when a VPN is active                 |
+| `cellularOperator`                     | string \| null                                                | `TelephonyManager.getNetworkOperatorName()` on mobile data                   |
+| `cellularGeneration`                   | `5G` `4G` `3G` `2G` \| null                                   | Newest technology in `SignalStrength.getCellSignalStrengths()` (Android 10+) |
+| `cellularDbm`, `cellularLevel`         | number \| null                                                | dBm of that report; Android's 0–4 level (Android 9+); no permission needed   |
+| `deviceName`                           | string \| null                                                | `Settings.Global.DEVICE_NAME`, else `Build.MODEL`                            |
+| `locationPermission`                   | boolean                                                       | Precise location granted                                                     |
+| `locationEnabled`                      | boolean                                                       | Location services on                                                         |
 
 `WifiLink`:
 

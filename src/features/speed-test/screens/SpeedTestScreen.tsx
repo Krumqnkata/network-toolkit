@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useRoute, type RouteProp } from '@react-navigation/native';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import type { MainTabParamList } from '../../../app/navigation/types';
 import { useTheme } from '../../../app/theme';
 import { SpeedGauge } from '../../../components/charts/SpeedGauge';
 import {
@@ -78,6 +80,18 @@ export function SpeedTestScreen() {
     }
     start();
   };
+
+  // "Start speed test" on the home screen opens this tab with a fresh autoStart value.
+  const route = useRoute<RouteProp<MainTabParamList, 'SpeedTest'>>();
+  const autoStart = route.params?.autoStart;
+  const onStartRef = useRef(onStart);
+  onStartRef.current = onStart;
+  const handledAutoStart = useRef<number | undefined>(undefined);
+  useEffect(() => {
+    if (autoStart === undefined || handledAutoStart.current === autoStart || running) return;
+    handledAutoStart.current = autoStart;
+    onStartRef.current();
+  }, [autoStart, running]);
 
   const phase = status?.phase ?? 'idle';
   const shownMbps = running

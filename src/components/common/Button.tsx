@@ -11,6 +11,8 @@ export interface ButtonProps {
   busy?: boolean;
   disabled?: boolean;
   testID?: string;
+  /** Full-width, taller button with larger text for the main action of a screen. */
+  block?: boolean;
 }
 
 export function Button({
@@ -20,6 +22,7 @@ export function Button({
   busy = false,
   disabled = false,
   testID,
+  block = false,
 }: ButtonProps) {
   const theme = useTheme();
   const primary = variant === 'primary';
@@ -35,12 +38,13 @@ export function Button({
       onPress={onPress}
       style={({ pressed }) => [
         styles.button,
+        block && styles.block,
         {
           backgroundColor: primary ? theme.colors.accent : 'transparent',
           borderColor: theme.colors.accent,
-          borderRadius: theme.radius.sm,
+          borderRadius: block ? theme.radius.md : theme.radius.sm,
           paddingHorizontal: theme.spacing.lg,
-          paddingVertical: theme.spacing.sm,
+          paddingVertical: block ? theme.spacing.lg : theme.spacing.sm,
           gap: theme.spacing.sm,
           opacity: inactive ? 0.6 : pressed ? 0.85 : 1,
         },
@@ -52,7 +56,11 @@ export function Button({
           color={primary ? theme.colors.onAccent : theme.colors.accent}
         />
       ) : null}
-      <AppText variant="caption" color={primary ? 'onAccent' : 'accent'} style={styles.label}>
+      <AppText
+        variant={block ? 'heading' : 'caption'}
+        color={primary ? 'onAccent' : 'accent'}
+        style={styles.label}
+      >
         {label}
       </AppText>
     </Pressable>
@@ -60,6 +68,11 @@ export function Button({
 }
 
 const styles = StyleSheet.create({
+  block: {
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+    minHeight: 56,
+  },
   button: {
     alignItems: 'center',
     alignSelf: 'flex-start',

@@ -20,7 +20,7 @@ describe('App shell', () => {
   it('starts on the home screen with all main tabs available', async () => {
     await render(<App />);
 
-    expect(await screen.findByRole('header', { name: 'Home Network' })).toBeOnTheScreen();
+    expect(await screen.findByRole('header', { name: 'Wi-Fi' })).toBeOnTheScreen();
     for (const tab of ['Home', 'Wi-Fi', 'Speed', 'Devices', 'Tools']) {
       // Tab buttons are announced as "<label>, tab, n of m".
       expect(screen.getByRole('button', { name: new RegExp(`^${tab}, tab`) })).toBeOnTheScreen();
@@ -64,7 +64,7 @@ describe('App shell', () => {
     expect(within(themeGroup).getByRole('radio', { name: 'System' })).not.toBeChecked();
 
     await user.press(screen.getByTestId('screen-back'));
-    expect(await screen.findByTestId('home-speed')).toBeOnTheScreen();
+    expect(await screen.findByTestId('home-run-speed')).toBeOnTheScreen();
   });
 
   it('switches the whole interface to Bulgarian', async () => {

@@ -51,4 +51,19 @@ object NetworkFormat {
             (address.address[0].toInt() and 0xfe) == 0xfc -> "unique-local"
             else -> "global"
         }
+
+    /** dBm from a CellSignalStrength, or null for "unavailable" (Integer.MAX_VALUE) and nonsense values. */
+    fun cellDbm(dbm: Int): Int? = if (dbm in -160..-20) dbm else null
+
+    private val GENERATION_RANK = mapOf("5G" to 4, "4G" to 3, "3G" to 2, "2G" to 1)
+
+    /**
+     * Picks the report of the newest generation; its dBm when known, otherwise
+     * the strongest known dBm of any report.
+     */
+    fun bestCellReport(reports: List<Pair<String, Int?>>): Pair<String, Int?>? {
+        val best = reports.maxByOrNull { GENERATION_RANK[it.first] ?: 0 } ?: return null
+        val dbm = best.second ?: reports.mapNotNull { it.second }.maxOrNull()
+        return best.first to dbm
+    }
 }

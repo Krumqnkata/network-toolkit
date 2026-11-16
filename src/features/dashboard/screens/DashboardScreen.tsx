@@ -1,5 +1,5 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import { useTheme, type ThemeColors } from '../../../app/theme';
@@ -14,9 +14,20 @@ import {
   SectionHeader,
 } from '../../../components/common';
 import { Icon } from '../../../components/icons/Icon';
+import { LocationNotice } from '../../../components/permissions/LocationNotice';
+import { isIPv4 } from '../../../domain/algorithms/ip';
 import { statsOf } from '../../../domain/algorithms/monitor';
+import {
+  cellularRating,
+  connectionSummary,
+  speedUse,
+  wifiRating,
+  type ConnectionSummary,
+} from '../../../domain/algorithms/plain';
+import { formatMbps } from '../../../domain/algorithms/speed';
 import type { NetworkSnapshot, WifiLink } from '../../../domain/models/network';
-import { formatTime, useLanguage, useStrings } from '../../../i18n';
+import { formatDateTime, formatTime, useLanguage, useStrings } from '../../../i18n';
+import { useHomeStore, type LatencyTarget } from '../../../stores/homeStore';
 import { useLanStore } from '../../../stores/lanStore';
 import { useMonitorStore } from '../../../stores/monitorStore';
 import { useSpeedTestStore } from '../../../stores/speedTestStore';
@@ -24,22 +35,29 @@ import { logError } from '../../../utils/errors';
 import { healthReports, type HealthReport } from '../../health-check/services/healthCheck';
 import { formatMs } from '../../network-tools/components/ToolFrame';
 import { UpdatePanel } from '../../updates/components/UpdatePanel';
+import { ConnectionDiagram } from '../components/ConnectionDiagram';
+import { FactorsCard, RATING_COLOR, type Factor } from '../components/FactorsCard';
 import { HomeTile } from '../components/HomeTile';
 import { IpConfigCard } from '../components/IpConfigCard';
-import { SignalCard } from '../components/SignalCard';
-import { SpeedHeroCard } from '../components/SpeedHeroCard';
+import { LatencyRow } from '../components/LatencyRow';
 import { WifiCard } from '../components/WifiCard';
-import { internetStatus, type InternetStatus } from '../format';
+import { formatBand, ssidBlocker } from '../format';
 import { useNetworkSnapshot } from '../hooks/useNetworkSnapshot';
+import {
+  loadHomeSettings,
+  refreshLatency,
+  refreshPublicInfo,
+  SITE_TARGETS,
+} from '../services/homeData';
 
-/** RSSI readings kept for the signal trend (about two minutes at 3 s polling). */
-const RSSI_HISTORY = 40;
-
-const STATUS_COLOR: Record<InternetStatus, keyof ThemeColors> = {
-  ok: 'success',
-  'captive-portal': 'warning',
-  checking: 'textMuted',
-  none: 'danger',
+const SUMMARY_COLOR: Record<ConnectionSummary, keyof ThemeColors> = {
+  good: 'success',
+  slow: 'warning',
+  'weak-signal': 'warning',
+  checking: 'textSecondary',
+  portal: 'warning',
+  'no-internet': 'danger',
+  offline: 'danger',
 };
 
 function hasWifi(snapshot: NetworkSnapshot): snapshot is NetworkSnapshot & { wifi: WifiLink } {
@@ -60,9 +78,29 @@ export function DashboardScreen() {
   const lanPhase = useLanStore(state => state.phase);
   const monitorRunning = useMonitorStore(state => state.running);
   const monitorAccumulator = useMonitorStore(state => state.accumulator);
+  const latency = useHomeStore(state => state.latency);
+  const latencyLoading = useHomeStore(state => state.latencyLoading);
+  const publicInfo = useHomeStore(state => state.publicInfo);
+  const showPublicInfo = useHomeStore(state => state.showPublicInfo);
+  const technicalOpen = useHomeStore(state => state.technicalOpen);
+  const setHome = useHomeStore(state => state.set);
   const [health, setHealth] = useState<HealthReport | null>(null);
-  const [rssiHistory, setRssiHistory] = useState<number[]>([]);
-  const lastTimestamp = useRef<number | null>(null);
+
+  const gateway = snapshot?.gateways.find(isIPv4) ?? null;
+  const targets = useMemo<LatencyTarget[]>(
+    // Mobile data has no router to measure, so the router entry is shown only with a gateway.
+    () =>
+      gateway
+        ? [...SITE_TARGETS, { id: 'gateway', host: gateway, label: t.gatewayLabel }]
+        : [...SITE_TARGETS],
+    [gateway, t.gatewayLabel],
+  );
+  const connectionKey = snapshot ? `${snapshot.transport}|${snapshot.wifi?.bssid ?? ''}` : null;
+  const lastConnection = useRef<string | null>(null);
+
+  useEffect(() => {
+    loadHomeSettings();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -74,34 +112,107 @@ export function DashboardScreen() {
     }, [loadSpeed]),
   );
 
-  // Collect one RSSI sample per new snapshot for the trend line.
-  useEffect(() => {
-    if (!snapshot || snapshot.timestamp === lastTimestamp.current) return;
-    lastTimestamp.current = snapshot.timestamp;
-    const rssi = snapshot.wifi?.rssi;
-    if (rssi === null || rssi === undefined) return;
-    setRssiHistory(previous => [...previous, rssi].slice(-RSSI_HISTORY));
-  }, [snapshot]);
+  // Latency and public info are refreshed on focus and whenever the network changes.
+  useFocusEffect(
+    useCallback(() => {
+      if (!connectionKey || connectionKey.startsWith('none')) return;
+      const changed = lastConnection.current !== connectionKey;
+      lastConnection.current = connectionKey;
+      refreshLatency(targets);
+      refreshPublicInfo(changed);
+    }, [connectionKey, targets]),
+  );
 
-  const status = snapshot ? internetStatus(snapshot) : null;
-  const statusText: Record<InternetStatus, string> = {
-    ok: s.dashboard.internet.ok,
-    'captive-portal': s.dashboard.internet.captivePortal,
-    checking: s.dashboard.internet.checking,
-    none: s.dashboard.internet.none,
+  const onRefresh = () => {
+    refresh();
+    refreshLatency(targets);
+    refreshPublicInfo(true);
   };
 
-  const networkName = !snapshot
-    ? s.dashboard.title
-    : snapshot.transport === 'none'
-    ? t.offline
-    : snapshot.transport === 'wifi'
-    ? snapshot.wifi?.ssid ?? t.wifiUnnamed
-    : s.transport[snapshot.transport];
+  const transport = snapshot?.transport ?? 'none';
+  const wifi = snapshot && hasWifi(snapshot) ? snapshot.wifi : null;
+  const signalRating =
+    transport === 'cellular'
+      ? cellularRating(snapshot?.cellularDbm ?? null, snapshot?.cellularLevel ?? null)
+      : wifiRating(wifi?.rssi ?? null);
+  const summary = snapshot
+    ? connectionSummary({
+        transport,
+        hasInternet: snapshot.hasInternet,
+        isValidated: snapshot.isValidated,
+        isCaptivePortal: snapshot.isCaptivePortal,
+        signal: signalRating,
+        latencies: SITE_TARGETS.map(target => latency[target.id] ?? null),
+      })
+    : null;
+
+  const titleByTransport: Record<string, string> = {
+    wifi: t.connection.wifi,
+    cellular: t.connection.cellular,
+    ethernet: t.connection.ethernet,
+    none: t.connection.none,
+  };
+  const title = snapshot ? titleByTransport[transport] ?? t.connection.other : s.dashboard.title;
+
+  const localIp =
+    snapshot?.addresses.find(address => address.family === 'ipv4')?.address ??
+    snapshot?.addresses[0]?.address ??
+    null;
+  const online = !!snapshot?.isValidated && !snapshot.isCaptivePortal;
+  const providerName =
+    transport === 'cellular' && snapshot?.cellularOperator
+      ? snapshot.cellularOperator
+      : publicInfo?.provider ?? (showPublicInfo && !publicInfo ? t.loadingProvider : t.provider);
+  const statusNode = snapshot?.isCaptivePortal
+    ? { text: t.portal, color: 'warning' as const }
+    : online
+    ? { text: t.available, color: 'success' as const }
+    : snapshot?.hasInternet
+    ? { text: s.dashboard.internet.checking, color: 'textSecondary' as const }
+    : { text: t.unavailable, color: 'danger' as const };
+
+  const factors: Factor[] = [];
+  if (transport === 'cellular' && snapshot) {
+    if (snapshot.cellularOperator) {
+      factors.push({ label: t.operatorLabel, value: snapshot.cellularOperator });
+    }
+    if (snapshot.cellularGeneration) {
+      factors.push({ label: t.standard, value: snapshot.cellularGeneration });
+    }
+    if (snapshot.cellularDbm !== null) {
+      factors.push({
+        label: t.signalStrength,
+        value: `${snapshot.cellularDbm} dBm`,
+        color: signalRating ? RATING_COLOR[signalRating] : undefined,
+      });
+    } else if (signalRating) {
+      factors.push({
+        label: t.signalStrength,
+        value: t.rating[signalRating],
+        color: RATING_COLOR[signalRating],
+      });
+    }
+  } else if (wifi) {
+    factors.push({
+      label: t.networkLabel,
+      value: wifi.ssid ?? (wifi.hiddenSsid ? s.dashboard.fields.hiddenNetwork : '—'),
+    });
+    const band = formatBand(wifi.frequencyMhz);
+    if (band) factors.push({ label: t.bandLabel, value: band });
+    if (wifi.rssi !== null) {
+      factors.push({
+        label: t.signalStrength,
+        value: `${wifi.rssi} dBm`,
+        color: signalRating ? RATING_COLOR[signalRating] : undefined,
+      });
+    }
+  }
 
   const problems = health?.findings.filter(finding => finding.severity === 'problem').length ?? 0;
   const warnings = health?.findings.filter(finding => finding.severity === 'warning').length ?? 0;
   const monitorStats = statsOf(monitorAccumulator);
+  const use = speedUse(speed?.downloadMbps ?? null);
+  const blocker = snapshot && hasWifi(snapshot) ? ssidBlocker(snapshot) : null;
 
   const settingsButton = (
     <Pressable
@@ -122,34 +233,12 @@ export function DashboardScreen() {
   return (
     <Screen
       overline={t.overline}
-      title={networkName}
-      onRefresh={refresh}
+      title={title}
+      onRefresh={onRefresh}
       refreshing={refreshing}
       headerAction={settingsButton}
     >
-      {snapshot ? (
-        <View testID="connection-card" style={[styles.status, { gap: theme.spacing.sm }]}>
-          {status ? (
-            <View style={[styles.row, { gap: theme.spacing.xs }]}>
-              <View style={[styles.dot, { backgroundColor: theme.colors[STATUS_COLOR[status]] }]} />
-              <AppText variant="body" color={STATUS_COLOR[status]} testID="internet-status">
-                {statusText[status]}
-              </AppText>
-            </View>
-          ) : (
-            <AppText variant="caption" color="textSecondary">
-              {s.dashboard.notConnectedHint}
-            </AppText>
-          )}
-          {snapshot.transport !== 'none' ? (
-            <AppText variant="caption" color="textMuted">
-              {s.dashboard.connectedVia(s.transport[snapshot.transport])}
-            </AppText>
-          ) : null}
-          {snapshot.isVpn ? <Badge label={s.dashboard.badges.vpn} tone="accent" /> : null}
-          {snapshot.isMetered ? <Badge label={s.dashboard.badges.metered} /> : null}
-        </View>
-      ) : null}
+      <UpdatePanel compact />
 
       {loading && !snapshot ? (
         <Card>
@@ -173,21 +262,150 @@ export function DashboardScreen() {
         </Card>
       ) : null}
 
-      <UpdatePanel compact />
-
-      <SpeedHeroCard
-        result={speed}
-        onRun={() => navigation.navigate('Main', { screen: 'SpeedTest' })}
-      />
-
-      {snapshot && hasWifi(snapshot) && snapshot.wifi.rssi !== null ? (
-        <SignalCard
-          wifi={snapshot.wifi}
-          history={rssiHistory}
-          onPress={() => navigation.navigate('Main', { screen: 'WifiAnalyzer' })}
+      {snapshot && transport !== 'none' ? (
+        <ConnectionDiagram
+          accessibilityLabel={`${providerName} ${publicInfo?.ip ?? ''} — ${statusNode.text} — ${
+            snapshot.deviceName ?? t.thisPhone
+          } ${localIp ?? ''}`}
+          lineColor={statusNode.color}
+          left={{
+            icon: transport === 'cellular' ? 'antenna' : 'globe',
+            title: providerName,
+            subtitle: publicInfo?.ip ?? null,
+            status: statusNode,
+          }}
+          right={{
+            icon: 'phone',
+            title: snapshot.deviceName ?? t.thisPhone,
+            subtitle: localIp,
+          }}
         />
       ) : null}
 
+      {snapshot && summary ? (
+        <View
+          testID="connection-card"
+          style={[
+            styles.summary,
+            {
+              backgroundColor: theme.colors.surface,
+              borderColor: theme.colors[SUMMARY_COLOR[summary]],
+              borderRadius: theme.radius.md,
+              padding: theme.spacing.md,
+              gap: theme.spacing.sm,
+            },
+          ]}
+        >
+          <View style={[styles.dot, { backgroundColor: theme.colors[SUMMARY_COLOR[summary]] }]} />
+          <AppText testID="internet-status" variant="body" style={styles.flex}>
+            {t.summary[summary]}
+          </AppText>
+          {snapshot.isVpn ? <Badge label={s.dashboard.badges.vpn} tone="accent" /> : null}
+          {snapshot.isMetered ? <Badge label={s.dashboard.badges.metered} /> : null}
+        </View>
+      ) : null}
+
+      <View style={[styles.row, { marginTop: theme.spacing.sm }]}>
+        <AppText variant="title" style={styles.flex}>
+          {t.speed}
+        </AppText>
+        <AppText
+          variant="body"
+          color="accent"
+          accessibilityRole="button"
+          onPress={() => navigation.navigate('Main', { screen: 'SpeedTest' })}
+        >
+          {t.allResults}
+        </AppText>
+      </View>
+      <Button
+        testID="home-run-speed"
+        block
+        label={t.startSpeedTest}
+        onPress={() =>
+          navigation.navigate('Main', { screen: 'SpeedTest', params: { autoStart: Date.now() } })
+        }
+      />
+      {speed ? (
+        <Card testID="home-speed" style={{ gap: theme.spacing.sm }}>
+          <View style={[styles.row, { gap: theme.spacing.lg }]}>
+            <View style={styles.flex}>
+              <View style={[styles.row, { gap: theme.spacing.xs }]}>
+                <Icon name="arrowDown" color={theme.colors.accent} size={16} />
+                <AppText variant="caption" color="textSecondary">
+                  {t.download}
+                </AppText>
+              </View>
+              <AppText variant="display" testID="home-download">
+                {formatMbps(speed.downloadMbps)}
+              </AppText>
+            </View>
+            <View style={styles.flex}>
+              <View style={[styles.row, { gap: theme.spacing.xs }]}>
+                <Icon name="arrowUp" color={theme.colors.info} size={16} />
+                <AppText variant="caption" color="textSecondary">
+                  {t.upload}
+                </AppText>
+              </View>
+              <AppText variant="display" testID="home-upload">
+                {formatMbps(speed.uploadMbps)}
+              </AppText>
+            </View>
+            <View style={styles.flex}>
+              <AppText variant="caption" color="textSecondary">
+                {t.ping}
+              </AppText>
+              <AppText variant="display">
+                {speed.idleLatencyMs === null ? '—' : Math.round(speed.idleLatencyMs)}
+              </AppText>
+            </View>
+          </View>
+          <AppText variant="caption" color="textMuted">
+            {`${t.mbps} · ${t.lastTest(formatDateTime(speed.finishedAt, language))}`}
+          </AppText>
+          {use ? (
+            <AppText testID="home-speed-use" variant="body" color="success">
+              {t.speedUse[use]}
+            </AppText>
+          ) : null}
+        </Card>
+      ) : (
+        <AppText variant="caption" color="textSecondary">
+          {t.noSpeed}
+        </AppText>
+      )}
+
+      {blocker ? <LocationNotice purpose="ssid" reason={blocker} onGranted={refresh} /> : null}
+
+      {factors.length > 0 ? (
+        <>
+          <SectionHeader title={t.factors} />
+          <FactorsCard
+            title={transport === 'cellular' ? t.factorsCellular : t.factorsWifi}
+            factors={factors}
+            rating={signalRating}
+          />
+        </>
+      ) : null}
+
+      {snapshot && transport !== 'none' ? (
+        <>
+          <AppText variant="title" style={{ marginTop: theme.spacing.sm }}>
+            {t.latencyTitle}
+          </AppText>
+          <AppText variant="caption" color="textMuted">
+            {t.latencyHint}
+          </AppText>
+          <LatencyRow
+            targets={targets}
+            latency={latency}
+            loading={latencyLoading}
+            onOpen={host => navigation.navigate('Tool', { toolId: 'ping', host })}
+          />
+        </>
+      ) : null}
+
+      <SectionHeader title={t.moreTools} />
       <View style={[styles.grid, { gap: theme.spacing.md }]}>
         <HomeTile
           testID="home-devices"
@@ -239,34 +457,56 @@ export function DashboardScreen() {
           testID="home-ip"
           icon="globe"
           title={t.publicIp}
-          value={t.publicIpValue}
+          value={publicInfo?.ip ?? t.publicIpValue}
           accessibilityLabel={t.open(t.publicIp)}
           onPress={() => navigation.navigate('Tool', { toolId: 'ip-info' })}
         />
       </View>
 
-      {snapshot && hasWifi(snapshot) ? (
-        <>
-          <SectionHeader title={s.dashboard.sections.wifi} />
-          <WifiCard snapshot={snapshot} onPermissionGranted={refresh} />
-        </>
+      {snapshot && transport !== 'none' ? (
+        <Pressable
+          testID="toggle-technical"
+          accessibilityRole="button"
+          accessibilityState={{ expanded: technicalOpen }}
+          onPress={() => setHome({ technicalOpen: !technicalOpen })}
+          style={[styles.row, { gap: theme.spacing.sm, paddingVertical: theme.spacing.sm }]}
+        >
+          <View style={styles.flex}>
+            <AppText variant="heading">{technicalOpen ? t.showLess : t.technical}</AppText>
+            {technicalOpen ? null : (
+              <AppText variant="caption" color="textMuted">
+                {t.technicalHint}
+              </AppText>
+            )}
+          </View>
+          <Icon
+            name={technicalOpen ? 'arrowUp' : 'arrowDown'}
+            color={theme.colors.textSecondary}
+            size={20}
+          />
+        </Pressable>
       ) : null}
 
-      {snapshot?.cellularOperator ? (
+      {snapshot && technicalOpen ? (
         <>
-          <SectionHeader title={s.dashboard.sections.cellular} />
-          <Card>
-            <InfoRow
-              label={s.dashboard.fields.operator}
-              value={snapshot.cellularOperator}
-              mono={false}
-            />
-          </Card>
-        </>
-      ) : null}
-
-      {snapshot && snapshot.transport !== 'none' ? (
-        <>
+          {hasWifi(snapshot) ? (
+            <>
+              <SectionHeader title={s.dashboard.sections.wifi} />
+              <WifiCard snapshot={snapshot} onPermissionGranted={refresh} />
+            </>
+          ) : null}
+          {snapshot.cellularOperator ? (
+            <>
+              <SectionHeader title={s.dashboard.sections.cellular} />
+              <Card>
+                <InfoRow
+                  label={s.dashboard.fields.operator}
+                  value={snapshot.cellularOperator}
+                  mono={false}
+                />
+              </Card>
+            </>
+          ) : null}
           <SectionHeader title={t.details} />
           <IpConfigCard snapshot={snapshot} />
         </>
@@ -283,9 +523,12 @@ export function DashboardScreen() {
 
 const styles = StyleSheet.create({
   dot: {
-    borderRadius: 4,
-    height: 8,
-    width: 8,
+    borderRadius: 5,
+    height: 10,
+    width: 10,
+  },
+  flex: {
+    flex: 1,
   },
   grid: {
     flexDirection: 'row',
@@ -305,10 +548,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
-  status: {
+  summary: {
     alignItems: 'center',
+    borderWidth: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: -12,
   },
 });
