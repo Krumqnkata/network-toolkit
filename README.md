@@ -29,14 +29,15 @@ native app.
 Planned feature modules. The **Status** column reflects what is actually
 implemented in the current code.
 
-| Module                   | Highlights                                                                                    | Status    |
-| ------------------------ | --------------------------------------------------------------------------------------------- | --------- |
-| **Dashboard**            | Connection type, IP, gateway, DNS, Wi-Fi signal, internet reachability, quick access to tools | Available |
-| **Wi-Fi Analyzer**       | 2.4 / 5 / 6 GHz scans, SSID/BSSID, RSSI, channels, overlap analysis, signal history           | Available |
-| **Network Tools**        | Ping, traceroute, DNS & reverse DNS, reachability, HTTP headers, TLS certificates, IP info    | Available |
-| **LAN Scanner**          | TCP/ICMP sweep, mDNS, SSDP/UPnP and NetBIOS discovery, device names and types, port scanner   | Available |
-| **Internet Diagnostics** | Download / upload speed, latency, jitter, packet loss, latency under load (bufferbloat)       | Available |
-| **Advanced Diagnostics** | Connection monitoring, outage tracking, automatic problem detection, text/JSON reports        | Available |
+| Module                   | Highlights                                                                                     | Status    |
+| ------------------------ | ---------------------------------------------------------------------------------------------- | --------- |
+| **Dashboard**            | Connection type, IP, gateway, DNS, Wi-Fi signal, internet reachability, quick access to tools  | Available |
+| **Wi-Fi Analyzer**       | 2.4 / 5 / 6 GHz scans, SSID/BSSID, RSSI, channels, overlap analysis, signal history            | Available |
+| **Network Tools**        | Ping, traceroute, DNS & reverse DNS, reachability, HTTP headers, TLS certificates, IP info     | Available |
+| **LAN Scanner**          | TCP/ICMP sweep, mDNS, SSDP/UPnP and NetBIOS discovery, device names and types, port scanner    | Available |
+| **Internet Diagnostics** | Download / upload speed, latency, jitter, packet loss, latency under load (bufferbloat)        | Available |
+| **Advanced Diagnostics** | Connection monitoring, outage tracking, "where is the problem?" per-segment diagnosis, reports | Available |
+| **Network Map**          | Self-building topology: path to the internet, router, mesh access points, LAN and Bluetooth    | Available |
 
 Design principles:
 
@@ -136,8 +137,9 @@ Read more in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 The first public version (MVP) covers milestones 1–5: dashboard, network
 information, Wi-Fi Analyzer, ping and DNS lookup.
 
-Ideas for after 1.0: MikroTik RouterOS integration, network topology map,
-device identification and smarter diagnostics.
+After 1.0: per-segment diagnosis and the network map are done; smarter
+device identification (HTTP/SSH/TLS banners, OS guess from TTL, access point
+vendor) is next. MikroTik RouterOS integration remains an idea.
 
 ## Changelog
 
