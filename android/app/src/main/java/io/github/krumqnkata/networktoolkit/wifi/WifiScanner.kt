@@ -1,6 +1,7 @@
 package io.github.krumqnkata.networktoolkit.wifi
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -92,6 +93,9 @@ class WifiScanner(context: Context) {
             putArray("networks", Arguments.createArray())
         }
 
+    // Only reached through scan()/cached(), which call preconditions() first and
+    // throw MissingPermissionException without ACCESS_FINE_LOCATION.
+    @SuppressLint("MissingPermission")
     private fun results(scanStarted: Boolean, fresh: Boolean): WritableMap {
         val now = SystemClock.elapsedRealtime()
         val networks = Arguments.createArray()
