@@ -9,6 +9,15 @@ Release notes.
 
 ## [Unreleased]
 
+### Added
+
+- **Health check: "Where is the problem?"** The check now measures each part
+  of the connection separately (this phone → router → provider → internet)
+  with eight pings each, and shows the chain with every link coloured by the
+  delay and loss it adds. A plain-language verdict says whether the Wi-Fi or
+  mobile signal, the router, the provider's line or the internet beyond it is
+  to blame, with advice. The result is included in shared reports.
+
 ## [1.0.0] - 2026-11-16
 
 First stable release. It contains exactly what was tested as 1.0.0-rc.5 on a

@@ -44,7 +44,7 @@ public IP address, as every website does.
 | Port Scanner          | The host you enter                                                                                                                                                                                                          |
 | Speed Test            | Cloudflare (`speed.cloudflare.com`)                                                                                                                                                                                         |
 | Connection Monitor    | The target you choose (default `1.1.1.1`)                                                                                                                                                                                   |
-| Health Check          | The same as Internet Reachability                                                                                                                                                                                           |
+| Health Check          | The same as Internet Reachability, plus pings to your router, your provider's first router and `1.1.1.1`                                                                                                                    |
 
 ## Updates
 
