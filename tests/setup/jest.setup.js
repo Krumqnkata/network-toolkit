@@ -187,3 +187,26 @@ jest.mock('../../src/native/specs/NativeUpdateModule', () => ({
 globalThis.fetch = jest.fn(() =>
   Promise.resolve({ ok: true, status: 200, text: () => Promise.resolve('[]') }),
 );
+
+jest.mock('../../src/native/specs/NativeBluetoothModule', () => ({
+  __esModule: true,
+  default: {
+    getState: jest.fn(() =>
+      Promise.resolve({
+        supported: true,
+        enabled: true,
+        scanPermission: true,
+        connectPermission: true,
+        needsLocation: false,
+        locationEnabled: true,
+        scanning: false,
+      }),
+    ),
+    startScan: jest.fn(() => Promise.resolve()),
+    stopScan: jest.fn(() => Promise.resolve()),
+    getScanResults: jest.fn(() =>
+      Promise.resolve({ scanning: true, error: null, elapsedMs: 0, devices: [] }),
+    ),
+    getBondedDevices: jest.fn(() => Promise.resolve([])),
+  },
+}));

@@ -16,8 +16,11 @@ export function ToolsScreen() {
   // The speed test and the LAN scanner have their own tabs.
   const openTool = (toolId: ToolId) => {
     if (toolId === 'speed-test') navigation.navigate('Main', { screen: 'SpeedTest' });
-    else if (toolId === 'lan-scanner') navigation.navigate('Main', { screen: 'Devices' });
-    else navigation.navigate('Tool', { toolId });
+    else if (toolId === 'lan-scanner') {
+      navigation.navigate('Main', { screen: 'Devices', params: { mode: 'network' } });
+    } else if (toolId === 'bluetooth-scanner') {
+      navigation.navigate('Main', { screen: 'Devices', params: { mode: 'bluetooth' } });
+    } else navigation.navigate('Tool', { toolId });
   };
 
   return (
