@@ -26,7 +26,6 @@ import { useSpeedTestStore } from '../../../stores/speedTestStore';
 import { logError } from '../../../utils/errors';
 import {
   ErrorNotice,
-  FormCard,
   ToolFrame,
   formatMs,
 } from '../../network-tools/components/ToolFrame';
@@ -120,38 +119,6 @@ export function SpeedTestScreen() {
 
   return (
     <ToolFrame toolId="speed-test">
-      <FormCard>
-        <AppText variant="caption" color="textSecondary">
-          {t.intro}
-        </AppText>
-        {confirmMetered && !running ? (
-          <View style={{ gap: theme.spacing.sm }}>
-            <AppText variant="heading" color="warning">
-              {t.meteredTitle}
-            </AppText>
-            <AppText variant="caption" color="textSecondary">
-              {t.meteredBody}
-            </AppText>
-            <Button
-              testID="speed-run-anyway"
-              label={t.runAnyway}
-              onPress={() => {
-                setConfirmMetered(false);
-                start();
-              }}
-            />
-          </View>
-        ) : running ? (
-          <Button testID="speed-stop" label={t.stop} variant="secondary" onPress={cancel} />
-        ) : (
-          <Button
-            testID="speed-start"
-            label={phase === 'done' ? t.again : t.start}
-            onPress={onStart}
-          />
-        )}
-      </FormCard>
-
       {error ? <ErrorNotice error={error} /> : null}
 
       <Card>
@@ -165,6 +132,34 @@ export function SpeedTestScreen() {
         {running && status ? (
           <ProgressBar value={status.progress} label={t.phases[status.phase]} />
         ) : null}
+        <View style={{ marginTop: theme.spacing.md }}>
+          {confirmMetered && !running ? (
+            <View style={{ gap: theme.spacing.sm }}>
+              <AppText variant="heading" color="warning">
+                {t.meteredTitle}
+              </AppText>
+              <AppText variant="caption" color="textSecondary">
+                {t.meteredBody}
+              </AppText>
+              <Button
+                testID="speed-run-anyway"
+                label={t.runAnyway}
+                onPress={() => {
+                  setConfirmMetered(false);
+                  start();
+                }}
+              />
+            </View>
+          ) : running ? (
+            <Button testID="speed-stop" label={t.stop} variant="secondary" onPress={cancel} />
+          ) : (
+            <Button
+              testID="speed-start"
+              label={phase === 'done' ? t.again : t.start}
+              onPress={onStart}
+            />
+          )}
+        </View>
         {phase === 'error' && status?.error ? (
           <AppText testID="speed-error" variant="caption" color="danger" selectable>
             {`${t.phases.error}: ${status.error}`}
@@ -187,6 +182,9 @@ export function SpeedTestScreen() {
           </View>
         ) : null}
       </Card>
+      <AppText variant="caption" color="textMuted" style={{ marginTop: -theme.spacing.xs }}>
+        {t.intro}
+      </AppText>
 
       {status && phase !== 'idle' ? (
         <>

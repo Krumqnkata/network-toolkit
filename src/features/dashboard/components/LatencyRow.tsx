@@ -1,15 +1,15 @@
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../../app/theme';
 import { AppText } from '../../../components/common';
-import { Icon } from '../../../components/icons/Icon';
+import { EquipmentPicture } from '../../../components/illustrations/EquipmentPicture';
 import { latencyRating } from '../../../domain/algorithms/plain';
 import { useStrings } from '../../../i18n';
 import type { LatencyTarget } from '../../../stores/homeStore';
 import { RATING_COLOR } from './FactorsCard';
 
-/** Horizontal row of sites with their response time; tapping one opens Ping. */
+/** Sites and the router in equal columns, with their response time; tapping one opens Ping. */
 export function LatencyRow({
   targets,
   latency,
@@ -24,7 +24,7 @@ export function LatencyRow({
   const theme = useTheme();
   const s = useStrings();
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+    <View style={[styles.row, { gap: theme.spacing.xs }]}>
       {targets.map(target => {
         const ms = latency[target.id];
         const rating = latencyRating(ms ?? null);
@@ -44,13 +44,9 @@ export function LatencyRow({
             accessibilityLabel={`${target.label}: ${value}`}
             disabled={!target.host}
             onPress={() => target.host && onOpen(target.host)}
-            style={[styles.item, { marginRight: theme.spacing.md, gap: theme.spacing.xs }]}
+            style={[styles.item, { gap: 2 }]}
           >
-            <Icon
-              name={target.id === 'gateway' ? 'router' : 'globe'}
-              color={theme.colors.textSecondary}
-              size={28}
-            />
+            <EquipmentPicture kind={target.id === 'gateway' ? 'router' : 'internet'} size={36} />
             <AppText variant="caption" numberOfLines={1} align="center">
               {target.label}
             </AppText>
@@ -64,13 +60,16 @@ export function LatencyRow({
           </Pressable>
         );
       })}
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   item: {
     alignItems: 'center',
-    width: 96,
+    flex: 1,
+  },
+  row: {
+    flexDirection: 'row',
   },
 });

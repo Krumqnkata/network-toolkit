@@ -7,9 +7,9 @@ import { lookupPublicIp } from '../../network-tools/services/ipInfo';
 
 /** Popular sites for the latency row. Plain names, no brand logos. */
 export const SITE_TARGETS: readonly LatencyTarget[] = [
-  { id: 'google', host: 'google.com', label: 'google.com' },
-  { id: 'youtube', host: 'youtube.com', label: 'youtube.com' },
-  { id: 'cloudflare', host: 'cloudflare.com', label: 'cloudflare.com' },
+  { id: 'google', host: 'google.com', label: 'Google' },
+  { id: 'youtube', host: 'youtube.com', label: 'YouTube' },
+  { id: 'cloudflare', host: 'cloudflare.com', label: 'Cloudflare' },
 ];
 
 /** Public IP lookups are repeated at most this often. */

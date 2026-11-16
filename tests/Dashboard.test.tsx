@@ -87,7 +87,7 @@ describe('Home', () => {
     mockedGetSnapshot.mockResolvedValue(wifiSnapshot);
     await render(<App />);
 
-    expect(await screen.findByRole('header', { name: 'Wi-Fi' })).toBeOnTheScreen();
+    expect(await screen.findByRole('header', { name: 'Home Network' })).toBeOnTheScreen();
     expect(await screen.findByText('BTC-AS')).toBeOnTheScreen();
     expect(
       within(screen.getByTestId('diagram-provider')).getByText('95.42.85.223'),
@@ -101,7 +101,7 @@ describe('Home', () => {
     expect(screen.getByLabelText('Network: Home Network')).toBeOnTheScreen();
     expect(screen.getByLabelText('Band: 5 GHz')).toBeOnTheScreen();
     expect(screen.getByLabelText('Signal: -58 dBm')).toBeOnTheScreen();
-    expect(screen.getByLabelText('google.com: 18 ms')).toBeOnTheScreen();
+    expect(screen.getByLabelText('Google: 18 ms')).toBeOnTheScreen();
     expect(screen.getByLabelText('Router: 3 ms')).toBeOnTheScreen();
     // Technical details are hidden until asked for.
     expect(screen.queryByLabelText('Gateway: 192.168.1.1')).not.toBeOnTheScreen();
@@ -118,7 +118,7 @@ describe('Home', () => {
     expect(screen.getByText('Excellent')).toBeOnTheScreen();
     // Mobile data has no router to measure.
     expect(screen.queryByTestId('latency-gateway')).not.toBeOnTheScreen();
-    expect(screen.getByLabelText('google.com: 18 ms')).toBeOnTheScreen();
+    expect(screen.getByLabelText('Google: 18 ms')).toBeOnTheScreen();
   });
 
   it('opens technical details on request', async () => {
@@ -242,7 +242,7 @@ describe('Home', () => {
     mockedGetSnapshot.mockResolvedValue(wifiSnapshot);
     await user.press(screen.getByRole('button', { name: 'Try again' }));
 
-    expect(await screen.findByRole('header', { name: 'Wi-Fi' })).toBeOnTheScreen();
+    expect(await screen.findByRole('header', { name: 'Home Network' })).toBeOnTheScreen();
   });
 
   it('renders in Bulgarian', async () => {

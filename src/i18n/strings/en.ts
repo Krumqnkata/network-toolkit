@@ -168,12 +168,16 @@ export const en = {
     title: 'Tools',
     subtitle: 'Diagnostics for networks you own or manage.',
     categories: {
-      diagnostics: 'Diagnostics',
-      discovery: 'Discovery',
-      web: 'Web & TLS',
-      performance: 'Performance',
+      check: 'Check my connection',
+      network: 'My network',
+      lookup: 'Look up & trace',
+      web: 'Websites & security',
     },
     items: {
+      'network-map': {
+        name: 'Network Map',
+        description: 'Draw your network: internet path, router and devices',
+      },
       'bluetooth-scanner': {
         name: 'Bluetooth Scanner',
         description: 'Find nearby Bluetooth devices and how close they are',
@@ -392,7 +396,7 @@ export const en = {
     scan: 'Scan network',
     stop: 'Stop',
     intro:
-      'Finds devices on your Wi-Fi or Ethernet network with TCP and ICMP probes, mDNS, SSDP/UPnP and NetBIOS. Only scan networks you own or manage.',
+      'Finds every device on your network: computers, phones, TVs, printers and more. Only scan networks you own or manage.',
     network: 'Network',
     range: 'Scanned range',
     truncated: 'Large subnet: only the /24 around this device is scanned.',
@@ -407,6 +411,7 @@ export const en = {
     unnamed: 'Unknown device',
     kinds: {
       router: 'Router',
+      switch: 'Network switch',
       phone: 'Phone or tablet',
       computer: 'Computer',
       printer: 'Printer',
@@ -817,7 +822,7 @@ export const en = {
   topology: {
     title: 'Network map',
     intro:
-      'Draws your network by measuring it: the path to the internet, your router and access points, devices on the network and nearby Bluetooth devices.',
+      'Draws your network by measuring it: the way to the internet, your router and every device it can find.',
     build: 'Build map',
     rebuild: 'Rebuild',
     stop: 'Stop',
@@ -827,8 +832,8 @@ export const en = {
     notConnected: 'Connect to a network to build its map.',
     types: {
       internet: 'Internet',
-      hop: 'Router on the way',
-      more: (count: number) => `${count} more hops`,
+      provider: 'Internet provider',
+      hop: 'Another router',
       operator: 'Mobile operator',
       router: 'Your router',
       ap: 'Access point',
@@ -863,9 +868,27 @@ export const en = {
       radios: 'Radios (BSSIDs)',
       model: 'Model',
       vendor: 'Maker',
+      network: 'Wi-Fi network',
+      hops: (count: number) =>
+        `${count} ${
+          count === 1 ? 'router' : 'routers'
+        } of the provider and the internet on the way:`,
     },
     connected: 'Connected',
     notReachedDelay: 'no answer',
+    devicesGroup: (count: number) => `DEVICES ON THE NETWORK · ${count}`,
+    bluetoothGroup: 'BLUETOOTH NEARBY',
+    sections: { path: 'Path to the internet', accessPoints: 'Access points' },
+    exportTitleNamed: (ssid: string) => `Network map — ${ssid}`,
+    exportFooter: 'Measured from this phone with Network Toolkit',
+    export: {
+      title: 'Export',
+      hint: 'Opens the share menu: save the map to Files or Drive, or send it in a chat.',
+      png: 'Image',
+      svg: 'Drawing (SVG)',
+      text: 'Text report',
+      json: 'Data (JSON)',
+    },
     actions: { details: 'Device details', ping: 'Ping', close: 'Close' },
     legend: 'Line colour: green good, amber slow, red very slow. Dashed: wireless.',
     notes: {

@@ -166,12 +166,16 @@ export const bg: Strings = {
     title: 'Инструменти',
     subtitle: 'Диагностика на мрежи, които притежаваш или управляваш.',
     categories: {
-      diagnostics: 'Диагностика',
-      discovery: 'Откриване',
-      web: 'Уеб и TLS',
-      performance: 'Производителност',
+      check: 'Провери връзката',
+      network: 'Моята мрежа',
+      lookup: 'Търсене и проследяване',
+      web: 'Сайтове и сигурност',
     },
     items: {
+      'network-map': {
+        name: 'Карта на мрежата',
+        description: 'Нарисувай мрежата си: път до интернет, рутер и устройства',
+      },
       'bluetooth-scanner': {
         name: 'Bluetooth скенер',
         description: 'Bluetooth устройства наоколо и колко са близо',
@@ -397,7 +401,7 @@ export const bg: Strings = {
     scan: 'Сканирай мрежата',
     stop: 'Стоп',
     intro:
-      'Открива устройствата в Wi-Fi или Ethernet мрежата чрез TCP и ICMP проби, mDNS, SSDP/UPnP и NetBIOS. Сканирай само мрежи, които притежаваш или управляваш.',
+      'Намира всички устройства в мрежата ти: компютри, телефони, телевизори, принтери и други. Сканирай само мрежи, които са твои или управляваш.',
     network: 'Мрежа',
     range: 'Сканиран обхват',
     truncated: 'Голяма подмрежа: сканира се само /24 около това устройство.',
@@ -412,6 +416,7 @@ export const bg: Strings = {
     unnamed: 'Неизвестно устройство',
     kinds: {
       router: 'Рутер',
+      switch: 'Мрежов суич',
       phone: 'Телефон или таблет',
       computer: 'Компютър',
       printer: 'Принтер',
@@ -831,7 +836,7 @@ export const bg: Strings = {
   topology: {
     title: 'Карта на мрежата',
     intro:
-      'Рисува мрежата ти, като я измерва: пътя до интернет, рутера и точките за достъп, устройствата в мрежата и Bluetooth устройствата наблизо.',
+      'Рисува мрежата ти, като я измерва: пътя до интернет, рутера и всяко устройство, което открие.',
     build: 'Направи карта',
     rebuild: 'Обнови',
     stop: 'Спри',
@@ -841,8 +846,8 @@ export const bg: Strings = {
     notConnected: 'Свържи се с мрежа, за да направиш картата ѝ.',
     types: {
       internet: 'Интернет',
-      hop: 'Рутер по пътя',
-      more: (count: number) => `Още ${count} прехода`,
+      provider: 'Интернет доставчик',
+      hop: 'Още един рутер',
       operator: 'Мобилен оператор',
       router: 'Твоят рутер',
       ap: 'Точка за достъп',
@@ -877,9 +882,25 @@ export const bg: Strings = {
       radios: 'Радиа (BSSID)',
       model: 'Модел',
       vendor: 'Производител',
+      network: 'Wi-Fi мрежа',
+      hops: (count: number) =>
+        `${count} ${count === 1 ? 'рутер' : 'рутера'} на доставчика и в интернет по пътя:`,
     },
     connected: 'Свързан',
     notReachedDelay: 'няма отговор',
+    devicesGroup: (count: number) => `УСТРОЙСТВА В МРЕЖАТА · ${count}`,
+    bluetoothGroup: 'BLUETOOTH НАБЛИЗО',
+    sections: { path: 'Път до интернет', accessPoints: 'Точки за достъп' },
+    exportTitleNamed: (ssid: string) => `Карта на мрежата — ${ssid}`,
+    exportFooter: 'Измерено от този телефон с Network Toolkit',
+    export: {
+      title: 'Експорт',
+      hint: 'Отваря менюто за споделяне: запази картата във Файлове или Drive, или я изпрати в чат.',
+      png: 'Снимка',
+      svg: 'Чертеж (SVG)',
+      text: 'Текстов отчет',
+      json: 'Данни (JSON)',
+    },
     actions: { details: 'Подробности', ping: 'Ping', close: 'Затвори' },
     legend:
       'Цвят на линията: зелено – добре, жълто – бавно, червено – много бавно. Пунктир – безжично.',

@@ -1,5 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../../app/theme';
 import { Badge, Card, ListRow, Screen, SectionHeader } from '../../../components/common';
@@ -20,6 +21,8 @@ export function ToolsScreen() {
       navigation.navigate('Main', { screen: 'Devices', params: { mode: 'network' } });
     } else if (toolId === 'bluetooth-scanner') {
       navigation.navigate('Main', { screen: 'Devices', params: { mode: 'bluetooth' } });
+    } else if (toolId === 'network-map') {
+      navigation.navigate('Main', { screen: 'Devices', params: { mode: 'map' } });
     } else navigation.navigate('Tool', { toolId });
   };
 
@@ -42,10 +45,21 @@ export function ToolsScreen() {
                   onPress={available ? () => openTool(tool.id) : undefined}
                   showDivider={index < tools.length - 1}
                   leading={
-                    <Icon
-                      name={tool.icon}
-                      color={available ? theme.colors.accent : theme.colors.textMuted}
-                    />
+                    <View
+                      style={[
+                        styles.iconBox,
+                        {
+                          backgroundColor: theme.colors.accentMuted,
+                          borderRadius: theme.radius.md,
+                        },
+                      ]}
+                    >
+                      <Icon
+                        name={tool.icon}
+                        color={available ? theme.colors.accent : theme.colors.textMuted}
+                        size={20}
+                      />
+                    </View>
                   }
                   trailing={
                     available ? (
@@ -63,3 +77,12 @@ export function ToolsScreen() {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  iconBox: {
+    alignItems: 'center',
+    height: 36,
+    justifyContent: 'center',
+    width: 36,
+  },
+});

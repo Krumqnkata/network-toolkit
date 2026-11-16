@@ -3,6 +3,7 @@ import { identify, type Fingerprint } from './fingerprint';
 
 export type DeviceKind =
   | 'router'
+  | 'switch'
   | 'phone'
   | 'computer'
   | 'printer'

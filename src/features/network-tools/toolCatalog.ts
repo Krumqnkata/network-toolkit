@@ -14,9 +14,11 @@ export type ToolId =
   | 'speed-test'
   | 'connection-monitor'
   | 'health-check'
-  | 'bluetooth-scanner';
+  | 'bluetooth-scanner'
+  | 'network-map';
 
-export type ToolCategory = 'diagnostics' | 'discovery' | 'web' | 'performance';
+/** Groups shown on the Tools tab, from everyday checks to expert tools. */
+export type ToolCategory = 'check' | 'network' | 'lookup' | 'web';
 
 /**
  * `planned`   – on the roadmap, not implemented; the UI shows it as disabled.
@@ -34,112 +36,30 @@ export interface ToolDefinition {
 }
 
 /** Display order of categories. Names and descriptions live in src/i18n. */
-export const TOOL_CATEGORIES: readonly ToolCategory[] = [
-  'diagnostics',
-  'discovery',
-  'web',
-  'performance',
-];
+export const TOOL_CATEGORIES: readonly ToolCategory[] = ['check', 'network', 'lookup', 'web'];
 
 export const TOOLS: readonly ToolDefinition[] = [
-  {
-    id: 'health-check',
-    category: 'diagnostics',
-    icon: 'pulse',
-    status: 'available',
-    milestone: 8,
-  },
-  {
-    id: 'ping',
-    category: 'diagnostics',
-    icon: 'pulse',
-    status: 'available',
-    milestone: 5,
-  },
-  {
-    id: 'dns-lookup',
-    category: 'diagnostics',
-    icon: 'globe',
-    status: 'available',
-    milestone: 5,
-  },
-  {
-    id: 'reverse-dns',
-    category: 'diagnostics',
-    icon: 'globe',
-    status: 'available',
-    milestone: 5,
-  },
-  {
-    id: 'traceroute',
-    category: 'diagnostics',
-    icon: 'route',
-    status: 'available',
-    milestone: 5,
-  },
-  {
-    id: 'reachability',
-    category: 'diagnostics',
-    icon: 'info',
-    status: 'available',
-    milestone: 5,
-  },
-  {
-    id: 'ip-info',
-    category: 'diagnostics',
-    icon: 'info',
-    status: 'available',
-    milestone: 5,
-  },
-  {
-    id: 'lan-scanner',
-    category: 'discovery',
-    icon: 'lan',
-    status: 'available',
-    milestone: 6,
-  },
+  { id: 'health-check', category: 'check', icon: 'heart', status: 'available', milestone: 8 },
+  { id: 'speed-test', category: 'check', icon: 'gauge', status: 'available', milestone: 7 },
+  { id: 'reachability', category: 'check', icon: 'shield', status: 'available', milestone: 5 },
+  { id: 'connection-monitor', category: 'check', icon: 'chart', status: 'available', milestone: 8 },
+  { id: 'network-map', category: 'network', icon: 'map', status: 'available', milestone: 10 },
+  { id: 'lan-scanner', category: 'network', icon: 'lan', status: 'available', milestone: 6 },
   {
     id: 'bluetooth-scanner',
-    category: 'discovery',
+    category: 'network',
     icon: 'bluetooth',
     status: 'available',
     milestone: 10,
   },
-  {
-    id: 'port-scanner',
-    category: 'discovery',
-    icon: 'plug',
-    status: 'available',
-    milestone: 6,
-  },
-  {
-    id: 'http-headers',
-    category: 'web',
-    icon: 'document',
-    status: 'available',
-    milestone: 5,
-  },
-  {
-    id: 'tls-certificate',
-    category: 'web',
-    icon: 'lock',
-    status: 'available',
-    milestone: 5,
-  },
-  {
-    id: 'speed-test',
-    category: 'performance',
-    icon: 'gauge',
-    status: 'available',
-    milestone: 7,
-  },
-  {
-    id: 'connection-monitor',
-    category: 'performance',
-    icon: 'pulse',
-    status: 'available',
-    milestone: 8,
-  },
+  { id: 'port-scanner', category: 'network', icon: 'plug', status: 'available', milestone: 6 },
+  { id: 'ping', category: 'lookup', icon: 'pulse', status: 'available', milestone: 5 },
+  { id: 'traceroute', category: 'lookup', icon: 'route', status: 'available', milestone: 5 },
+  { id: 'dns-lookup', category: 'lookup', icon: 'search', status: 'available', milestone: 5 },
+  { id: 'reverse-dns', category: 'lookup', icon: 'swap', status: 'available', milestone: 5 },
+  { id: 'ip-info', category: 'lookup', icon: 'pin', status: 'available', milestone: 5 },
+  { id: 'http-headers', category: 'web', icon: 'document', status: 'available', milestone: 5 },
+  { id: 'tls-certificate', category: 'web', icon: 'lock', status: 'available', milestone: 5 },
 ];
 
 export function toolsByCategory(

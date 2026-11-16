@@ -141,7 +141,11 @@ export function certificateOrganization(dn: string | null): string | null {
 }
 
 /** Brand and device type from words found in banners and certificates. */
-const RULES: [RegExp, string, DeviceKind | null][] = [
+const RULES: [RegExp, string | null, DeviceKind | null][] = [
+  // Switches first: their pages often carry a router maker's name.
+  [/tl-s[gx]\d|easy smart switch|jetstream/i, 'TP-Link', 'switch'],
+  [/netgear (gs|prosafe)|\bgs\d{3}[a-z]*\b/i, 'Netgear', 'switch'],
+  [/\bswitch\b/i, null, 'switch'],
   [/mikrotik|routeros/i, 'MikroTik', 'router'],
   [/fritz!?\s?box|\bavm\b/i, 'AVM FRITZ!', 'router'],
   [/ubiquiti|unifi|edgeos|airos|\bubnt\b/i, 'Ubiquiti', 'router'],

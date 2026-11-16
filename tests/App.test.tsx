@@ -20,7 +20,7 @@ describe('App shell', () => {
   it('starts on the home screen with all main tabs available', async () => {
     await render(<App />);
 
-    expect(await screen.findByRole('header', { name: 'Wi-Fi' })).toBeOnTheScreen();
+    expect(await screen.findByRole('header', { name: 'Home Network' })).toBeOnTheScreen();
     for (const tab of ['Home', 'Wi-Fi', 'Speed', 'Devices', 'Tools']) {
       // Tab buttons are announced as "<label>, tab, n of m".
       expect(screen.getByRole('button', { name: new RegExp(`^${tab}, tab`) })).toBeOnTheScreen();
