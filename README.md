@@ -18,7 +18,7 @@ native app.
 
 <!-- prettier-ignore -->
 > [!NOTE]
-> **Status: 1.0 — stable.** All nine milestones are implemented: home screen,
+> **Status: 1.1 — stable.** All nine milestones are implemented: home screen,
 > Wi-Fi Analyzer, network tools, LAN and Bluetooth scanners, speed test,
 > connection monitor and health check. Installed copies update themselves from
 > the [Releases](https://github.com/Krumqnkata/network-toolkit/releases) page —
