@@ -12,6 +12,8 @@ class UpdateRulesTest {
     fun `allows only APKs from this repository's releases`() {
         assertTrue(UpdateRules.isAllowedUrl("${base}v1.0.0/NetworkToolkit-v1.0.0-arm64-v8a.apk"))
         assertTrue(UpdateRules.isAllowedUrl("${base}v1.0.0-rc.3/NetworkToolkit-v1.0.0-rc.3.apk"))
+        assertTrue(UpdateRules.isAllowedUrl("${base}v1.0.0/NetworkToolkit-v1.0.0-x86_64.apk"))
+        assertTrue(UpdateRules.isAllowedUrl("${base}v1.0.0/NetworkToolkit-v1.0.0-armeabi-v7a.apk"))
         assertFalse(UpdateRules.isAllowedUrl("http://github.com/Krumqnkata/network-toolkit/releases/download/v1/NetworkToolkit-v1.apk"))
         assertFalse(UpdateRules.isAllowedUrl("https://github.com/someone/else/releases/download/v1/NetworkToolkit-v1.0.0.apk"))
         assertFalse(UpdateRules.isAllowedUrl("${base}v1.0.0/../../x/NetworkToolkit-v1.0.0.apk"))

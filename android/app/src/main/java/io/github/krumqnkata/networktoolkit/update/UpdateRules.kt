@@ -7,7 +7,8 @@ object UpdateRules {
     /** Updates are only downloaded from this repository's GitHub releases. */
     const val RELEASE_PREFIX = "https://github.com/Krumqnkata/network-toolkit/releases/download/"
 
-    private val FILE_NAME = Regex("^NetworkToolkit-v[0-9A-Za-z.+-]+\\.apk$")
+    // ABI suffixes include underscores (x86_64).
+    private val FILE_NAME = Regex("^NetworkToolkit-v[0-9A-Za-z._+-]+\\.apk$")
     private val SHA256 = Regex("^[0-9a-f]{64}$")
 
     fun isAllowedUrl(url: String): Boolean =
