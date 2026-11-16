@@ -9,6 +9,13 @@ Release notes.
 
 ## [Unreleased]
 
+## [1.1.0-rc.1] - 2026-11-16
+
+Release candidate for 1.1: smarter diagnostics, a self-building network map
+and device identification. Installed copies of 1.0.0 do not update to it
+automatically (pre-releases are offered only to pre-release installs); install
+the APK from the release page to test it.
+
 ### Added
 
 - **Health check: "Where is the problem?"** The check now measures each part
@@ -331,7 +338,8 @@ failed (see Fixed).
 - Tag-driven release workflow that builds, signs, verifies and publishes the
   APK, AAB and SHA-256 checksums.
 
-[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.1.0-rc.1...HEAD
+[1.1.0-rc.1]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0...v1.1.0-rc.1
 [1.0.0]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.5...v1.0.0
 [1.0.0-rc.5]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.4...v1.0.0-rc.5
 [1.0.0-rc.4]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.3...v1.0.0-rc.4
