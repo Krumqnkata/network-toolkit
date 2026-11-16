@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { hydrateSettings } from '../stores/settingsStore';
 import { RootNavigator } from './navigation/RootNavigator';
 import { ThemeProvider, useTheme } from './theme';
 
@@ -13,6 +14,15 @@ function ThemedStatusBar() {
 }
 
 export function App() {
+  // Saved theme and language are read before the first frame so the UI does
+  // not flash the defaults; the native splash screen covers this short wait.
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    hydrateSettings().finally(() => setReady(true));
+  }, []);
+
+  if (!ready) return null;
+
   return (
     <SafeAreaProvider>
       <ThemeProvider>

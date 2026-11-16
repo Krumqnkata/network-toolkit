@@ -170,6 +170,10 @@ export const bg: Strings = {
       performance: 'Производителност',
     },
     items: {
+      'health-check': {
+        name: 'Проверка на мрежата',
+        description: 'Открива и обяснява проблеми с връзката',
+      },
       ping: { name: 'Ping', description: 'Време за отговор и загуба на пакети до хост' },
       'dns-lookup': {
         name: 'DNS заявка',
@@ -500,8 +504,145 @@ export const bg: Strings = {
     increase: (ms: string) => `+${ms}`,
     server: 'Сървър',
     dataUsed: 'Изразходвани данни',
-    history: 'Тази сесия',
+    history: 'История',
+    clearHistory: 'Изчисти историята',
     historyRow: (down: string, up: string, ping: string) => `↓ ${down} · ↑ ${up} Mbps · ${ping}`,
+  },
+  monitor: {
+    intro:
+      'Пинва цел на всеки 2 секунди, докато приложението е отворено, и записва latency, загуба на пакети и прекъсвания (3 или повече поредни изгубени заявки). Сесиите се пазят на устройството.',
+    target: 'Цел',
+    targets: { internet: 'Интернет (1.1.1.1)', gateway: 'Gateway', custom: 'Друга' },
+    start: 'Започни мониторинг',
+    stop: 'Стоп',
+    noGateway: 'Активната мрежа няма gateway.',
+    live: 'На живо',
+    current: 'Текущо',
+    uptime: 'Без прекъсване',
+    duration: 'Продължителност',
+    outages: 'Прекъсвания',
+    noOutages: 'Няма прекъсвания.',
+    outageRow: (start: string, duration: string) => `${start} · ${duration}`,
+    ongoing: 'продължава',
+    chartLabel: (count: number) => `Latency на последните ${count} заявки.`,
+    history: 'Минали сесии',
+    sessionRow: (duration: string, loss: string, outages: number) =>
+      `${duration} · ${loss} загуба · ${outages} ${outages === 1 ? 'прекъсване' : 'прекъсвания'}`,
+    share: 'Сподели',
+    delete: 'Изтрий',
+    foreground:
+      'Мониторингът спира, когато Android спре приложението във фонов режим; дръж го отворено за непрекъснати резултати.',
+  },
+  health: {
+    intro:
+      'Проверява връзката от край до край — Wi-Fi сигнал и защита, gateway, DNS, интернет, captive portal, HTTPS и IPv6 — и обяснява какво намира. Ако има скорошен тест на скоростта и Wi-Fi сканиране, и те се включват.',
+    run: 'Провери мрежата',
+    running: 'Проверка…',
+    findings: 'Резултати',
+    severity: { problem: 'Проблем', warning: 'Внимание', info: 'Инфо', ok: 'OK' },
+    share: 'Сподели отчета',
+    shareJson: 'Сподели като JSON',
+    history: 'Предишни отчети',
+    reportRow: (problems: number, warnings: number) =>
+      `${problems} ${problems === 1 ? 'проблем' : 'проблема'} · ${warnings} ${
+        warnings === 1 ? 'предупреждение' : 'предупреждения'
+      }`,
+    items: {
+      offline: {
+        title: 'Няма връзка',
+        advice: 'Включи Wi-Fi или мобилните данни.',
+      },
+      'captive-portal': {
+        title: 'Открита е страница за вход',
+        advice:
+          'Мрежата изисква вход или приемане на условия в браузъра, преди да даде достъп до интернет.',
+      },
+      'not-validated': {
+        title: 'Android не потвърди достъп до интернет',
+        advice:
+          'Мрежата е свързана, но проверката на Android не мина. Може да има проблем с рутера или доставчика.',
+      },
+      vpn: {
+        title: 'VPN е активен',
+        advice:
+          'Резултатите описват пътя през VPN. Изключи VPN, за да тестваш собствената си мрежа.',
+      },
+      'weak-signal': {
+        title: 'Слаб Wi-Fi сигнал',
+        advice:
+          'Сигналът е {rssi} dBm. Приближи се до рутера, махни препятствията или добави access point или mesh.',
+      },
+      'fair-signal': {
+        title: 'Среден Wi-Fi сигнал',
+        advice: 'Сигналът е {rssi} dBm. По-далеч от рутера скоростта може да падне.',
+      },
+      'insecure-wifi': {
+        title: 'Незащитена Wi-Fi мрежа',
+        advice:
+          'Мрежата използва {security}. Хората наоколо могат да четат некриптирания трафик; използвай WPA2 или WPA3.',
+      },
+      'band-2g': {
+        title: 'Връзка на 2.4 GHz',
+        advice:
+          '2.4 GHz стига по-далеч, но е по-бавен и по-натоварен. Използвай 5 GHz или 6 GHz, когато си близо до рутера.',
+      },
+      'congested-channel': {
+        title: 'Натоварен Wi-Fi канал',
+        advice:
+          '{overlapping} мрежи наоколо се припокриват с твоя канал. Wi-Fi Analyzer предлага по-свободен.',
+      },
+      'gateway-unreachable': {
+        title: 'Рутерът е недостъпен',
+        advice: 'Gateway-ят не отговаря. Рестартирай рутера или провери Wi-Fi връзката.',
+      },
+      'gateway-no-ping': {
+        title: 'Рутерът не отговаря на ping',
+        advice: 'Много рутери игнорират ping; това не е проблем, ако интернетът работи.',
+      },
+      'dns-failed': {
+        title: 'DNS не работи',
+        advice:
+          'Имената не се разрешават. Пробвай друг DNS (напр. Private DNS с one.one.one.one или dns.google).',
+      },
+      'dns-slow': {
+        title: 'Бавен DNS',
+        advice: 'Заявката отне {ms} ms. С по-бърз DNS страниците започват да се зареждат по-рано.',
+      },
+      'internet-unreachable': {
+        title: 'Няма интернет',
+        advice:
+          'Рутерът е достъпен, но интернетът не е. Може да има проблем с доставчика или модема.',
+      },
+      'high-latency': {
+        title: 'Висока latency',
+        advice: 'Свързването с интернет отне {ms} ms. Разговорите и игрите може да насичат.',
+      },
+      'https-failed': {
+        title: 'HTTPS не работи',
+        advice:
+          'Защитените сайтове са недостъпни. Причина може да е firewall, proxy или грешна дата и час.',
+      },
+      'no-ipv6': {
+        title: 'Няма IPv6',
+        advice:
+          'Мрежата предлага само IPv4. Всичко работи; за повечето хора IPv6 не е задължителен.',
+      },
+      'packet-loss': {
+        title: 'Загуба на пакети',
+        advice:
+          '{percent}% от заявките в последния тест на скоростта са изгубени. Това води до насичане в разговори и игри.',
+      },
+      bufferbloat: {
+        title: 'Latency расте под натоварване',
+        advice:
+          'Latency се увеличи с {ms} ms по време на теста. Обикновено помага SQM/Smart Queue в рутера.',
+      },
+      'all-good': {
+        title: 'Няма открити проблеми',
+        advice: 'Връзката изглежда наред.',
+      },
+    },
+    reportTitle: 'Network Toolkit — отчет за мрежата',
   },
   settings: {
     title: 'Настройки',

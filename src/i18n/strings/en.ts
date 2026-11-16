@@ -172,6 +172,10 @@ export const en = {
       performance: 'Performance',
     },
     items: {
+      'health-check': {
+        name: 'Health Check',
+        description: 'Find and explain problems with your connection',
+      },
       ping: { name: 'Ping', description: 'Round-trip latency and packet loss to a host' },
       'dns-lookup': {
         name: 'DNS Lookup',
@@ -489,8 +493,143 @@ export const en = {
     increase: (ms: string) => `+${ms}`,
     server: 'Server',
     dataUsed: 'Data used',
-    history: 'This session',
+    history: 'History',
+    clearHistory: 'Clear history',
     historyRow: (down: string, up: string, ping: string) => `↓ ${down} · ↑ ${up} Mbps · ${ping}`,
+  },
+  monitor: {
+    intro:
+      'Pings a target every 2 seconds while the app is open and records latency, packet loss and outages (3 or more lost probes in a row). Sessions are saved on this device.',
+    target: 'Target',
+    targets: { internet: 'Internet (1.1.1.1)', gateway: 'Gateway', custom: 'Custom' },
+    start: 'Start monitoring',
+    stop: 'Stop',
+    noGateway: 'The active network has no gateway.',
+    live: 'Live',
+    current: 'Current',
+    uptime: 'Uptime',
+    duration: 'Duration',
+    outages: 'Outages',
+    noOutages: 'No outages.',
+    outageRow: (start: string, duration: string) => `${start} · ${duration}`,
+    ongoing: 'ongoing',
+    chartLabel: (count: number) => `Latency of the last ${count} probes.`,
+    history: 'Past sessions',
+    sessionRow: (duration: string, loss: string, outages: number) =>
+      `${duration} · ${loss} loss · ${outages} ${outages === 1 ? 'outage' : 'outages'}`,
+    share: 'Share',
+    delete: 'Delete',
+    foreground:
+      'Monitoring pauses when Android stops the app in the background; keep the app open for continuous results.',
+  },
+  health: {
+    intro:
+      'Checks your connection end to end — Wi-Fi signal and security, gateway, DNS, internet, captive portal, HTTPS and IPv6 — and explains what it finds. A recent speed test and Wi-Fi scan are included when available.',
+    run: 'Run health check',
+    running: 'Checking…',
+    findings: 'Findings',
+    severity: { problem: 'Problem', warning: 'Warning', info: 'Info', ok: 'OK' },
+    share: 'Share report',
+    shareJson: 'Share as JSON',
+    history: 'Previous reports',
+    reportRow: (problems: number, warnings: number) =>
+      `${problems} ${problems === 1 ? 'problem' : 'problems'} · ${warnings} ${
+        warnings === 1 ? 'warning' : 'warnings'
+      }`,
+    items: {
+      offline: {
+        title: 'Not connected',
+        advice: 'Turn on Wi-Fi or mobile data.',
+      },
+      'captive-portal': {
+        title: 'Sign-in page detected',
+        advice:
+          'This network wants you to sign in or accept terms in a browser before it allows internet access.',
+      },
+      'not-validated': {
+        title: 'Android could not confirm internet access',
+        advice:
+          'The network is connected but Android’s connectivity check failed. The router or provider may have a problem.',
+      },
+      vpn: {
+        title: 'VPN is active',
+        advice: 'Results describe the VPN path. Turn the VPN off to test your own network.',
+      },
+      'weak-signal': {
+        title: 'Weak Wi-Fi signal',
+        advice:
+          'Signal is {rssi} dBm. Move closer to the router, remove obstacles, or add an access point or mesh node.',
+      },
+      'fair-signal': {
+        title: 'Fair Wi-Fi signal',
+        advice: 'Signal is {rssi} dBm. Speeds may drop further away from the router.',
+      },
+      'insecure-wifi': {
+        title: 'Insecure Wi-Fi',
+        advice:
+          'This network uses {security}. Others nearby can read unencrypted traffic; use WPA2 or WPA3.',
+      },
+      'band-2g': {
+        title: 'Connected on 2.4 GHz',
+        advice:
+          '2.4 GHz reaches further but is slower and more crowded. Use 5 GHz or 6 GHz when you are close to the router.',
+      },
+      'congested-channel': {
+        title: 'Busy Wi-Fi channel',
+        advice:
+          '{overlapping} nearby networks overlap your channel. The Wi-Fi Analyzer suggests a less crowded one.',
+      },
+      'gateway-unreachable': {
+        title: 'Router unreachable',
+        advice: 'The gateway does not answer. Restart the router or check the Wi-Fi connection.',
+      },
+      'gateway-no-ping': {
+        title: 'Router does not answer ping',
+        advice: 'Many routers ignore ping; this is not a problem if the internet works.',
+      },
+      'dns-failed': {
+        title: 'DNS is not working',
+        advice:
+          'Names cannot be resolved. Try another DNS server (e.g. Private DNS with one.one.one.one or dns.google).',
+      },
+      'dns-slow': {
+        title: 'Slow DNS',
+        advice: 'A lookup took {ms} ms. A faster resolver can make pages start loading sooner.',
+      },
+      'internet-unreachable': {
+        title: 'No internet connection',
+        advice:
+          'The router is reachable but the internet is not. The provider or the modem may be down.',
+      },
+      'high-latency': {
+        title: 'High latency',
+        advice: 'Connecting to the internet took {ms} ms. Calls and games may lag.',
+      },
+      'https-failed': {
+        title: 'HTTPS fails',
+        advice:
+          'Secure websites cannot be reached. A firewall, proxy or wrong date and time can cause this.',
+      },
+      'no-ipv6': {
+        title: 'No IPv6',
+        advice: 'This network only offers IPv4. Everything works; IPv6 is optional for most users.',
+      },
+      'packet-loss': {
+        title: 'Packet loss',
+        advice:
+          '{percent}% of probes were lost in the last speed test. This causes stutter in calls and games.',
+      },
+      bufferbloat: {
+        title: 'Latency rises under load',
+        advice:
+          'Latency grew by {ms} ms during the speed test. Enabling SQM/Smart Queue on the router usually helps.',
+      },
+      'all-good': {
+        title: 'No problems found',
+        advice: 'Your connection looks healthy.',
+      },
+    },
+    reportTitle: 'Network Toolkit — health report',
   },
   settings: {
     title: 'Settings',
