@@ -47,13 +47,14 @@ export function LatencyRow({
             style={[styles.item, { gap: 2 }]}
           >
             <EquipmentPicture kind={target.id === 'gateway' ? 'router' : 'internet'} size={36} />
-            <AppText variant="caption" numberOfLines={1} align="center">
+            <AppText variant="caption" align="center" fit>
               {target.label}
             </AppText>
             <AppText
               variant="heading"
               color={rating ? RATING_COLOR[rating] : 'textMuted'}
               align="center"
+              fit
             >
               {value}
             </AppText>

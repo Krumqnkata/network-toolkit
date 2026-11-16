@@ -47,7 +47,7 @@ export function ConnectionDiagram({
           <React.Fragment key={node.id}>
             <View testID={`diagram-${node.id}`} style={[styles.node, { gap: 2 }]}>
               <EquipmentPicture kind={node.picture} size={nodes.length > 2 ? 60 : 68} />
-              <AppText variant="heading" align="center" numberOfLines={2}>
+              <AppText variant="heading" align="center" numberOfLines={2} fit>
                 {node.title}
               </AppText>
               {node.subtitle ? (
@@ -55,14 +55,20 @@ export function ConnectionDiagram({
                   variant="mono"
                   color="textSecondary"
                   align="center"
-                  numberOfLines={1}
                   style={styles.address}
+                  fit
                 >
                   {node.subtitle}
                 </AppText>
               ) : null}
               {node.status ? (
-                <AppText variant="caption" color={node.status.color} align="center">
+                <AppText
+                  variant="caption"
+                  color={node.status.color}
+                  align="center"
+                  numberOfLines={2}
+                  fit
+                >
                   {node.status.text}
                 </AppText>
               ) : null}
@@ -73,8 +79,8 @@ export function ConnectionDiagram({
                   variant="caption"
                   color={link.color}
                   align="center"
-                  numberOfLines={1}
                   style={styles.linkLabel}
+                  fit
                 >
                   {link.label ?? ' '}
                 </AppText>

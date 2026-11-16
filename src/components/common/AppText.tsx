@@ -13,6 +13,12 @@ export interface AppTextProps extends TextProps {
   variant?: TypographyVariant;
   color?: keyof ThemeColors;
   align?: TextStyle['textAlign'];
+  /**
+   * For text in a fixed space (tabs, diagram labels, badges, numbers in
+   * columns): shrinks the font to fit on `numberOfLines` (default 1) lines
+   * instead of cutting words or adding "…".
+   */
+  fit?: boolean;
 }
 
 /** Themed text. Every piece of visible text in the app goes through this. */
@@ -20,6 +26,7 @@ export function AppText({
   variant = 'body',
   color = 'textPrimary',
   align,
+  fit = false,
   style,
   ...rest
 }: AppTextProps) {
@@ -27,6 +34,13 @@ export function AppText({
   return (
     <Text
       maxFontSizeMultiplier={MAX_FONT_SCALE}
+      {...(fit
+        ? {
+            numberOfLines: rest.numberOfLines ?? 1,
+            adjustsFontSizeToFit: true,
+            minimumFontScale: 0.55,
+          }
+        : null)}
       {...rest}
       style={[
         theme.typography[variant],
