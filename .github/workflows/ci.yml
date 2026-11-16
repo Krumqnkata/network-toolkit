@@ -81,6 +81,9 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v6
 
+      - name: Install Android NDK and CMake (with retries)
+        run: bash .github/scripts/install-android-ndk.sh
+
       - name: Install dependencies
         run: npm ci
 
