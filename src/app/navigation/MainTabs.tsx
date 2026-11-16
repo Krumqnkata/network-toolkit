@@ -4,7 +4,8 @@ import React from 'react';
 import { Icon, type IconName } from '../../components/icons/Icon';
 import { DashboardScreen } from '../../features/dashboard/screens/DashboardScreen';
 import { ToolsScreen } from '../../features/network-tools/screens/ToolsScreen';
-import { SettingsScreen } from '../../features/settings/screens/SettingsScreen';
+import { LanScannerScreen } from '../../features/lan-scanner/screens/LanScannerScreen';
+import { SpeedTestScreen } from '../../features/speed-test/screens/SpeedTestScreen';
 import { WifiAnalyzerScreen } from '../../features/wifi-analyzer/screens/WifiAnalyzerScreen';
 import { useStrings } from '../../i18n';
 import { useTheme } from '../theme';
@@ -25,10 +26,11 @@ function makeTabIcon(name: IconName) {
 }
 
 const TAB_ICONS: Record<keyof MainTabParamList, (props: TabIconProps) => React.ReactNode> = {
-  Dashboard: makeTabIcon('dashboard'),
+  Dashboard: makeTabIcon('home'),
   WifiAnalyzer: makeTabIcon('wifi'),
+  SpeedTest: makeTabIcon('gauge'),
+  Devices: makeTabIcon('lan'),
   Tools: makeTabIcon('terminal'),
-  Settings: makeTabIcon('sliders'),
 };
 
 export function MainTabs() {
@@ -59,8 +61,9 @@ export function MainTabs() {
         component={WifiAnalyzerScreen}
         options={{ title: s.tabs.wifi }}
       />
+      <Tab.Screen name="SpeedTest" component={SpeedTestScreen} options={{ title: s.tabs.speed }} />
+      <Tab.Screen name="Devices" component={LanScannerScreen} options={{ title: s.tabs.devices }} />
       <Tab.Screen name="Tools" component={ToolsScreen} options={{ title: s.tabs.tools }} />
-      <Tab.Screen name="Settings" component={SettingsScreen} options={{ title: s.tabs.settings }} />
     </Tab.Navigator>
   );
 }

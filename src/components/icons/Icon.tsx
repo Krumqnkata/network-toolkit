@@ -6,6 +6,19 @@ import Svg, { Circle, Path } from 'react-native-svg';
  * the visual language stays consistent and no icon font is needed.
  */
 const icons = {
+  home: (
+    <>
+      <Path d="M4 10.5L12 4l8 6.5V20h-5.5v-5.5h-5V20H4z" />
+    </>
+  ),
+  settings: (
+    <>
+      <Circle cx={12} cy={12} r={3} />
+      <Path d="M12 2.75v2.5M12 18.75v2.5M21.25 12h-2.5M5.25 12h-2.5M18.54 5.46l-1.77 1.77M7.23 16.77l-1.77 1.77M18.54 18.54l-1.77-1.77M7.23 7.23L5.46 5.46" />
+    </>
+  ),
+  arrowDown: <Path d="M12 4.5v15M6 13.5l6 6 6-6" />,
+  arrowUp: <Path d="M12 19.5v-15M6 10.5l6-6 6 6" />,
   dashboard: (
     <>
       <Path d="M4 16a8 8 0 1 1 16 0" />

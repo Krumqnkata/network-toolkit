@@ -5,8 +5,9 @@ import type { ToolId } from '../../features/network-tools/toolCatalog';
 export type MainTabParamList = {
   Dashboard: undefined;
   WifiAnalyzer: undefined;
+  SpeedTest: undefined;
+  Devices: undefined;
   Tools: undefined;
-  Settings: undefined;
 };
 
 /** Root stack. Tool screens (Ping, DNS Lookup, …) are pushed on top of the tab bar. */
@@ -15,6 +16,7 @@ export type RootStackParamList = {
   /** `host` pre-fills the tool's target (e.g. when opened from a LAN device). */
   Tool: { toolId: ToolId; host?: string };
   LanDevice: { address: string };
+  Settings: undefined;
 };
 
 declare global {
