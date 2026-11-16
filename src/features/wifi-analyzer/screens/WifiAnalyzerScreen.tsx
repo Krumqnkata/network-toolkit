@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { SettingsButton } from '../../../components/common/SettingsButton';
+import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, Switch, View } from 'react-native';
 
 import { useTheme } from '../../../app/theme';
@@ -13,6 +13,8 @@ import {
   SectionHeader,
   SegmentedControl,
 } from '../../../components/common';
+import { ListRow } from '../../../components/common';
+import { SettingsButton } from '../../../components/common/SettingsButton';
 import { Icon } from '../../../components/icons/Icon';
 import { LocationNotice } from '../../../components/permissions/LocationNotice';
 import { networksInBand } from '../../../domain/algorithms/wifiAnalysis';
@@ -31,6 +33,7 @@ function networkKey(network: ScannedNetwork): string {
 }
 
 export function WifiAnalyzerScreen() {
+  const navigation = useNavigation();
   const theme = useTheme();
   const s = useStrings();
   const a = s.wifiAnalyzer;
@@ -77,6 +80,16 @@ export function WifiAnalyzerScreen() {
 
   return (
     <Screen title={a.title} subtitle={a.subtitle} headerAction={<SettingsButton />}>
+      <Card padded={false}>
+        <ListRow
+          testID="open-wifi-survey"
+          title={s.tools.items['wifi-survey'].name}
+          subtitle={s.tools.items['wifi-survey'].description}
+          onPress={() => navigation.navigate('Tool', { toolId: 'wifi-survey' })}
+          leading={<Icon name="wifi" color={theme.colors.accent} />}
+          trailing={<Icon name="chevronRight" color={theme.colors.textMuted} size={20} />}
+        />
+      </Card>
       {needsPermission ? (
         <LocationNotice purpose="scan" reason="permission" onGranted={onPermissionGranted} />
       ) : null}

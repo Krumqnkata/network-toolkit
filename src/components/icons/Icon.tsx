@@ -41,6 +41,7 @@ const icons = {
       <Circle cx={12} cy={10} r={2.25} />
     </>
   ),
+  close: <Path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />,
   chart: <Path d="M4 19.5h16M6 15.5l4-4.5 3 3 5-6.5" />,
   swap: <Path d="M6.5 8h12l-3.5-3.5M17.5 16h-12l3.5 3.5" />,
   map: (

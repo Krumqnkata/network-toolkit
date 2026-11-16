@@ -179,6 +179,10 @@ export const en = {
       web: 'Websites & security',
     },
     items: {
+      'wifi-survey': {
+        name: 'Wi-Fi by Room',
+        description: 'Walk through your home and find the weak spots',
+      },
       'network-map': {
         name: 'Network Map',
         description: 'Draw your network: internet path, router and devices',
@@ -824,6 +828,95 @@ export const en = {
     confirmHint: 'Android will ask you to confirm the installation.',
   },
   devices: { title: 'Devices', network: 'Network', bluetooth: 'Bluetooth', map: 'Map' },
+  survey: {
+    intro:
+      'Walk through your home. In each room, type its name and tap “Measure here” — it takes about 8 seconds. Then you see where the Wi-Fi is weak and what to do about it.',
+    notWifi: 'Connect to your Wi-Fi to check the signal room by room.',
+    roomName: 'Room',
+    roomPlaceholder: 'For example: Bedroom',
+    suggestions: [
+      'Living room',
+      'Bedroom',
+      'Kitchen',
+      'Office',
+      'Kids room',
+      'Bathroom',
+      'Hallway',
+      'Balcony',
+    ],
+    measure: 'Measure here',
+    measuring: (room: string) => `Measuring “${room}”… hold the phone as you normally do`,
+    nameNeeded: 'Type the name of the room first.',
+    rooms: 'Rooms',
+    remove: (room: string) => `Remove ${room}`,
+    best: 'Best',
+    worst: 'Weakest',
+    ratings: {
+      excellent: 'Excellent',
+      good: 'Good',
+      fair: 'Fair',
+      weak: 'Weak',
+      poor: 'Very weak',
+      unknown: 'No data',
+    },
+    router: (ms: number) => `router ${ms} ms`,
+    lost: (percent: number) => `${percent}% lost`,
+    adviceTitle: 'What to do',
+    advice: {
+      'all-good': {
+        title: 'Strong Wi-Fi everywhere you measured',
+        body: () => 'Nothing to change. If something is slow, the cause is probably not the Wi-Fi.',
+      },
+      'dead-zone': {
+        title: 'Almost no signal',
+        body: (rooms: string) =>
+          `In ${rooms} calls and videos will drop. A mesh access point or an extender halfway between the router and ${rooms} fixes this best.`,
+      },
+      'weak-rooms': {
+        title: 'Weak signal',
+        body: (rooms: string) =>
+          `In ${rooms} pages may load slowly and video may stutter. The tips below help.`,
+      },
+      'add-access-point': {
+        title: 'Add a second access point',
+        body: (rooms: string) =>
+          `Your whole home runs on one access point. A mesh unit or a Wi-Fi extender placed between the router and ${rooms} will cover them.`,
+      },
+      'move-router': {
+        title: 'Move the router',
+        body: () =>
+          'Even the best room is only fair. Put the router higher, in the open and nearer the middle of the home — not in a cabinet, behind the TV or on the floor.',
+      },
+      'sticky-client': {
+        title: 'The phone stayed on a far access point',
+        body: (rooms: string) =>
+          `In ${rooms} another access point of your network was much stronger. Turning Wi-Fi off and on reconnects; on the router, turn on roaming assist or band steering (802.11k/v) if it has it.`,
+      },
+      'use-5ghz': {
+        title: 'Use 5 GHz',
+        body: (rooms: string) =>
+          `In ${rooms} the signal is strong but the phone uses 2.4 GHz, which is slower. Give both bands the same network name or turn on band steering on the router.`,
+      },
+      interference: {
+        title: 'Interference',
+        body: (rooms: string) =>
+          `In ${rooms} the signal is strong but the router answers slowly or loses packets. Neighbouring networks on the same channel, a microwave or many Bluetooth devices can cause this — try another channel (see Wi-Fi Analyzer).`,
+      },
+      'measure-more': {
+        title: 'Measure more rooms',
+        body: () =>
+          'Measure at least two rooms, including the one farthest from the router, to compare.',
+      },
+    },
+    and: 'and',
+    share: 'Share report',
+    finish: 'Save and start over',
+    saved: 'Saved.',
+    history: 'Previous checks',
+    historyRow: (rooms: number, weak: number) =>
+      `${rooms} ${rooms === 1 ? 'room' : 'rooms'} · ${weak === 0 ? 'all good' : `${weak} weak`}`,
+    reportTitle: 'Network Toolkit — Wi-Fi by room',
+  },
   topology: {
     title: 'Network map',
     intro:

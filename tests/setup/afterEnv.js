@@ -17,3 +17,8 @@ beforeEach(() => {
     '../../src/features/health-check/services/problemLocator',
   ).locatorTiming.spacingMs = 0;
 });
+
+// The Wi-Fi survey waits between signal samples; not in tests.
+beforeEach(() => {
+  jest.requireActual('../../src/features/wifi-survey/services/survey').surveyTiming.spacingMs = 0;
+});
