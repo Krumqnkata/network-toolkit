@@ -4,7 +4,7 @@ import NativeStorageModule from '../native/specs/NativeStorageModule';
 import { logError, toAppError } from '../utils/errors';
 
 /** Record kinds stored in SQLite. Adding a kind needs no migration. */
-export type RecordKind = 'speed-result' | 'monitor-session' | 'health-report';
+export type RecordKind = 'speed-result' | 'monitor-session' | 'health-report' | 'wifi-survey';
 
 export interface StoredRecord<T> {
   id: number;

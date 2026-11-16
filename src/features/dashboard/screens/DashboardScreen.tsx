@@ -484,12 +484,12 @@ export function DashboardScreen() {
           onPress={() => navigation.navigate('Tool', { toolId: 'connection-monitor' })}
         />
         <HomeTile
-          testID="home-ip"
-          icon="pin"
-          title={t.publicIp}
-          value={publicInfo?.ip ?? t.publicIpValue}
-          accessibilityLabel={t.open(t.publicIp)}
-          onPress={() => navigation.navigate('Tool', { toolId: 'ip-info' })}
+          testID="home-survey"
+          icon="wifi"
+          title={s.tools.items['wifi-survey'].name}
+          value={s.tools.items['wifi-survey'].description}
+          accessibilityLabel={t.open(s.tools.items['wifi-survey'].name)}
+          onPress={() => navigation.navigate('Tool', { toolId: 'wifi-survey' })}
         />
       </View>
 

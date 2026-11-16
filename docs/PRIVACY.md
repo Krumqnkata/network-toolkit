@@ -46,6 +46,7 @@ public IP address, as every website does.
 | Connection Monitor    | The target you choose (default `1.1.1.1`)                                                                                                                                                                                                                             |
 | Health Check          | The same as Internet Reachability, plus pings to your router, your provider's first router and `1.1.1.1`                                                                                                                                                              |
 | Network map           | Pings with limited TTL to `1.1.1.1` and pings to the routers on the way; the same LAN discovery as the LAN Scanner; Bluetooth results are only those already in memory; exports are written to the app cache and leave the phone only through the share menu you open |
+| Wi-Fi by room         | Pings to your router only; the signal readings come from the phone itself                                                                                                                                                                                             |
 
 ## Updates
 
