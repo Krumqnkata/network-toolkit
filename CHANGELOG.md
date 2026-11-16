@@ -9,8 +9,22 @@ Release notes.
 
 ## [Unreleased]
 
+## [1.0.0-rc.1] - 2026-11-16
+
+Release candidate for 1.0: all nine roadmap milestones are implemented. It has
+not yet been tested on physical devices, so it stays a pre-release until it
+has been; please report problems in the issue tracker.
+
 ### Added
 
+- Per-ABI APKs (milestone 9): every release now ships
+  `NetworkToolkit-vX-arm64-v8a.apk` (and `armeabi-v7a`, `x86_64`, `x86`),
+  about a quarter of the size of the universal APK, plus the universal APK and
+  the App Bundle. The release notes explain which file to pick.
+- Settings → Data: delete all saved speed tests, monitor sessions and health
+  reports (with confirmation; settings are kept).
+- Settings → About: privacy statement and source code links;
+  [docs/PRIVACY.md](docs/PRIVACY.md) lists every service each tool contacts.
 - On-device storage (milestone 8): `NativeStorageModule` over Android's
   built-in SQLite with versioned migrations, no third-party library. Records
   are JSON documents validated with Zod when read.
@@ -40,6 +54,14 @@ Release notes.
   networks. Results of the session are listed below the test.
 - `NativeSpeedTestModule` (Kotlin); the test keeps running if the screen is
   left and can be stopped at any time.
+
+### Changed
+
+- CI runs Android lint (`:app:lintDebug`), so calls to APIs above the minimum
+  Android version without a version check fail the build.
+- `targetSdk` stays 36 for 1.0. Moving to 37 (Android 17) requires the new
+  `ACCESS_LOCAL_NETWORK` runtime permission for the LAN tools and is planned
+  for a later release, after testing on Android 17 devices.
 
 ## [0.2.0-beta.2] - 2026-11-16
 
@@ -155,6 +177,7 @@ failed (see Fixed).
 - Tag-driven release workflow that builds, signs, verifies and publishes the
   APK, AAB and SHA-256 checksums.
 
-[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v0.2.0-beta.2...HEAD
+[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.0.0-rc.1...HEAD
+[1.0.0-rc.1]: https://github.com/Krumqnkata/network-toolkit/compare/v0.2.0-beta.2...v1.0.0-rc.1
 [0.2.0-beta.2]: https://github.com/Krumqnkata/network-toolkit/compare/v0.1.0-alpha.1...v0.2.0-beta.2
 [0.1.0-alpha.1]: https://github.com/Krumqnkata/network-toolkit/releases/tag/v0.1.0-alpha.1

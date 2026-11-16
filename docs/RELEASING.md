@@ -51,8 +51,9 @@ Keystores (`*.keystore`, except the public debug keystore) are ignored by Git.
    key from secrets.
 4. **Verify** — `apksigner verify` on the APK (rejects the debug key and,
    if configured, any unexpected certificate) and `jarsigner -verify` on the AAB.
-5. **Package** — `NetworkToolkit-vX.Y.Z.apk`, `NetworkToolkit-vX.Y.Z.aab` and
-   `checksums.txt` (SHA-256).
+5. **Package** — the universal `NetworkToolkit-vX.Y.Z.apk`, one APK per ABI
+   (`-arm64-v8a`, `-armeabi-v7a`, `-x86_64`, `-x86`; all five are signature
+   checked), `NetworkToolkit-vX.Y.Z.aab` and `checksums.txt` (SHA-256).
 6. **Publish** — creates the GitHub Release with the CHANGELOG section as
    release notes. Versions with a pre-release suffix are marked as pre-releases.
 

@@ -643,6 +643,19 @@ export const en = {
     about: 'About',
     version: (version: string) => `Version ${version}`,
     license: 'License',
+    data: 'Data',
+    dataHint:
+      'Speed tests, monitor sessions and health reports are stored only on this device. Nothing is uploaded.',
+    clearHistory: 'Delete saved history',
+    clearTitle: 'Delete saved history?',
+    clearBody:
+      'This deletes all saved speed tests, monitor sessions and health reports. Settings are kept.',
+    clearConfirm: 'Delete',
+    cancel: 'Cancel',
+    cleared: 'Saved history deleted.',
+    privacy: 'Privacy',
+    privacyValue: 'No accounts, ads or analytics. See which services each tool contacts.',
+    source: 'Source code',
     licenseValue: (license: string) => `${license} — free and open source software`,
   },
 };
