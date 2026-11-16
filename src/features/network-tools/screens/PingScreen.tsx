@@ -15,17 +15,18 @@ import {
 import { latencyLevel, pingStats } from '../../../domain/algorithms/ping';
 import type { AddressFamily } from '../../../domain/models/netTools';
 import { useStrings } from '../../../i18n';
+import type { ToolScreenProps } from './ToolHostScreen';
 import { ErrorNotice, FormCard, ToolFrame, formatMs } from '../components/ToolFrame';
 import { usePing } from '../hooks/usePing';
 
 const COUNTS = ['10', '50', '0'] as const;
 type CountOption = (typeof COUNTS)[number];
 
-export function PingScreen() {
+export function PingScreen({ initialHost }: ToolScreenProps) {
   const theme = useTheme();
   const s = useStrings();
   const t = s.netTools;
-  const [host, setHost] = useState('1.1.1.1');
+  const [host, setHost] = useState(initialHost ?? '1.1.1.1');
   const [family, setFamily] = useState<AddressFamily>('any');
   const [count, setCount] = useState<CountOption>('10');
   const [inputError, setInputError] = useState<string | null>(null);

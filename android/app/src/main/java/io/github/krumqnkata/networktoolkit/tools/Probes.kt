@@ -87,6 +87,13 @@ object Probes {
         )
     }
 
+    /** One ICMP echo with the system ping, or null when this device does not allow it. */
+    fun icmpEcho(address: InetAddress, timeoutMs: Int): PingReply? = try {
+        runPing(address, AddressResolver.familyOf(address), 0, timeoutMs)
+    } catch (error: PingUnavailableException) {
+        null
+    }
+
     private fun runPing(address: InetAddress, family: String, ttl: Int, timeoutMs: Int): PingReply {
         val binary = (if (family == "ipv6") PING6_BINARIES else PING_BINARIES)
             .firstOrNull { File(it).canExecute() }

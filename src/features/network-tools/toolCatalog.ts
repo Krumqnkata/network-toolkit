@@ -86,14 +86,14 @@ export const TOOLS: readonly ToolDefinition[] = [
     id: 'lan-scanner',
     category: 'discovery',
     icon: 'lan',
-    status: 'planned',
+    status: 'available',
     milestone: 6,
   },
   {
     id: 'port-scanner',
     category: 'discovery',
     icon: 'plug',
-    status: 'planned',
+    status: 'available',
     milestone: 6,
   },
   {

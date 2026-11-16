@@ -69,15 +69,14 @@ bounded operation (one ping probe, one DNS query, one traceroute hop); series
 such as continuous ping or traceroute are scheduled in TypeScript hooks, which
 also own cancellation, so no event channel is needed so far.
 
-| Module              | Milestone | Responsibility                                         |
-| ------------------- | --------- | ------------------------------------------------------ |
-| `NetworkModule`     | 3         | Active network, capabilities, link properties, changes |
-| `InterfaceModule`   | 3         | `NetworkInterface` enumeration and addresses           |
-| `WifiModule`        | 4         | Connection info, scans, scan results                   |
-| `NetToolsModule`    | 5         | Ping, traceroute hops, DNS, TCP connect, HTTP and TLS  |
-| `LanScannerModule`  | 6         | Host discovery (TCP, ARP-cache where accessible, mDNS) |
-| `PortScannerModule` | 6         | Bounded, rate-limited TCP connect scanning             |
-| `SpeedTestModule`   | 7         | Multi-stream download/upload measurement               |
+| Module            | Milestone | Responsibility                                         |
+| ----------------- | --------- | ------------------------------------------------------ |
+| `NetworkModule`   | 3         | Active network, capabilities, link properties, changes |
+| `InterfaceModule` | 3         | `NetworkInterface` enumeration and addresses           |
+| `WifiModule`      | 4         | Connection info, scans, scan results                   |
+| `NetToolsModule`  | 5         | Ping, traceroute hops, DNS, TCP connect, HTTP and TLS  |
+| `LanModule`       | 6         | Host probes, NetBIOS, mDNS, SSDP, port scanning        |
+| `SpeedTestModule` | 7         | Multi-stream download/upload measurement               |
 
 The bridge contract for each module is documented in `docs/API.md` as the
 module is implemented.

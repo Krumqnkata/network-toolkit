@@ -37,3 +37,14 @@ jest.mock('../../src/native/specs/NativeNetToolsModule', () => ({
     tlsInspect: jest.fn(),
   },
 }));
+
+jest.mock('../../src/native/specs/NativeLanModule', () => ({
+  __esModule: true,
+  default: {
+    probeHosts: jest.fn(),
+    netbiosQuery: jest.fn(),
+    mdnsQuery: jest.fn(),
+    ssdpSearch: jest.fn(),
+    scanPorts: jest.fn(),
+  },
+}));

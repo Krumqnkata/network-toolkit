@@ -90,6 +90,69 @@ const icons = {
   ),
   chevronRight: <Path d="M9.5 6l6 6-6 6" />,
   chevronLeft: <Path d="M14.5 6l-6 6 6 6" />,
+  router: (
+    <>
+      <Path d="M3.5 13.5h17v5h-17z" />
+      <Path d="M7 16h.01M10 16h.01M16.5 13.5V9" />
+      <Path d="M13.5 7a4.2 4.2 0 0 1 6 0" />
+    </>
+  ),
+  phone: (
+    <>
+      <Path d="M7.5 3h9v18h-9z" />
+      <Path d="M11 18h2" />
+    </>
+  ),
+  computer: (
+    <>
+      <Path d="M3.5 5h17v11h-17z" />
+      <Path d="M9 20h6M12 16v4" />
+    </>
+  ),
+  printer: (
+    <>
+      <Path d="M7 9V3.5h10V9" />
+      <Path d="M4 9h16v7h-3M7 16H4V9" />
+      <Path d="M7 13.5h10V20.5H7z" />
+    </>
+  ),
+  tv: (
+    <>
+      <Path d="M3 5.5h18v11H3z" />
+      <Path d="M8 20.5h8" />
+    </>
+  ),
+  speaker: (
+    <>
+      <Path d="M6.5 3h11v18h-11z" />
+      <Circle cx={12} cy={14.5} r={3} />
+      <Path d="M12 7h.01" />
+    </>
+  ),
+  storage: (
+    <>
+      <Path d="M4 4.5h16v6H4zM4 13.5h16v6H4z" />
+      <Path d="M7.5 7.5h.01M7.5 16.5h.01" />
+    </>
+  ),
+  camera: (
+    <>
+      <Path d="M3.5 7.5h12v9h-12z" />
+      <Path d="M15.5 11l5-3v8l-5-3" />
+    </>
+  ),
+  chip: (
+    <>
+      <Path d="M7 7h10v10H7z" />
+      <Path d="M10 3.5V7M14 3.5V7M10 17v3.5M14 17v3.5M3.5 10H7M3.5 14H7M17 10h3.5M17 14h3.5" />
+    </>
+  ),
+  device: (
+    <>
+      <Circle cx={12} cy={12} r={8.5} />
+      <Path d="M12 8v4.5M12 16h.01" />
+    </>
+  ),
 } as const;
 
 export type IconName = keyof typeof icons;

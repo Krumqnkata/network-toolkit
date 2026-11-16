@@ -12,7 +12,9 @@ export type MainTabParamList = {
 /** Root stack. Tool screens (Ping, DNS Lookup, …) are pushed on top of the tab bar. */
 export type RootStackParamList = {
   Main: NavigatorScreenParams<MainTabParamList>;
-  Tool: { toolId: ToolId };
+  /** `host` pre-fills the tool's target (e.g. when opened from a LAN device). */
+  Tool: { toolId: ToolId; host?: string };
+  LanDevice: { address: string };
 };
 
 declare global {

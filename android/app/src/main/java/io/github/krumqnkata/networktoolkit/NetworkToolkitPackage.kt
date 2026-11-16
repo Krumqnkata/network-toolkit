@@ -5,6 +5,7 @@ import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
+import io.github.krumqnkata.networktoolkit.lan.LanModule
 import io.github.krumqnkata.networktoolkit.network.NetworkModule
 import io.github.krumqnkata.networktoolkit.tools.NetToolsModule
 import io.github.krumqnkata.networktoolkit.wifi.WifiModule
@@ -16,12 +17,13 @@ class NetworkToolkitPackage : BaseReactPackage() {
             NetworkModule.NAME -> NetworkModule(reactContext)
             WifiModule.NAME -> WifiModule(reactContext)
             NetToolsModule.NAME -> NetToolsModule(reactContext)
+            LanModule.NAME -> LanModule(reactContext)
             else -> null
         }
 
     override fun getReactModuleInfoProvider(): ReactModuleInfoProvider =
         ReactModuleInfoProvider {
-            listOf(NetworkModule.NAME, WifiModule.NAME, NetToolsModule.NAME).associateWith { name ->
+            listOf(NetworkModule.NAME, WifiModule.NAME, NetToolsModule.NAME, LanModule.NAME).associateWith { name ->
                 ReactModuleInfo(
                     name = name,
                     className = name,
