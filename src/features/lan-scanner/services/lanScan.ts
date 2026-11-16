@@ -24,12 +24,15 @@ import {
 } from '../../../native/lan';
 import { getNetworkSnapshot } from '../../../native/network';
 import { dnsQuery } from '../../../native/netTools';
-import { useLanStore } from '../../../stores/lanStore';
+import { isLanScanning, useLanStore } from '../../../stores/lanStore';
+import { identifyDevice } from './identify';
 import { AppError, logError, toAppError } from '../../../utils/errors';
 
 /** 32 hosts × 8 ports = 256 connects per native call. */
 export const PROBE_BATCH = 32;
 export const PROBE_TIMEOUT_MS = 700;
+/** Devices identified at the same time. */
+export const IDENTIFY_PARALLELISM = 6;
 const MDNS_ROUND_MS = 1500;
 const SSDP_MS = 2500;
 
@@ -210,12 +213,13 @@ function emptyDevice(address: string, source: LanDevice['source']): LanDevice {
     workgroup: null,
     mac: null,
     upnp: null,
+    fingerprint: null,
   };
 }
 
 export function cancelLanScan(): void {
   const { runId, phase, update } = useLanStore.getState();
-  if (phase === 'probing' || phase === 'naming') {
+  if (isLanScanning(phase)) {
     update({ runId: runId + 1, phase: 'done' });
   }
 }
@@ -331,6 +335,20 @@ export async function startLanScan(): Promise<void> {
       const device = devices.get(address);
       if (device) device.upnp = info;
     }
+    publish();
+
+    // Ask each device about itself: ping TTL, web/SSH banners, certificate, MAC vendor.
+    update({ phase: 'identifying', progress: 0.9 });
+    const targets = [...devices.values()].filter(device => !device.isSelf);
+    let identified = 0;
+    await mapLimited(targets, IDENTIFY_PARALLELISM, async device => {
+      const fingerprint = await identifyDevice(device);
+      if (!active()) return;
+      device.fingerprint = fingerprint;
+      identified++;
+      update({ progress: 0.9 + (identified / Math.max(1, targets.length)) * 0.1 });
+    });
+    if (!active()) return;
     publish();
     const info = useLanStore.getState().info;
     update({

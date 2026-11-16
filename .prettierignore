@@ -5,3 +5,5 @@ package-lock.json
 LICENSE
 # Generated from Bluetooth SIG assigned numbers (see src/domain/data/README.md).
 src/domain/data/*.json
+# Generated from the IEEE OUI registry by scripts/generate-oui.py.
+src/domain/data/oui.ts

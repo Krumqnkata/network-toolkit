@@ -25,6 +25,19 @@ Release notes.
   response time and what it is, and to open device details or ping it.
   Double NAT and provider CGNAT are detected and explained. Packets are not
   captured: Android does not allow that without root.
+- **Smarter device identification.** After finding devices, the LAN scan
+  asks each one about itself, using only the ports it found open: the TTL
+  of a ping reply (Linux/Android/Apple, Windows or network equipment), the
+  web server's `Server` header, page title and login realm, the SSH
+  greeting (software and distribution) and the HTTPS certificate. Brands
+  such as MikroTik, FRITZ!Box, Ubiquiti, Synology, HP and Hikvision are
+  recognised, and a device without another name is called by its web
+  page's title. A new Identification card on the device screen shows what
+  was found. Only private addresses can be asked.
+- **Manufacturer from MAC addresses** using the bundled IEEE OUI registry:
+  Wi-Fi Analyzer shows who made each access point, the network map names
+  access points by maker, and devices with a known MAC show their network
+  card's maker. Randomised addresses are skipped.
 
 ## [1.0.0] - 2026-11-16
 

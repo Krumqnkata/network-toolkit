@@ -183,6 +183,66 @@ describe('LAN scanner', () => {
     );
   });
 
+  it('identifies devices from their banners, ping TTL and network card maker', async () => {
+    lan.probeHosts.mockReset().mockImplementation(async hosts => ({
+      hosts: hosts.map(address => ({
+        address,
+        alive: address === '192.168.1.1' || address === '192.168.1.40',
+        method: 'tcp',
+        rttMs: 2,
+        openPorts: address === '192.168.1.40' ? [22, 80] : [80, 443],
+      })),
+    }));
+    lan.netbiosQuery.mockReset().mockResolvedValue({
+      hosts: [{ address: '192.168.1.40', name: null, workgroup: null, mac: '00:11:32:AA:BB:CC' }],
+    });
+    lan.readBanner.mockReset().mockImplementation(async (host, port) => {
+      if (host !== '192.168.1.40') throw new Error('connection refused');
+      const text =
+        port === 80
+          ? 'HTTP/1.1 200 OK\r\nServer: nginx\r\n\r\n<title>DS920+ &ndash; DiskStation</title>'
+          : 'SSH-2.0-OpenSSH_8.2p1\r\n';
+      return { address: host, port, text, bytes: text.length, connectMs: 3 };
+    });
+    tools.ping.mockReset().mockImplementation(async host => ({
+      address: host,
+      family: 'ipv4',
+      method: 'icmp',
+      status: 'reply',
+      rttMs: 2,
+      ttl: 64,
+      from: host,
+    }));
+    const user = await openTool(/^LAN Scanner/);
+
+    await user.press(screen.getByTestId('lan-scan'));
+    await screen.findByText(/^Last scan /);
+
+    expect(lan.readBanner).toHaveBeenCalledWith(
+      '192.168.1.40',
+      80,
+      expect.stringContaining('GET / HTTP/1.0\r\nHost: 192.168.1.40\r\n'),
+      8192,
+      2000,
+    );
+    expect(lan.readBanner).toHaveBeenCalledWith('192.168.1.40', 22, '', 256, 2000);
+    // The page title names the device; the MAC maker (IEEE registry) gives its type.
+    expect(screen.getByTestId('lan-device-192.168.1.40')).toHaveTextContent(
+      /DS920\+ – DiskStation/,
+    );
+    expect(screen.getByText('192.168.1.40 · Synology')).toBeOnTheScreen();
+
+    await user.press(screen.getByTestId('lan-device-192.168.1.40'));
+    expect(await screen.findByTestId('device-identification')).toBeOnTheScreen();
+    expect(screen.getByTestId('ident-os')).toHaveTextContent(
+      /Linux, Android, Apple or embedded \(TTL 64\)/,
+    );
+    expect(screen.getByTestId('ident-vendor')).toHaveTextContent(/Synology/);
+    expect(screen.getByTestId('ident-web-server')).toHaveTextContent(/nginx/);
+    expect(screen.getByTestId('ident-ssh')).toHaveTextContent(/OpenSSH 8\.2p1/);
+    expect(screen.getByText('Storage')).toBeOnTheScreen();
+  });
+
   it('explains that a scan needs Wi-Fi or Ethernet', async () => {
     network.getNetworkSnapshot.mockResolvedValue(offlineSnapshot);
     const user = await openTool(/^LAN Scanner/);

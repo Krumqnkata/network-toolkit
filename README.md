@@ -137,9 +137,8 @@ Read more in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 The first public version (MVP) covers milestones 1–5: dashboard, network
 information, Wi-Fi Analyzer, ping and DNS lookup.
 
-After 1.0: per-segment diagnosis and the network map are done; smarter
-device identification (HTTP/SSH/TLS banners, OS guess from TTL, access point
-vendor) is next. MikroTik RouterOS integration remains an idea.
+After 1.0: per-segment diagnosis, the network map and smarter device
+identification are done. MikroTik RouterOS integration remains an idea.
 
 ## Changelog
 

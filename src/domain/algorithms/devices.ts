@@ -1,4 +1,5 @@
 import { DNS_RECORD_TYPES } from './dns';
+import { identify, type Fingerprint } from './fingerprint';
 
 export type DeviceKind =
   | 'router'
@@ -47,6 +48,8 @@ export interface LanDevice {
   workgroup: string | null;
   mac: string | null;
   upnp: UpnpInfo | null;
+  /** TTL, HTTP/SSH/TLS banners and MAC vendor; null until identified. */
+  fingerprint: Fingerprint | null;
 }
 
 export interface MdnsRecordLike {
@@ -222,7 +225,8 @@ export function guessKind(device: LanDevice): DeviceKind {
   if (ports.has(8008) || ports.has(8009)) return 'tv';
   if (device.netbiosName || ports.has(445) || ports.has(3389)) return 'computer';
   if (device.isSelf) return 'phone';
-  return 'unknown';
+  const fromBanners = device.fingerprint ? identify(device.fingerprint).kind : null;
+  return fromBanners ?? 'unknown';
 }
 
 /** The most human-friendly name the scan found, or null. */
@@ -237,7 +241,8 @@ export function displayName(device: LanDevice): string | null {
     instance?.instance ??
     device.netbiosName ??
     device.hostname ??
-    (device.mdnsHost ? device.mdnsHost.replace(/\.local\.?$/i, '') : null)
+    (device.mdnsHost ? device.mdnsHost.replace(/\.local\.?$/i, '') : null) ??
+    (device.fingerprint ? identify(device.fingerprint).product : null)
   );
 }
 
@@ -248,6 +253,10 @@ export function modelName(device: LanDevice): string | null {
   for (const service of device.services) {
     const value = service.txt.md ?? service.txt.model ?? service.txt.ty ?? service.txt.usb_mdl;
     if (value) return value;
+  }
+  // Brand from banners, or the network card's manufacturer.
+  if (device.fingerprint) {
+    return identify(device.fingerprint).brand ?? device.fingerprint.vendor;
   }
   return null;
 }

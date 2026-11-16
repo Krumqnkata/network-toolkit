@@ -22,6 +22,17 @@ export interface Spec extends TurboModule {
   ): Promise<Object>;
   /** SSDP M-SEARCH (ssdp:all); collects unicast responses for `durationMs`. */
   ssdpSearch(localAddress: string, durationMs: number): Promise<Object>;
+  /**
+   * Connects to a device on the local network, sends `payload` (may be empty)
+   * and returns up to `maxBytes` of its reply as text. Private addresses only.
+   */
+  readBanner(
+    host: string,
+    port: number,
+    payload: string,
+    maxBytes: number,
+    timeoutMs: number,
+  ): Promise<Object>;
   /** TCP connect scan of up to 512 ports on one host. */
   scanPorts(host: string, ports: number[], timeoutMs: number): Promise<Object>;
 }
