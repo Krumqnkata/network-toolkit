@@ -1,12 +1,14 @@
 import {
   assembleMdns,
   displayName,
+  escapeLabel,
   guessKind,
   modelName,
   parseTxtAttributes,
   parseUpnpDescription,
   serviceTypesFrom,
   splitInstanceName,
+  unescapeLabel,
   type LanDevice,
 } from '../devices';
 import { chunk, COMMON_PORTS, parsePortList, serviceName } from '../ports';
@@ -93,6 +95,18 @@ describe('devices', () => {
       md: 'Chromecast',
       flag: '',
     });
+  });
+
+  it('escapes labels so that they round-trip', () => {
+    expect(escapeLabel('My.Box')).toBe('My\\.Box');
+    expect(escapeLabel('a\\b')).toBe('a\\\\b');
+    expect(escapeLabel('x\\.y')).toBe('x\\\\\\.y');
+    for (const label of ['My.Box', 'a\\b', 'x\\.y', 'plain']) {
+      expect(unescapeLabel(escapeLabel(label))).toBe(label);
+    }
+    expect(splitInstanceName(`${escapeLabel('Box.TV')}._airplay._tcp.local`)?.instance).toBe(
+      'Box.TV',
+    );
   });
 
   it('splits instance names, including escaped dots', () => {

@@ -1,5 +1,6 @@
 import {
   assembleMdns,
+  escapeLabel,
   parseUpnpDescription,
   serviceTypesFrom,
   type LanDevice,
@@ -98,7 +99,7 @@ async function discoverMdns(localAddress: string): Promise<Map<string, MdnsServi
       const followUp = await mdnsQuery(
         localAddress,
         incomplete.flatMap(service => {
-          const name = `${service.instance.replace(/\./g, '\\.')}.${service.type}.local`;
+          const name = `${escapeLabel(service.instance)}.${service.type}.local`;
           return [
             { name, type: DNS_RECORD_TYPES.SRV },
             { name, type: DNS_RECORD_TYPES.TXT },
