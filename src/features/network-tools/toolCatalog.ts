@@ -17,7 +17,8 @@ export type ToolId =
   | 'bluetooth-scanner'
   | 'network-map'
   | 'wifi-survey'
-  | 'security-check';
+  | 'security-check'
+  | 'provider-report';
 
 /** Groups shown on the Tools tab, from everyday checks to expert tools. */
 export type ToolCategory = 'check' | 'network' | 'lookup' | 'web';
@@ -44,6 +45,13 @@ export const TOOLS: readonly ToolDefinition[] = [
   { id: 'health-check', category: 'check', icon: 'heart', status: 'available', milestone: 8 },
   { id: 'wifi-survey', category: 'check', icon: 'wifi', status: 'available', milestone: 11 },
   { id: 'speed-test', category: 'check', icon: 'gauge', status: 'available', milestone: 7 },
+  {
+    id: 'provider-report',
+    category: 'check',
+    icon: 'clipboard',
+    status: 'available',
+    milestone: 13,
+  },
   { id: 'reachability', category: 'check', icon: 'globe', status: 'available', milestone: 5 },
   { id: 'connection-monitor', category: 'check', icon: 'chart', status: 'available', milestone: 8 },
   { id: 'network-map', category: 'network', icon: 'map', status: 'available', milestone: 10 },

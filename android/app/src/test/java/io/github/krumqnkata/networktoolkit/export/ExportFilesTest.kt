@@ -9,6 +9,7 @@ class ExportFilesTest {
         assertEquals("network-map_2026-11-16.png", ExportFiles.safeName("network-map_2026-11-16.png"))
         assertEquals("image/png", ExportFiles.mimeType("map.PNG"))
         assertEquals("image/svg+xml", ExportFiles.mimeType("map.svg"))
+        assertEquals("text/csv", ExportFiles.mimeType("speed-tests.csv"))
     }
 
     @Test

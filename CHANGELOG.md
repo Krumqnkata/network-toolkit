@@ -9,6 +9,23 @@ Release notes.
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-17
+
+### Added
+
+- **Provider report** (Tools → Check my connection): do you get the speed you
+  pay for? Enter your plan's download and upload speed and, if you like, turn
+  on automatic tests every 6, 12 or 24 hours. They run in the background only
+  on home Wi-Fi or Ethernet and when the battery is not low, are shorter than
+  a manual test, and the screen shows how much data each one uses. For the
+  last 7, 30 or 90 days the report shows the typical download and upload as a
+  share of the plan, the slowest and fastest test, how many tests reached 80%
+  of the plan, a chart with the plan line, and the speed by time of day — and
+  says when the evening is much slower. Tests on weak Wi-Fi or mobile data are
+  left out, because there the phone limits the speed. Share it as text or as
+  a spreadsheet (CSV).
+- Speed test results now remember the connection type and Wi-Fi signal.
+
 ## [1.3.1] - 2026-11-16
 
 ### Fixed
@@ -454,7 +471,8 @@ failed (see Fixed).
 - Tag-driven release workflow that builds, signs, verifies and publishes the
   APK, AAB and SHA-256 checksums.
 
-[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.3.1...HEAD
+[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/Krumqnkata/network-toolkit/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/Krumqnkata/network-toolkit/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/Krumqnkata/network-toolkit/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/Krumqnkata/network-toolkit/compare/v1.1.1...v1.2.0

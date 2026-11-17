@@ -26,6 +26,8 @@
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
     <!-- Android 17+: reaching the router and devices on the home network (asked when needed). -->
     <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
+    <!-- Keeps automatic speed tests scheduled after a restart. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
 
@@ -53,6 +55,10 @@
       </activity>
       <receiver
         android:name=".update.InstallResultReceiver"
+        android:exported="false" />
+      <service
+        android:name=".speed.ScheduledSpeedTestJob"
+        android:permission="android.permission.BIND_JOB_SERVICE"
         android:exported="false" />
       <provider
         android:name="androidx.core.content.FileProvider"

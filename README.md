@@ -35,7 +35,7 @@ implemented in the current code.
 | **Wi-Fi Analyzer**       | 2.4 / 5 / 6 GHz scans, channels, overlap analysis, signal history, Wi-Fi by room               | Available |
 | **Network Tools**        | Ping, traceroute, DNS & reverse DNS, reachability, HTTP headers, TLS certificates, IP info     | Available |
 | **LAN Scanner**          | Device discovery and identification, network map, port scanner, security check                 | Available |
-| **Internet Diagnostics** | Download / upload speed, latency, jitter, packet loss, latency under load (bufferbloat)        | Available |
+| **Internet Diagnostics** | Speed test with bufferbloat and packet loss; provider report with automatic tests              | Available |
 | **Advanced Diagnostics** | Connection monitoring, outage tracking, "where is the problem?" per-segment diagnosis, reports | Available |
 | **Network Map**          | Self-building topology: path to the internet, router, mesh access points, LAN and Bluetooth    | Available |
 
