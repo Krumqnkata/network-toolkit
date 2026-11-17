@@ -3,7 +3,14 @@ import { z } from 'zod';
 import { speedStatusSchema } from '../native/speedTest';
 import { Repository } from './storage';
 
-export const speedResultSchema = speedStatusSchema.extend({ finishedAt: z.number() });
+export const speedResultSchema = speedStatusSchema.extend({
+  finishedAt: z.number(),
+  /** Started by the automatic schedule, not by hand. */
+  scheduled: z.boolean().optional(),
+  /** Connection used (`wifi`, `ethernet`, …) and Wi-Fi signal, for the provider report. */
+  transport: z.string().optional(),
+  rssi: z.number().nullable().optional(),
+});
 export type SpeedResult = z.infer<typeof speedResultSchema>;
 
 export const monitorSampleSchema = z.object({

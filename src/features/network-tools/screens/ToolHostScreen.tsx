@@ -15,6 +15,7 @@ import { TlsCertificateScreen } from './TlsCertificateScreen';
 import { ConnectionMonitorScreen } from '../../connection-monitor/screens/ConnectionMonitorScreen';
 import { HealthCheckScreen } from '../../health-check/screens/HealthCheckScreen';
 import { TopologyContent } from '../../topology/screens/TopologyContent';
+import { ProviderReportScreen } from '../../provider-report/screens/ProviderReportScreen';
 import { SecurityCheckScreen } from '../../security-check/screens/SecurityCheckScreen';
 import { WifiSurveyScreen } from '../../wifi-survey/screens/WifiSurveyScreen';
 import { BluetoothContent } from '../../bluetooth/screens/BluetoothContent';
@@ -55,6 +56,7 @@ export const TOOL_SCREENS: Partial<Record<ToolId, React.ComponentType<ToolScreen
   'network-map': NetworkMapScreen,
   'wifi-survey': WifiSurveyScreen,
   'security-check': SecurityCheckScreen,
+  'provider-report': ProviderReportScreen,
 };
 
 function NetworkMapScreen() {

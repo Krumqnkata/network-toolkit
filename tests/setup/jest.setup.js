@@ -96,6 +96,8 @@ jest.mock('../../src/native/specs/NativeSpeedTestModule', () => ({
       }),
     ),
     cancel: jest.fn(() => Promise.resolve()),
+    setSchedule: jest.fn(hours => Promise.resolve(hours)),
+    getSchedule: jest.fn(() => Promise.resolve(0)),
   },
 }));
 

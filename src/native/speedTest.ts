@@ -55,3 +55,26 @@ export async function cancelSpeedTest(): Promise<void> {
     throw toAppError(error);
   }
 }
+
+/** Hours between automatic background tests: 0 (off), 6, 12 or 24. */
+export type SpeedSchedule = 0 | 6 | 12 | 24;
+
+const asSchedule = (hours: number): SpeedSchedule =>
+  hours === 6 || hours === 12 || hours === 24 ? hours : 0;
+
+/** Schedules automatic tests on home Wi-Fi / Ethernet (unmetered, battery not low). */
+export async function setSpeedSchedule(hours: SpeedSchedule): Promise<SpeedSchedule> {
+  try {
+    return asSchedule(await NativeSpeedTestModule.setSchedule(hours));
+  } catch (error) {
+    throw toAppError(error);
+  }
+}
+
+export async function getSpeedSchedule(): Promise<SpeedSchedule> {
+  try {
+    return asSchedule(await NativeSpeedTestModule.getSchedule());
+  } catch (error) {
+    throw toAppError(error);
+  }
+}

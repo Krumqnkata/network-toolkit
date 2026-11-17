@@ -189,6 +189,10 @@ export const en = {
         name: 'Security Check',
         description: 'Wi-Fi encryption, router services, UPnP and open ports',
       },
+      'provider-report': {
+        name: 'Provider Report',
+        description: 'Do you get the speed you pay for? Automatic tests and a report',
+      },
       'network-map': {
         name: 'Network Map',
         description: 'Draw your network: internet path, router and devices',
@@ -950,6 +954,78 @@ export const en = {
           'Your provider can see which sites you look up. In Android Settings → Network → Private DNS you can choose a provider such as dns.google or one.one.one.one.',
       },
     },
+  },
+  providerReport: {
+    intro:
+      'Checks whether you get the speed you pay for. Enter your plan and turn on automatic tests; after a few days you see what share of the promised speed you really get and when it is slowest — ready to send to your provider.',
+    plan: 'Your plan',
+    planDown: 'Download you pay for (Mbps)',
+    planUp: 'Upload you pay for (Mbps)',
+    planHint: 'It is in your contract or on your bill.',
+    savePlan: 'Save plan',
+    planSaved: 'Plan saved.',
+    provider: (name: string) => `Provider: ${name}`,
+    schedule: 'Automatic tests',
+    scheduleOptions: { off: 'Off', h6: 'Every 6 h', h12: 'Every 12 h', h24: 'Once a day' },
+    scheduleHint: (mb: number) =>
+      `Only on home Wi-Fi or Ethernet and when the battery is not low. Each test uses about ${mb} MB.`,
+    scheduleHintUnknown:
+      'Only on home Wi-Fi or Ethernet and when the battery is not low. On a fast connection a test can use several hundred MB.',
+    testNow: 'Test now',
+    period: 'Period',
+    periods: { d7: '7 days', d30: '30 days', d90: '90 days' },
+    verdict: {
+      good: {
+        title: 'You get what you pay for',
+        body: (p: number) => `Typical download is ${p}% of your plan.`,
+      },
+      fair: {
+        title: 'A little below your plan',
+        body: (p: number) => `Typical download is ${p}% of your plan.`,
+      },
+      poor: {
+        title: 'Well below your plan',
+        body: (p: number) =>
+          `Typical download is only ${p}% of your plan. Share this report with your provider.`,
+      },
+      'no-plan': {
+        title: 'Enter your plan',
+        body: () => 'Then the report compares your tests with what you pay for.',
+      },
+      'no-data': { title: 'No tests yet', body: () => 'Run a test or turn on automatic tests.' },
+    },
+    stats: {
+      download: 'Typical download',
+      upload: 'Typical upload',
+      range: 'Slowest – fastest',
+      ping: 'Typical ping',
+      tests: 'Tests',
+      reached: 'Tests with 80% of the plan or more',
+    },
+    ofPlan: (p: number) => `${p}% of plan`,
+    byTime: 'By time of day',
+    dayParts: {
+      night: 'Night (0–6)',
+      morning: 'Morning (6–12)',
+      afternoon: 'Afternoon (12–18)',
+      evening: 'Evening (18–24)',
+    },
+    slowest: (part: string, p: number) =>
+      `${part} is ${p}% slower than the best time — the provider's network may be overloaded then.`,
+    excluded: (count: number) =>
+      `${count} ${
+        count === 1 ? 'test was' : 'tests were'
+      } left out: on weak Wi-Fi (below −67 dBm) or mobile data the phone, not the provider, limits the speed.`,
+    chart: 'Download speed per test',
+    chartLabel: (count: number) => `Chart of ${count} download results`,
+    planLine: 'plan',
+    auto: 'automatic',
+    shareText: 'Share report',
+    shareCsv: 'Spreadsheet (CSV)',
+    reportTitle: 'Network Toolkit — internet speed report',
+    reportPlan: (down: string, up: string) => `Plan: ${down} / ${up} Mbps`,
+    reportPeriod: (from: string, to: string) => `Period: ${from} – ${to}`,
+    reportTests: 'Tests',
   },
   survey: {
     intro:

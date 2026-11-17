@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { getNetworkSnapshot } from '../../../native/network';
 import {
   cancelSpeedTest,
   getSpeedTestStatus,
@@ -43,7 +44,17 @@ export function useSpeedTest(): SpeedTestState {
         setStatus(next);
         if (!RUNNING_PHASES.includes(next.phase)) {
           stopPolling();
-          if (next.phase === 'done') addResult({ ...next, finishedAt: Date.now() });
+          if (next.phase === 'done') {
+            const finishedAt = Date.now();
+            // The connection is saved with the result: the provider report sets weak-Wi-Fi tests apart.
+            getNetworkSnapshot()
+              .then(snapshot => ({
+                transport: snapshot.transport,
+                rssi: snapshot.wifi?.rssi ?? null,
+              }))
+              .catch(() => ({}))
+              .then(link => addResult({ ...next, finishedAt, ...link }));
+          }
         }
       } catch (caught) {
         logError('speed-test', caught);

@@ -41,6 +41,23 @@ class SpeedTestModule(reactContext: ReactApplicationContext) : NativeSpeedTestMo
         promise.resolve(toMap(current?.status() ?: IDLE))
     }
 
+    override fun setSchedule(hours: Double, promise: Promise) {
+        try {
+            SpeedSchedule.schedule(reactApplicationContext, hours.toInt())
+            promise.resolve(SpeedSchedule.currentHours(reactApplicationContext).toDouble())
+        } catch (error: Exception) {
+            promise.reject("E_SCHEDULE", error.message ?: "Could not schedule tests", error)
+        }
+    }
+
+    override fun getSchedule(promise: Promise) {
+        try {
+            promise.resolve(SpeedSchedule.currentHours(reactApplicationContext).toDouble())
+        } catch (error: Exception) {
+            promise.reject("E_SCHEDULE", error.message ?: "Could not read the schedule", error)
+        }
+    }
+
     override fun cancel(promise: Promise) {
         current?.cancel()
         promise.resolve(null)

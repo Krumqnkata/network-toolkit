@@ -10,6 +10,7 @@ object ExportFiles {
         "png" to "image/png",
         "svg" to "image/svg+xml",
         "txt" to "text/plain",
+        "csv" to "text/csv",
         "json" to "application/json",
     )
 
