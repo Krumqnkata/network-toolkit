@@ -10,6 +10,7 @@ import {
   Card,
   EmptyState,
   InfoRow,
+  ListRow,
   Screen,
   SectionHeader,
 } from '../../../components/common';
@@ -40,7 +41,6 @@ import { formatMs } from '../../network-tools/components/ToolFrame';
 import { UpdatePanel } from '../../updates/components/UpdatePanel';
 import { ConnectionDiagram } from '../components/ConnectionDiagram';
 import { FactorsCard, RATING_COLOR, type Factor } from '../components/FactorsCard';
-import { HomeTile } from '../components/HomeTile';
 import { IpConfigCard } from '../components/IpConfigCard';
 import { LatencyRow } from '../components/LatencyRow';
 import { WifiCard } from '../components/WifiCard';
@@ -233,9 +233,10 @@ export function DashboardScreen() {
   const use = speedUse(speed?.downloadMbps ?? null);
   const blocker = snapshot && hasWifi(snapshot) ? ssidBlocker(snapshot) : null;
 
+  const chevron = <Icon name="chevronRight" color={theme.colors.textMuted} size={20} />;
+
   return (
     <Screen
-      overline={t.overline}
       title={title}
       onRefresh={onRefresh}
       refreshing={refreshing}
@@ -302,7 +303,10 @@ export function DashboardScreen() {
             ...(gateway && transport !== 'cellular'
               ? [
                   {
-                    color: 'success' as const,
+                    color:
+                      transport === 'wifi' && signalRating
+                        ? RATING_COLOR[signalRating]
+                        : ('success' as const),
                     label: latency.gateway != null ? `${Math.round(latency.gateway)} ms` : null,
                     dashed: transport === 'wifi',
                   },
@@ -339,14 +343,17 @@ export function DashboardScreen() {
         <AppText variant="title" style={styles.flex}>
           {t.speed}
         </AppText>
-        <AppText
-          variant="body"
-          color="accent"
+        <Pressable
+          testID="home-all-results"
           accessibilityRole="button"
           onPress={() => navigation.navigate('Main', { screen: 'SpeedTest' })}
+          hitSlop={8}
+          style={styles.link}
         >
-          {t.allResults}
-        </AppText>
+          <AppText variant="body" color="accent">
+            {t.allResults}
+          </AppText>
+        </Pressable>
       </View>
       <Button
         testID="home-run-speed"
@@ -369,6 +376,9 @@ export function DashboardScreen() {
               <AppText variant="display" testID="home-download" fit>
                 {formatMbps(speed.downloadMbps)}
               </AppText>
+              <AppText variant="caption" color="textMuted">
+                {t.mbps}
+              </AppText>
             </View>
             <View style={styles.flex}>
               <View style={[styles.row, { gap: theme.spacing.xs }]}>
@@ -380,18 +390,24 @@ export function DashboardScreen() {
               <AppText variant="display" testID="home-upload" fit>
                 {formatMbps(speed.uploadMbps)}
               </AppText>
+              <AppText variant="caption" color="textMuted">
+                {t.mbps}
+              </AppText>
             </View>
             <View style={styles.flex}>
               <AppText variant="caption" color="textSecondary" fit>
                 {t.ping}
               </AppText>
-              <AppText variant="display" fit>
+              <AppText variant="display" testID="home-ping" fit>
                 {speed.idleLatencyMs === null ? '—' : Math.round(speed.idleLatencyMs)}
+              </AppText>
+              <AppText variant="caption" color="textMuted">
+                ms
               </AppText>
             </View>
           </View>
           <AppText variant="caption" color="textMuted">
-            {`${t.mbps} · ${t.lastTest(formatDateTime(speed.finishedAt, language))}`}
+            {t.lastTest(formatDateTime(speed.finishedAt, language))}
           </AppText>
           {use ? (
             <AppText testID="home-speed-use" variant="body" color="success">
@@ -436,12 +452,12 @@ export function DashboardScreen() {
       ) : null}
 
       <SectionHeader title={t.moreTools} />
-      <View style={[styles.grid, { gap: theme.spacing.md }]}>
-        <HomeTile
+      <Card padded={false}>
+        <ListRow
           testID="home-devices"
-          icon="lan"
+          leading={<Icon name="lan" color={theme.colors.textSecondary} size={22} />}
           title={t.devices}
-          value={
+          subtitle={
             isLanScanning(lanPhase)
               ? t.devicesScanning
               : lanDevices > 0
@@ -450,48 +466,49 @@ export function DashboardScreen() {
           }
           accessibilityLabel={t.open(t.devices)}
           onPress={() => navigation.navigate('Main', { screen: 'Devices' })}
+          trailing={chevron}
+          showDivider
         />
-        <HomeTile
+        <ListRow
           testID="home-health"
-          icon="heart"
+          leading={<Icon name="heart" color={theme.colors.textSecondary} size={22} />}
           title={t.health}
-          value={
+          subtitle={
             health
               ? problems + warnings === 0
                 ? t.healthOk
                 : t.healthIssues(problems, warnings)
               : t.healthEmpty
           }
-          valueColor={
-            !health
-              ? 'textSecondary'
-              : problems > 0
-              ? 'danger'
-              : warnings > 0
-              ? 'warning'
-              : 'success'
+          subtitleColor={
+            !health ? 'textMuted' : problems > 0 ? 'danger' : warnings > 0 ? 'warning' : 'success'
           }
           accessibilityLabel={t.open(t.health)}
           onPress={() => navigation.navigate('Tool', { toolId: 'health-check' })}
+          trailing={chevron}
+          showDivider
         />
-        <HomeTile
+        <ListRow
           testID="home-monitor"
-          icon="chart"
+          leading={<Icon name="chart" color={theme.colors.textSecondary} size={22} />}
           title={t.monitor}
-          value={monitorRunning ? t.monitorLive(formatMs(monitorStats.avgMs, s)) : t.monitorIdle}
-          valueColor={monitorRunning ? 'accent' : 'textSecondary'}
+          subtitle={monitorRunning ? t.monitorLive(formatMs(monitorStats.avgMs, s)) : t.monitorIdle}
+          subtitleColor={monitorRunning ? 'accent' : 'textMuted'}
           accessibilityLabel={t.open(t.monitor)}
           onPress={() => navigation.navigate('Tool', { toolId: 'connection-monitor' })}
+          trailing={chevron}
+          showDivider
         />
-        <HomeTile
+        <ListRow
           testID="home-survey"
-          icon="wifi"
+          leading={<Icon name="wifi" color={theme.colors.textSecondary} size={22} />}
           title={s.tools.items['wifi-survey'].name}
-          value={s.tools.items['wifi-survey'].description}
+          subtitle={s.tools.items['wifi-survey'].description}
           accessibilityLabel={t.open(s.tools.items['wifi-survey'].name)}
           onPress={() => navigation.navigate('Tool', { toolId: 'wifi-survey' })}
+          trailing={chevron}
         />
-      </View>
+      </Card>
 
       {snapshot && transport !== 'none' ? (
         <Pressable
@@ -552,6 +569,10 @@ export function DashboardScreen() {
 }
 
 const styles = StyleSheet.create({
+  link: {
+    justifyContent: 'center',
+    minHeight: 48,
+  },
   dot: {
     borderRadius: 5,
     height: 10,
@@ -559,10 +580,6 @@ const styles = StyleSheet.create({
   },
   flex: {
     flex: 1,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
   },
   loading: {
     alignItems: 'center',

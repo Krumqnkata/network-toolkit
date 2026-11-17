@@ -1,9 +1,9 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { isLocalNetworkError } from '../../../services/permissions/localNetworkPermission';
 import { LocalNetworkNotice } from '../../../components/permissions/LocalNetworkNotice';
-import React from 'react';
+import React, { useState } from 'react';
 import { SettingsButton } from '../../../components/common/SettingsButton';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../../app/theme';
 import { AppText, Card, Screen } from '../../../components/common';
@@ -41,9 +41,26 @@ export function errorTitle(error: AppError, s: Strings): string {
     case 'invalid-input':
     case 'unsupported':
     case 'network':
+    case 'permission-denied':
       return errors[error.code];
     default:
       return errors.generic;
+  }
+}
+
+/** What the user can do about an error. */
+export function errorHint(error: AppError, s: Strings): string {
+  const hints = s.netTools.errorHints;
+  switch (error.code) {
+    case 'unknown-host':
+    case 'timeout':
+    case 'invalid-input':
+    case 'unsupported':
+    case 'network':
+    case 'permission-denied':
+      return hints[error.code];
+    default:
+      return hints.generic;
   }
 }
 
@@ -51,19 +68,51 @@ export function ErrorNotice({ error }: { error: AppError }) {
   const theme = useTheme();
   const s = useStrings();
   if (isLocalNetworkError(error)) return <LocalNetworkNotice />;
+  // Messages written by the app are for people; native ones (with a cause) are technical.
+  const technical = error.cause !== undefined;
   return (
     <Card testID="tool-error" accessibilityLiveRegion="polite">
       <View style={[styles.column, { gap: theme.spacing.xs }]}>
         <AppText variant="heading" color="danger">
           {errorTitle(error, s)}
         </AppText>
-        {error.message ? (
-          <AppText variant="mono" color="textSecondary" selectable>
+        {error.message && !technical ? (
+          <AppText variant="body" color="textPrimary">
             {error.message}
           </AppText>
         ) : null}
+        <AppText variant="caption" color="textSecondary">
+          {errorHint(error, s)}
+        </AppText>
+        {error.message && technical ? <ErrorDetails message={error.message} /> : null}
       </View>
     </Card>
+  );
+}
+
+/** The raw error text, for support or a bug report; hidden until asked for. */
+function ErrorDetails({ message }: { message: string }) {
+  const s = useStrings();
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Pressable
+        testID="tool-error-details"
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        onPress={() => setOpen(value => !value)}
+        style={styles.details}
+      >
+        <AppText variant="caption" color="accent">
+          {s.netTools.errorDetails}
+        </AppText>
+      </Pressable>
+      {open ? (
+        <AppText variant="mono" color="textSecondary" selectable>
+          {message}
+        </AppText>
+      ) : null}
+    </>
   );
 }
 
@@ -85,6 +134,11 @@ export function formatMs(value: number | null, s: Strings): string {
 }
 
 const styles = StyleSheet.create({
+  details: {
+    alignSelf: 'flex-start',
+    justifyContent: 'center',
+    minHeight: 48,
+  },
   column: {
     flexDirection: 'column',
   },

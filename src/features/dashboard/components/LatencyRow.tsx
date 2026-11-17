@@ -3,7 +3,6 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../../app/theme';
 import { AppText } from '../../../components/common';
-import { EquipmentPicture } from '../../../components/illustrations/EquipmentPicture';
 import { latencyRating } from '../../../domain/algorithms/plain';
 import { useStrings } from '../../../i18n';
 import type { LatencyTarget } from '../../../stores/homeStore';
@@ -46,7 +45,6 @@ export function LatencyRow({
             onPress={() => target.host && onOpen(target.host)}
             style={[styles.item, { gap: 2 }]}
           >
-            <EquipmentPicture kind={target.id === 'gateway' ? 'router' : 'internet'} size={36} />
             <AppText variant="caption" align="center" fit>
               {target.label}
             </AppText>

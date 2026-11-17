@@ -183,7 +183,7 @@ export const en = {
     items: {
       'wifi-survey': {
         name: 'Wi-Fi by Room',
-        description: 'Walk through your home and find the weak spots',
+        description: 'Find the weak spots, room by room',
       },
       'security-check': {
         name: 'Security Check',
@@ -256,9 +256,20 @@ export const en = {
       timeout: 'The request timed out.',
       'invalid-input': 'The input is not valid.',
       unsupported: 'Not supported on this device.',
-      network: 'Network error.',
-      generic: 'Something went wrong.',
+      network: 'The network did not respond.',
+      'permission-denied': 'Permission needed.',
+      generic: 'The check could not finish.',
     },
+    errorHints: {
+      'unknown-host': 'Check the address for typos, or try again in a moment.',
+      timeout: 'The other side did not answer in time. Check your connection and try again.',
+      'invalid-input': 'Check what you typed and try again.',
+      unsupported: 'This phone or network does not allow it.',
+      network: 'Check that Wi-Fi or mobile data is on, then try again.',
+      'permission-denied': 'Allow it in the app settings, then try again.',
+      generic: 'Try again. If it keeps failing, restart the app.',
+    },
+    errorDetails: 'Details',
     ping: {
       count: 'Probes',
       counts: { '10': '10', '50': '50', '0': 'Continuous' },
@@ -513,7 +524,7 @@ export const en = {
     again: 'Test again',
     stop: 'Stop',
     intro:
-      'Measures against Cloudflare’s speed-test servers (speed.cloudflare.com): 10 s download and 10 s upload over 4 parallel connections. A fast connection can use several hundred MB of data.',
+      'Uses Cloudflare’s speed-test servers. On a fast connection a test can use a few hundred MB of data.',
     meteredTitle: 'Metered connection',
     meteredBody:
       'This network is metered (e.g. mobile data). The test can use a lot of data. Run it anyway?',
@@ -545,7 +556,8 @@ export const en = {
     dataUsed: 'Data used',
     history: 'History',
     clearHistory: 'Clear history',
-    historyRow: (down: string, up: string, ping: string) => `↓ ${down} · ↑ ${up} Mbps · ${ping}`,
+    historyRow: (down: string, up: string) => `↓ ${down}   ↑ ${up} Mbps`,
+    historyMeta: (time: string, ping: string) => `${time} · ping ${ping}`,
   },
   monitor: {
     intro:
@@ -771,7 +783,7 @@ export const en = {
     latencyHint: 'How quickly sites answer. Lower is better.',
     gatewayLabel: 'Router',
     noReply: 'no reply',
-    moreTools: 'More',
+    moreTools: 'More tools',
     technical: 'Technical details',
     technicalHint: 'IP addresses, DNS, channel and other details',
     showLess: 'Hide technical details',

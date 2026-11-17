@@ -51,16 +51,23 @@ export function FactorsCard({
           </View>
         ) : null}
       </View>
-      <View style={[styles.grid, { columnGap: theme.spacing.lg, rowGap: theme.spacing.xs }]}>
+      <View style={{ gap: theme.spacing.xs }}>
         {factors.map(factor => (
           <View
             key={factor.label}
             accessible
             accessibilityLabel={`${factor.label}: ${factor.value}`}
-            style={[styles.factor, { gap: theme.spacing.xs }]}
+            style={[styles.factor, { gap: theme.spacing.md }]}
           >
-            <AppText variant="body">{factor.label}</AppText>
-            <AppText variant="body" color={factor.color ?? 'textSecondary'}>
+            <AppText variant="body" color="textSecondary">
+              {factor.label}
+            </AppText>
+            <AppText
+              variant="body"
+              color={factor.color ?? 'textPrimary'}
+              align="right"
+              style={styles.flex}
+            >
               {factor.value}
             </AppText>
           </View>
@@ -72,15 +79,11 @@ export function FactorsCard({
 
 const styles = StyleSheet.create({
   factor: {
+    alignItems: 'baseline',
     flexDirection: 'row',
-    flexWrap: 'wrap',
   },
   flex: {
     flex: 1,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
   },
   header: {
     alignItems: 'center',

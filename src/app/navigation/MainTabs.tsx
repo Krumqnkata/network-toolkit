@@ -42,7 +42,8 @@ function TabLabel({ color, children }: TabLabelProps) {
       numberOfLines={1}
       adjustsFontSizeToFit
       minimumFontScale={0.75}
-      allowFontScaling={false}
+      // Follows the user's text size up to 1.2×, then shrinks to fit the tab.
+      maxFontSizeMultiplier={1.2}
       style={[styles.label, { color }]}
     >
       {children}
