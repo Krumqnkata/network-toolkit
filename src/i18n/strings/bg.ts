@@ -181,7 +181,7 @@ export const bg: Strings = {
     items: {
       'wifi-survey': {
         name: 'Wi-Fi по стаи',
-        description: 'Обиколи дома и намери слабите места',
+        description: 'Намери слабите места, стая по стая',
       },
       'security-check': {
         name: 'Проверка на сигурността',
@@ -260,9 +260,20 @@ export const bg: Strings = {
       timeout: 'Времето за отговор изтече.',
       'invalid-input': 'Въведените данни не са валидни.',
       unsupported: 'Не се поддържа на това устройство.',
-      network: 'Мрежова грешка.',
-      generic: 'Нещо се обърка.',
+      network: 'Мрежата не отговори.',
+      'permission-denied': 'Нужно е разрешение.',
+      generic: 'Проверката не можа да завърши.',
     },
+    errorHints: {
+      'unknown-host': 'Провери адреса за грешки или опитай пак след малко.',
+      timeout: 'Другата страна не отговори навреме. Провери връзката и опитай пак.',
+      'invalid-input': 'Провери въведеното и опитай пак.',
+      unsupported: 'Този телефон или мрежа не го позволяват.',
+      network: 'Провери дали Wi-Fi или мобилните данни са включени и опитай пак.',
+      'permission-denied': 'Разреши го в настройките на приложението и опитай пак.',
+      generic: 'Опитай пак. Ако продължава, рестартирай приложението.',
+    },
+    errorDetails: 'Подробности',
     ping: {
       count: 'Заявки',
       counts: { '10': '10', '50': '50', '0': 'Без край' },
@@ -519,7 +530,7 @@ export const bg: Strings = {
     again: 'Тествай отново',
     stop: 'Стоп',
     intro:
-      'Мери спрямо сървърите на Cloudflare (speed.cloudflare.com): 10 s изтегляне и 10 s качване през 4 паралелни връзки. При бърза връзка тестът може да изразходи няколкостотин MB данни.',
+      'Използва сървърите на Cloudflare. При бърза връзка един тест може да изразходи няколкостотин MB.',
     meteredTitle: 'Връзка с лимит на данните',
     meteredBody:
       'Тази мрежа е с лимит на данните (напр. мобилни данни). Тестът може да изразходи много данни. Да продължа ли?',
@@ -556,7 +567,8 @@ export const bg: Strings = {
     dataUsed: 'Изразходвани данни',
     history: 'История',
     clearHistory: 'Изчисти историята',
-    historyRow: (down: string, up: string, ping: string) => `↓ ${down} · ↑ ${up} Mbps · ${ping}`,
+    historyRow: (down: string, up: string) => `↓ ${down}   ↑ ${up} Mbps`,
+    historyMeta: (time: string, ping: string) => `${time} · ping ${ping}`,
   },
   monitor: {
     intro:
@@ -784,7 +796,7 @@ export const bg: Strings = {
     latencyHint: 'Колко бързо отговарят сайтовете. По-малко е по-добре.',
     gatewayLabel: 'Рутер',
     noReply: 'няма отговор',
-    moreTools: 'Още',
+    moreTools: 'Още инструменти',
     technical: 'Технически детайли',
     technicalHint: 'IP адреси, DNS, канал и други подробности',
     showLess: 'Скрий техническите детайли',

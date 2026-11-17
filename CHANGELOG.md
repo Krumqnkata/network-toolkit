@@ -9,6 +9,29 @@ Release notes.
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-11-17
+
+### Fixed
+
+- Home: ping no longer looks like Mbps — every number in the speed card has
+  its own unit (Mbps, Mbps, ms).
+- Home: the router → phone line in the diagram takes the colour of the Wi-Fi
+  signal instead of always being green.
+- "All results" is a full-size touch target.
+- Errors say what happened in plain words and what to do next; the technical
+  text is behind "Details".
+- Tab names follow your text size (up to 1.2×) and still fit.
+
+### Changed
+
+- Section headings are written normally instead of in small spaced capitals,
+  and the "Network Toolkit" label above the home title is gone.
+- "What affects your speed" lists one item per line; response times show the
+  names and times without repeated pictures.
+- Speed history: two lines per test — speeds with units, then date and ping.
+- Shorter, plainer text under the speed test.
+- Text that shrinks to fit never goes below 70% of its size.
+
 ## [1.4.0] - 2026-11-17
 
 ### Added
@@ -471,7 +494,8 @@ failed (see Fixed).
 - Tag-driven release workflow that builds, signs, verifies and publishes the
   APK, AAB and SHA-256 checksums.
 
-[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/Krumqnkata/network-toolkit/compare/v1.4.1...HEAD
+[1.4.1]: https://github.com/Krumqnkata/network-toolkit/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/Krumqnkata/network-toolkit/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/Krumqnkata/network-toolkit/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/Krumqnkata/network-toolkit/compare/v1.2.0...v1.3.0

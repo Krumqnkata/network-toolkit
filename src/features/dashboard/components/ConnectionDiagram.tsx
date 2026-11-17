@@ -47,7 +47,7 @@ export function ConnectionDiagram({
           <React.Fragment key={node.id}>
             <View testID={`diagram-${node.id}`} style={[styles.node, { gap: 2 }]}>
               <EquipmentPicture kind={node.picture} size={nodes.length > 2 ? 60 : 68} />
-              <AppText variant="heading" align="center" numberOfLines={2} fit>
+              <AppText variant="heading" align="center" numberOfLines={3} fit>
                 {node.title}
               </AppText>
               {node.subtitle ? (

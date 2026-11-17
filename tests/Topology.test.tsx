@@ -31,6 +31,9 @@ async function openMap() {
   return user;
 }
 
+// Building the map runs a LAN scan and a traceroute; slow CI machines need more than 5 s.
+jest.setTimeout(15_000);
+
 describe('Network map', () => {
   const initial = { lan: useLanStore.getState(), topology: useTopologyStore.getState() };
 

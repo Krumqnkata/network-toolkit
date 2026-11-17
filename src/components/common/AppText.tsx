@@ -38,7 +38,7 @@ export function AppText({
         ? {
             numberOfLines: rest.numberOfLines ?? 1,
             adjustsFontSizeToFit: true,
-            minimumFontScale: 0.55,
+            minimumFontScale: 0.7,
           }
         : null)}
       {...rest}

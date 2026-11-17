@@ -235,7 +235,6 @@ export function DashboardScreen() {
 
   return (
     <Screen
-      overline={t.overline}
       title={title}
       onRefresh={onRefresh}
       refreshing={refreshing}
@@ -302,7 +301,10 @@ export function DashboardScreen() {
             ...(gateway && transport !== 'cellular'
               ? [
                   {
-                    color: 'success' as const,
+                    color:
+                      transport === 'wifi' && signalRating
+                        ? RATING_COLOR[signalRating]
+                        : ('success' as const),
                     label: latency.gateway != null ? `${Math.round(latency.gateway)} ms` : null,
                     dashed: transport === 'wifi',
                   },
@@ -339,14 +341,17 @@ export function DashboardScreen() {
         <AppText variant="title" style={styles.flex}>
           {t.speed}
         </AppText>
-        <AppText
-          variant="body"
-          color="accent"
+        <Pressable
+          testID="home-all-results"
           accessibilityRole="button"
           onPress={() => navigation.navigate('Main', { screen: 'SpeedTest' })}
+          hitSlop={8}
+          style={styles.link}
         >
-          {t.allResults}
-        </AppText>
+          <AppText variant="body" color="accent">
+            {t.allResults}
+          </AppText>
+        </Pressable>
       </View>
       <Button
         testID="home-run-speed"
@@ -369,6 +374,9 @@ export function DashboardScreen() {
               <AppText variant="display" testID="home-download" fit>
                 {formatMbps(speed.downloadMbps)}
               </AppText>
+              <AppText variant="caption" color="textMuted">
+                {t.mbps}
+              </AppText>
             </View>
             <View style={styles.flex}>
               <View style={[styles.row, { gap: theme.spacing.xs }]}>
@@ -380,18 +388,24 @@ export function DashboardScreen() {
               <AppText variant="display" testID="home-upload" fit>
                 {formatMbps(speed.uploadMbps)}
               </AppText>
+              <AppText variant="caption" color="textMuted">
+                {t.mbps}
+              </AppText>
             </View>
             <View style={styles.flex}>
               <AppText variant="caption" color="textSecondary" fit>
                 {t.ping}
               </AppText>
-              <AppText variant="display" fit>
+              <AppText variant="display" testID="home-ping" fit>
                 {speed.idleLatencyMs === null ? '—' : Math.round(speed.idleLatencyMs)}
+              </AppText>
+              <AppText variant="caption" color="textMuted">
+                ms
               </AppText>
             </View>
           </View>
           <AppText variant="caption" color="textMuted">
-            {`${t.mbps} · ${t.lastTest(formatDateTime(speed.finishedAt, language))}`}
+            {t.lastTest(formatDateTime(speed.finishedAt, language))}
           </AppText>
           {use ? (
             <AppText testID="home-speed-use" variant="body" color="success">
@@ -552,6 +566,10 @@ export function DashboardScreen() {
 }
 
 const styles = StyleSheet.create({
+  link: {
+    justifyContent: 'center',
+    minHeight: 48,
+  },
   dot: {
     borderRadius: 5,
     height: 10,

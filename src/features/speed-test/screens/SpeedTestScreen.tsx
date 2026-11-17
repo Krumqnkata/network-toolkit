@@ -238,17 +238,32 @@ export function SpeedTestScreen() {
       {results.length > 0 ? (
         <>
           <SectionHeader title={t.history} />
-          <Card>
-            {results.map(({ id, data: result }) => (
-              <InfoRow
+          <Card padded={false}>
+            {results.map(({ id, data: result }, index) => (
+              <View
                 key={id}
-                label={formatDateTime(result.finishedAt, language)}
-                value={t.historyRow(
-                  formatMbps(result.downloadMbps),
-                  formatMbps(result.uploadMbps),
-                  formatMs(result.idleLatencyMs, s),
-                )}
-              />
+                testID={`speed-history-${id}`}
+                accessible
+                style={[
+                  styles.historyRow,
+                  {
+                    paddingHorizontal: theme.spacing.lg,
+                    paddingVertical: theme.spacing.md,
+                    borderBottomColor: theme.colors.border,
+                    borderBottomWidth: index < results.length - 1 ? StyleSheet.hairlineWidth : 0,
+                  },
+                ]}
+              >
+                <AppText variant="heading" style={styles.tabular}>
+                  {t.historyRow(formatMbps(result.downloadMbps), formatMbps(result.uploadMbps))}
+                </AppText>
+                <AppText variant="caption" color="textSecondary">
+                  {t.historyMeta(
+                    formatDateTime(result.finishedAt, language),
+                    formatMs(result.idleLatencyMs, s),
+                  )}
+                </AppText>
+              </View>
             ))}
           </Card>
           {running ? null : (
@@ -266,6 +281,12 @@ export function SpeedTestScreen() {
 }
 
 const styles = StyleSheet.create({
+  historyRow: {
+    gap: 2,
+  },
+  tabular: {
+    fontVariant: ['tabular-nums'],
+  },
   metric: {
     width: '50%',
   },
