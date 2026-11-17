@@ -1,7 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { SettingsButton } from '../../../components/common/SettingsButton';
-import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../../app/theme';
 import { Badge, Card, ListRow, Screen, SectionHeader } from '../../../components/common';
@@ -46,21 +45,11 @@ export function ToolsScreen() {
                   onPress={available ? () => openTool(tool.id) : undefined}
                   showDivider={index < tools.length - 1}
                   leading={
-                    <View
-                      style={[
-                        styles.iconBox,
-                        {
-                          backgroundColor: theme.colors.accentMuted,
-                          borderRadius: theme.radius.md,
-                        },
-                      ]}
-                    >
-                      <Icon
-                        name={tool.icon}
-                        color={available ? theme.colors.accent : theme.colors.textMuted}
-                        size={20}
-                      />
-                    </View>
+                    <Icon
+                      name={tool.icon}
+                      color={available ? theme.colors.textSecondary : theme.colors.textMuted}
+                      size={22}
+                    />
                   }
                   trailing={
                     available ? (
@@ -78,12 +67,3 @@ export function ToolsScreen() {
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  iconBox: {
-    alignItems: 'center',
-    height: 36,
-    justifyContent: 'center',
-    width: 36,
-  },
-});

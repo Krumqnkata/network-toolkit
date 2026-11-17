@@ -31,6 +31,9 @@ Release notes.
 - Speed history: two lines per test — speeds with units, then date and ping.
 - Shorter, plainer text under the speed test.
 - Text that shrinks to fit never goes below 70% of its size.
+- Home: the four tool cards are now a list whose rows show their status
+  (devices found, problems, monitor running); Tools rows use plain icons
+  instead of tinted squares.
 
 ## [1.4.0] - 2026-11-17
 

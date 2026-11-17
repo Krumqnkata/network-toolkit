@@ -86,7 +86,7 @@ export function WifiAnalyzerScreen() {
           title={s.tools.items['wifi-survey'].name}
           subtitle={s.tools.items['wifi-survey'].description}
           onPress={() => navigation.navigate('Tool', { toolId: 'wifi-survey' })}
-          leading={<Icon name="wifi" color={theme.colors.accent} />}
+          leading={<Icon name="wifi" color={theme.colors.textSecondary} size={22} />}
           trailing={<Icon name="chevronRight" color={theme.colors.textMuted} size={20} />}
         />
       </Card>
